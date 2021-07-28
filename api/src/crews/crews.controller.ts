@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { CrewsService } from './crews.service';
 import { Crew } from './models/crews.entity';
 
@@ -9,5 +9,12 @@ export class CrewsController {
   @Get()
   getCrews(): Promise<Crew[]> {
     return this.crewsService.getCrews();
+  }
+
+  @Get('/movie/:movieId')
+  getCrewsByMovieId(
+    @Param('movieId', ParseIntPipe) movieId: number,
+  ): Promise<Crew[]> {
+    return this.crewsService.getCrewsByMovieId(movieId);
   }
 }

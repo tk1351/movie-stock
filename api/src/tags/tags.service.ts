@@ -13,4 +13,8 @@ export class TagsService {
   async getTags(): Promise<Tag[]> {
     return this.tagsRepository.find();
   }
+
+  async getTagsByMovieId(movieId: number): Promise<Tag[]> {
+    return await this.tagsRepository.getTagsByMovieId(movieId);
+  }
 }

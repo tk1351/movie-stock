@@ -98,12 +98,20 @@ export class MoviesRepository extends Repository<Movie> {
 
   async deleteMovie(id: number, user: User): Promise<IMessage> {
     const usersRepository = getCustomRepository(UsersRepository);
+    const crewsRepository = getCustomRepository(CrewsRepository);
+    const tagsRepository = getCustomRepository(TagsRepository);
 
     const movie = await this.getMovieById(id);
     const foundUser = await usersRepository.findOne(user.id);
 
     if (movie.userId !== foundUser.id)
       throw new UnauthorizedException('権限がありません');
+
+    const crewsIndex = await crewsRepository.getCrewsByMovieId(id);
+    const tagsIndex = await tagsRepository.getTagsByMovieId(id);
+
+    crewsIndex.map((index) => crewsRepository.deleteCrew(index.id));
+    tagsIndex.map((index) => tagsRepository.deleteTag(index.id));
 
     const result = await this.delete({ id });
 

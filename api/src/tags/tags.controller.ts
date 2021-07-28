@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 import { TagsService } from './tags.service';
 import { Tag } from './models/tags.entity';
 
@@ -9,5 +9,12 @@ export class TagsController {
   @Get()
   getTags(): Promise<Tag[]> {
     return this.tagsService.getTags();
+  }
+
+  @Get('/movie/:movieId')
+  getTagsByMovieId(
+    @Param('movieId', ParseIntPipe) movieId: number,
+  ): Promise<Tag[]> {
+    return this.tagsService.getTagsByMovieId(movieId);
   }
 }

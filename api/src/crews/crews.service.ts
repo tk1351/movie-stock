@@ -13,4 +13,8 @@ export class CrewsService {
   async getCrews(): Promise<Crew[]> {
     return this.crewsRepository.find();
   }
+
+  async getCrewsByMovieId(movieId: number): Promise<Crew[]> {
+    return await this.crewsRepository.getCrewsByMovieId(movieId);
+  }
 }
