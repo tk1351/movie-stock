@@ -36,6 +36,7 @@ export class UsersRepository extends Repository<User> {
     const { email, sub } = authCredentialsDto;
 
     const user = await this.createQueryBuilder('users')
+      .addSelect('users.email')
       .where('users.email = :email', { email })
       .andWhere('users.sub = :sub', { sub })
       .getOne();
