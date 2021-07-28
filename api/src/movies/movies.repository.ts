@@ -9,6 +9,8 @@ import { CreateMovieDto } from './dto/create-movie.dto';
 import { IMessage } from '../types/type';
 import { User } from '../users/models/users.entity';
 import { UsersRepository } from '../users/users.repository';
+import { CrewsRepository } from '../crews/crews.repository';
+import { TagsRepository } from '../tags/tags.repository';
 
 @EntityRepository(Movie)
 export class MoviesRepository extends Repository<Movie> {
@@ -34,7 +36,10 @@ export class MoviesRepository extends Repository<Movie> {
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
     const found = await this.createQueryBuilder('movies')
+      .leftJoinAndSelect('movies.crews', 'crews')
+      .leftJoinAndSelect('movies.tags', 'tags')
       .where('movies.userId = :userId', { userId: user.id })
+      .orderBy('movies.createdAt', 'DESC')
       .getMany();
 
     try {
@@ -49,12 +54,15 @@ export class MoviesRepository extends Repository<Movie> {
     user: User,
   ): Promise<IMessage> {
     const usersRepository = getCustomRepository(UsersRepository);
+    const crewsRepository = getCustomRepository(CrewsRepository);
+    const tagsRepository = getCustomRepository(TagsRepository);
 
     const foundUser = await usersRepository.findOne(user.id);
     if (foundUser.role === undefined)
       throw new UnauthorizedException('権限がありません');
 
-    const { title, release, time, country, productionCompany } = createMovieDto;
+    const { title, release, time, country, productionCompany, crews, tags } =
+      createMovieDto;
 
     const movie = this.create();
     movie.title = title;
@@ -64,8 +72,24 @@ export class MoviesRepository extends Repository<Movie> {
     movie.productionCompany = productionCompany;
     movie.user = foundUser;
 
+    const newMovie = await movie.save();
+
+    crews.map((crew) =>
+      crewsRepository.registerCrew({
+        category: crew.category,
+        name: crew.name,
+        movieId: newMovie.id,
+      }),
+    );
+
+    tags.map((tag) =>
+      tagsRepository.registerTag({
+        text: tag.text,
+        movieId: newMovie.id,
+      }),
+    );
+
     try {
-      await movie.save();
       return { message: '映画の登録が完了しました' };
     } catch (e) {
       throw new InternalServerErrorException();
