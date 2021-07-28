@@ -7,7 +7,7 @@ export class User extends DefaultEntity {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ select: false })
   email: string;
 
   @Column()
