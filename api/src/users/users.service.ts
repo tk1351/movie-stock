@@ -25,13 +25,11 @@ export class UsersService {
   }
 
   async login(authCredentialsDto: AuthCredentialsDto): Promise<Token> {
-    const email = await this.usersRepository.validateUserSub(
-      authCredentialsDto,
-    );
+    const sub = await this.usersRepository.validateUserSub(authCredentialsDto);
 
-    if (!email) throw new UnauthorizedException('認証情報が無効です');
+    if (!sub) throw new UnauthorizedException('認証情報が無効です');
 
-    const payload: JwtPayload = { email };
+    const payload: JwtPayload = { sub };
     const accessToken = this.jwtService.sign(payload);
     return { accessToken };
   }

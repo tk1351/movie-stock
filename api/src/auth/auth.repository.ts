@@ -1,10 +1,18 @@
+import { NotFoundException } from '@nestjs/common';
 import { EntityRepository, Repository } from 'typeorm';
 import { User } from '../users/models/users.entity';
 
 @EntityRepository(User)
 export class AuthRepository extends Repository<User> {
   async getAuthUser(user: User): Promise<User> {
-    const found = await this.findOne({ id: user.id });
-    return found;
+    try {
+      const found = await this.findOne(
+        { sub: user.sub },
+        { select: ['id', 'name', 'role'] },
+      );
+      return found;
+    } catch (e) {
+      throw new NotFoundException('ユーザーが存在しません');
+    }
   }
 }
