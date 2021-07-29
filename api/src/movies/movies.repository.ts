@@ -32,13 +32,13 @@ export class MoviesRepository extends Repository<Movie> {
   async getMovieByUser(user: User): Promise<Movie[]> {
     const usersRepository = getCustomRepository(UsersRepository);
 
-    const foundUser = await usersRepository.findOne(user.id);
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
     const found = await this.createQueryBuilder('movies')
       .leftJoinAndSelect('movies.crews', 'crews')
       .leftJoinAndSelect('movies.tags', 'tags')
-      .where('movies.userId = :userId', { userId: user.id })
+      .where('movies.userId = :userId', { userId: foundUser.id })
       .orderBy('movies.createdAt', 'DESC')
       .getMany();
 
@@ -57,7 +57,7 @@ export class MoviesRepository extends Repository<Movie> {
     const crewsRepository = getCustomRepository(CrewsRepository);
     const tagsRepository = getCustomRepository(TagsRepository);
 
-    const foundUser = await usersRepository.findOne(user.id);
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
     if (foundUser.role === undefined)
       throw new UnauthorizedException('権限がありません');
 
@@ -102,7 +102,7 @@ export class MoviesRepository extends Repository<Movie> {
     const tagsRepository = getCustomRepository(TagsRepository);
 
     const movie = await this.getMovieById(id);
-    const foundUser = await usersRepository.findOne(user.id);
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
 
     if (movie.userId !== foundUser.id)
       throw new UnauthorizedException('権限がありません');
