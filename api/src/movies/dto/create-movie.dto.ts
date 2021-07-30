@@ -1,6 +1,8 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 import { CreateTagsDto } from '../../tags/dto/create-tags.dto';
 import { CreateCrewsDto } from '../../crews/dto/create-crews.dto';
+import { CreateCountriesDto } from '../../countries/dto/create-countries.dto';
+import { CreateStudiosDto } from '../../studios/dto/create-studios.dto';
 
 export class CreateMovieDto {
   @IsNotEmpty({ message: 'titleを入力してください' })
@@ -15,13 +17,11 @@ export class CreateMovieDto {
   @IsString({ message: 'timeは文字で入力してください' })
   time: string;
 
-  @IsNotEmpty({ message: 'countryを入力してください' })
-  @IsString({ message: 'countryは文字で入力してください' })
-  country: string;
+  @IsNotEmpty({ message: 'countriesを入力してください' })
+  countries: CreateCountriesDto[];
 
-  @IsNotEmpty({ message: 'productionCompanyを入力してください' })
-  @IsString({ message: 'productionCompanyは文字で入力してください' })
-  productionCompany: string;
+  @IsNotEmpty({ message: 'studioを入力してください' })
+  studios: CreateStudiosDto[];
 
   @IsNotEmpty({ message: 'crewsを入力してください' })
   crews: CreateCrewsDto[];

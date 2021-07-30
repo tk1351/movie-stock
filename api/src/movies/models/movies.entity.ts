@@ -3,6 +3,8 @@ import { DefaultEntity } from '../../entity';
 import { User } from '../../users/models/users.entity';
 import { Tag } from '../../tags/models/tags.entity';
 import { Crew } from '../../crews/models/crews.entity';
+import { Country } from '../../countries/models/countries.entity';
+import { Studio } from '../../studios/models/studios.entity';
 
 @Entity({ name: 'movies' })
 export class Movie extends DefaultEntity {
@@ -15,18 +17,18 @@ export class Movie extends DefaultEntity {
   @Column()
   time: string;
 
-  @Column()
-  country: string;
-
-  @Column()
-  productionCompany: string;
-
   @ManyToOne(() => User, (user) => user.movies, { eager: false })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
 
   @Column()
   userId: number;
+
+  @OneToMany(() => Country, (countries) => countries.movie, { eager: true })
+  countries: Country[];
+
+  @OneToMany(() => Studio, (studios) => studios.movie, { eager: true })
+  studios: Studio[];
 
   @OneToMany(() => Tag, (tags) => tags.movie, { eager: true })
   tags: Tag[];

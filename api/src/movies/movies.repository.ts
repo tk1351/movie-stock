@@ -6,17 +6,106 @@ import {
 } from '@nestjs/common';
 import { Movie } from './models/movies.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
-import { IMessage } from '../types/type';
-import { User } from '../users/models/users.entity';
+import { IMessage, UserInfo } from '../types/type';
 import { UsersRepository } from '../users/users.repository';
 import { CrewsRepository } from '../crews/crews.repository';
 import { TagsRepository } from '../tags/tags.repository';
+import { GetMoviesQueryParams } from './dto/get-movies-query-params.dto';
+import { CountriesRepository } from '../countries/countries.repository';
+import { StudiosRepository } from '../studios/studios.repository';
 
 @EntityRepository(Movie)
 export class MoviesRepository extends Repository<Movie> {
+  async getMovies(
+    params: GetMoviesQueryParams,
+    user: UserInfo,
+  ): Promise<Movie[]> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const { title, release, time, country, studio, name, tag } = params;
+
+    const movies = await this.createQueryBuilder('movies')
+      .leftJoinAndSelect('movies.countries', 'countries')
+      .leftJoinAndSelect('movies.studios', 'studios')
+      .leftJoinAndSelect('movies.crews', 'crews')
+      .leftJoinAndSelect('movies.tags', 'tags')
+      .where('movies.userId = :userId', { userId: foundUser.id })
+      .andWhere(title ? 'movies.title LIKE :title' : 'true', {
+        title: `%${title}%`,
+      })
+      .andWhere(release ? 'movies.release = :release' : 'true', { release })
+      .andWhere(time ? 'movies.time = :time' : 'true', { time })
+      .andWhere(
+        country
+          ? (qb) =>
+              'movies.id IN' +
+              qb
+                .subQuery()
+                .select('countries.movieId')
+                .from('countries', 'countries')
+                .where('countries.country = :country', { country })
+                .getQuery()
+          : 'true',
+      )
+      .andWhere(
+        studio
+          ? (qb) =>
+              'movies.id IN' +
+              qb
+                .subQuery()
+                .select('studios.movieId')
+                .from('studios', 'studios')
+                .where('studios.studio = :studio', { studio })
+                .getQuery()
+          : 'true',
+      )
+      // moviesに紐づくcrewsを全取得
+      .andWhere(
+        name
+          ? (qb) =>
+              'movies.id IN' +
+              qb
+                .subQuery()
+                .select('crews.movieId')
+                .from('crews', 'crews')
+                .where('crews.name LIKE :name', {
+                  name: `%${name}%`,
+                })
+                .getQuery()
+          : 'true',
+      )
+      // moviesに紐づくtagsを全取得
+      .andWhere(
+        tag
+          ? (qb) =>
+              'movies.id IN' +
+              qb
+                .subQuery()
+                .select('tags.movieId')
+                .from('tags', 'tags')
+                .where('tags.text = :tag', { tag })
+                .getQuery()
+          : 'true',
+      )
+      .orderBy('movies.id', 'DESC')
+      .getMany();
+
+    try {
+      return movies;
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
   async getMovieById(id: number): Promise<Movie> {
     const found = await this.createQueryBuilder('movies')
-      .leftJoinAndSelect('movies.user', 'user')
+      .leftJoinAndSelect('movies.countries', 'countries')
+      .leftJoinAndSelect('movies.studios', 'studios')
+      .leftJoinAndSelect('movies.crews', 'crews')
+      .leftJoinAndSelect('movies.tags', 'tags')
       .where('movies.id = :id', { id })
       .getOne();
 
@@ -29,13 +118,15 @@ export class MoviesRepository extends Repository<Movie> {
     }
   }
 
-  async getMovieByUser(user: User): Promise<Movie[]> {
+  async getMoviesByUser(user: UserInfo): Promise<Movie[]> {
     const usersRepository = getCustomRepository(UsersRepository);
 
     const foundUser = await usersRepository.findOne({ sub: user.sub });
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
     const found = await this.createQueryBuilder('movies')
+      .leftJoinAndSelect('movies.countries', 'countries')
+      .leftJoinAndSelect('movies.studios', 'studios')
       .leftJoinAndSelect('movies.crews', 'crews')
       .leftJoinAndSelect('movies.tags', 'tags')
       .where('movies.userId = :userId', { userId: foundUser.id })
@@ -49,11 +140,39 @@ export class MoviesRepository extends Repository<Movie> {
     }
   }
 
+  async getMovieByUser(id: number, user: UserInfo): Promise<Movie> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const movie = await this.createQueryBuilder('movies')
+      .leftJoinAndSelect('movies.countries', 'countries')
+      .leftJoinAndSelect('movies.studios', 'studios')
+      .leftJoinAndSelect('movies.crews', 'crews')
+      .leftJoinAndSelect('movies.tags', 'tags')
+      .where('movies.id = :id', { id })
+      .getOne();
+
+    if (!movie) throw new NotFoundException(`id: ${id}の映画は存在しません`);
+
+    if (movie.userId !== foundUser.id)
+      throw new UnauthorizedException('権限がありません');
+
+    try {
+      return movie;
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
   async registerMovie(
     createMovieDto: CreateMovieDto,
-    user: User,
+    user: UserInfo,
   ): Promise<IMessage> {
     const usersRepository = getCustomRepository(UsersRepository);
+    const countriesRepository = getCustomRepository(CountriesRepository);
+    const studiosRepository = getCustomRepository(StudiosRepository);
     const crewsRepository = getCustomRepository(CrewsRepository);
     const tagsRepository = getCustomRepository(TagsRepository);
 
@@ -61,18 +180,30 @@ export class MoviesRepository extends Repository<Movie> {
     if (foundUser.role === undefined)
       throw new UnauthorizedException('権限がありません');
 
-    const { title, release, time, country, productionCompany, crews, tags } =
+    const { title, release, time, countries, studios, crews, tags } =
       createMovieDto;
 
     const movie = this.create();
     movie.title = title;
     movie.release = release;
     movie.time = time;
-    movie.country = country;
-    movie.productionCompany = productionCompany;
     movie.user = foundUser;
 
     const newMovie = await movie.save();
+
+    countries.map((country) =>
+      countriesRepository.registerCountry({
+        country: country.country,
+        movieId: newMovie.id,
+      }),
+    );
+
+    studios.map((studio) =>
+      studiosRepository.registerStudio({
+        studio: studio.studio,
+        movieId: newMovie.id,
+      }),
+    );
 
     crews.map((crew) =>
       crewsRepository.registerCrew({
@@ -96,8 +227,10 @@ export class MoviesRepository extends Repository<Movie> {
     }
   }
 
-  async deleteMovie(id: number, user: User): Promise<IMessage> {
+  async deleteMovie(id: number, user: UserInfo): Promise<IMessage> {
     const usersRepository = getCustomRepository(UsersRepository);
+    const countriesRepository = getCustomRepository(CountriesRepository);
+    const studiosRepository = getCustomRepository(StudiosRepository);
     const crewsRepository = getCustomRepository(CrewsRepository);
     const tagsRepository = getCustomRepository(TagsRepository);
 
@@ -107,9 +240,13 @@ export class MoviesRepository extends Repository<Movie> {
     if (movie.userId !== foundUser.id)
       throw new UnauthorizedException('権限がありません');
 
+    const countriesIndex = await countriesRepository.getCountriesByMovieId(id);
+    const studiosIndex = await studiosRepository.getStudiosByMovieId(id);
     const crewsIndex = await crewsRepository.getCrewsByMovieId(id);
     const tagsIndex = await tagsRepository.getTagsByMovieId(id);
 
+    countriesIndex.map((index) => countriesRepository.deleteCountry(index.id));
+    studiosIndex.map((index) => studiosRepository.deleteStudio(index.id));
     crewsIndex.map((index) => crewsRepository.deleteCrew(index.id));
     tagsIndex.map((index) => tagsRepository.deleteTag(index.id));
 

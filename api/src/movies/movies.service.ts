@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MoviesRepository } from './movies.repository';
 import { Movie } from './models/movies.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
-import { User } from '../users/models/users.entity';
-import { IMessage } from '../types/type';
+import { IMessage, UserInfo } from '../types/type';
+import { GetMoviesQueryParams } from './dto/get-movies-query-params.dto';
 
 @Injectable()
 export class MoviesService {
@@ -13,26 +13,33 @@ export class MoviesService {
     private moviesRepository: MoviesRepository,
   ) {}
 
-  async getMovies(): Promise<Movie[]> {
-    return await this.moviesRepository.find();
+  async getMovies(
+    params: GetMoviesQueryParams,
+    user: UserInfo,
+  ): Promise<Movie[]> {
+    return await this.moviesRepository.getMovies(params, user);
   }
 
   async getMovieById(id: number): Promise<Movie> {
     return await this.moviesRepository.getMovieById(id);
   }
 
-  async getMovieByUser(user: User): Promise<Movie[]> {
-    return await this.moviesRepository.getMovieByUser(user);
+  async getMoviesByUser(user: UserInfo): Promise<Movie[]> {
+    return await this.moviesRepository.getMoviesByUser(user);
+  }
+
+  async getMovieByUser(id: number, user: UserInfo): Promise<Movie> {
+    return await this.moviesRepository.getMovieByUser(id, user);
   }
 
   async registerMovie(
     createMovieDto: CreateMovieDto,
-    user: User,
+    user: UserInfo,
   ): Promise<IMessage> {
     return await this.moviesRepository.registerMovie(createMovieDto, user);
   }
 
-  async deleteMovie(id: number, user: User): Promise<IMessage> {
+  async deleteMovie(id: number, user: UserInfo): Promise<IMessage> {
     return await this.moviesRepository.deleteMovie(id, user);
   }
 }
