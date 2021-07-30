@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { MoviesModule } from './movies/movies.module';
 import { CrewsModule } from './crews/crews.module';
 import { TagsModule } from './tags/tags.module';
+import { CountriesModule } from './countries/countries.module';
+import { StudiosModule } from './studios/studios.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { TagsModule } from './tags/tags.module';
     MoviesModule,
     CrewsModule,
     TagsModule,
+    CountriesModule,
+    StudiosModule,
   ],
 })
 export class AppModule {}

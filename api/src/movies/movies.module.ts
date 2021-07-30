@@ -6,6 +6,8 @@ import { MoviesRepository } from './movies.repository';
 import { UsersModule } from '../users/users.module';
 import { CrewsModule } from '../crews/crews.module';
 import { TagsModule } from '../tags/tags.module';
+import { CountriesModule } from '../countries/countries.module';
+import { StudiosModule } from '../studios/studios.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { TagsModule } from '../tags/tags.module';
     UsersModule,
     CrewsModule,
     TagsModule,
+    CountriesModule,
+    StudiosModule,
   ],
   controllers: [MoviesController],
   providers: [MoviesService],
