@@ -1,6 +1,6 @@
 import { atom } from 'recoil'
 
-interface Auth {
+export interface Auth {
   accessToken: string
   user: {
     id: number
