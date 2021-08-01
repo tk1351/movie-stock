@@ -7,9 +7,9 @@ import { ThemeProvider as StyledComponentsThemeProvider } from 'styled-component
 import { ThemeProvider as MaterialUIThemeProvider } from '@material-ui/core/styles'
 import { StylesProvider } from '@material-ui/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import { setAuthToken } from '../src/utils/setAuthToken'
+import { setAuthToken } from '../src/utils/api/setAuthToken'
 import { authState } from '../atoms/auth'
-import API from '../src/utils/api'
+import API from '../src/utils/api/api'
 import theme from '../src/theme'
 
 const AppInit = () => {
