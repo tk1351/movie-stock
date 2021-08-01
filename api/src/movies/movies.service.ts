@@ -20,12 +20,15 @@ export class MoviesService {
     return await this.moviesRepository.getMovies(params, user);
   }
 
-  async getMovieById(id: number): Promise<Movie> {
-    return await this.moviesRepository.getMovieById(id);
+  async getMoviesLength(
+    params: GetMoviesQueryParams,
+    user: UserInfo,
+  ): Promise<number> {
+    return await this.moviesRepository.getMoviesLength(params, user);
   }
 
-  async getMoviesByUser(user: UserInfo): Promise<Movie[]> {
-    return await this.moviesRepository.getMoviesByUser(user);
+  async getMovieById(id: number): Promise<Movie> {
+    return await this.moviesRepository.getMovieById(id);
   }
 
   async getMovieByUser(id: number, user: UserInfo): Promise<Movie> {

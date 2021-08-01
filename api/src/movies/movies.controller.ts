@@ -31,10 +31,13 @@ export class MoviesController {
     return this.moviesService.getMovies(params, user);
   }
 
-  @Get('/me')
+  @Get('/length')
   @UseGuards(AuthGuard)
-  getMoviesByUser(@CurrentUser() user: UserInfo): Promise<Movie[]> {
-    return this.moviesService.getMoviesByUser(user);
+  getMoviesLength(
+    @Query() params: GetMoviesQueryParams,
+    @CurrentUser() user: UserInfo,
+  ): Promise<number> {
+    return this.moviesService.getMoviesLength(params, user);
   }
 
   @Get('/:id')

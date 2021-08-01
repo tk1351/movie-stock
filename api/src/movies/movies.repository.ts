@@ -100,6 +100,90 @@ export class MoviesRepository extends Repository<Movie> {
     }
   }
 
+  async getMoviesLength(
+    params: GetMoviesQueryParams,
+    user: UserInfo,
+  ): Promise<number> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const { title, release, time, country, studio, name, tag } = params;
+
+    const movies = await this.createQueryBuilder('movies')
+      .leftJoinAndSelect('movies.countries', 'countries')
+      .leftJoinAndSelect('movies.studios', 'studios')
+      .leftJoinAndSelect('movies.crews', 'crews')
+      .leftJoinAndSelect('movies.tags', 'tags')
+      .where('movies.userId = :userId', { userId: foundUser.id })
+      .andWhere(title ? 'movies.title LIKE :title' : 'true', {
+        title: `%${title}%`,
+      })
+      .andWhere(release ? 'movies.release = :release' : 'true', { release })
+      .andWhere(time ? 'movies.time = :time' : 'true', { time })
+      .andWhere(
+        country
+          ? (qb) =>
+              'movies.id IN' +
+              qb
+                .subQuery()
+                .select('countries.movieId')
+                .from('countries', 'countries')
+                .where('countries.country = :country', { country })
+                .getQuery()
+          : 'true',
+      )
+      .andWhere(
+        studio
+          ? (qb) =>
+              'movies.id IN' +
+              qb
+                .subQuery()
+                .select('studios.movieId')
+                .from('studios', 'studios')
+                .where('studios.studio = :studio', { studio })
+                .getQuery()
+          : 'true',
+      )
+      // moviesに紐づくcrewsを全取得
+      .andWhere(
+        name
+          ? (qb) =>
+              'movies.id IN' +
+              qb
+                .subQuery()
+                .select('crews.movieId')
+                .from('crews', 'crews')
+                .where('crews.name LIKE :name', {
+                  name: `%${name}%`,
+                })
+                .getQuery()
+          : 'true',
+      )
+      // moviesに紐づくtagsを全取得
+      .andWhere(
+        tag
+          ? (qb) =>
+              'movies.id IN' +
+              qb
+                .subQuery()
+                .select('tags.movieId')
+                .from('tags', 'tags')
+                .where('tags.text = :tag', { tag })
+                .getQuery()
+          : 'true',
+      )
+      .orderBy('movies.createdAt', 'DESC')
+      .getMany();
+
+    try {
+      return movies.length;
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
   async getMovieById(id: number): Promise<Movie> {
     const found = await this.createQueryBuilder('movies')
       .leftJoinAndSelect('movies.countries', 'countries')
@@ -110,28 +194,6 @@ export class MoviesRepository extends Repository<Movie> {
       .getOne();
 
     if (!found) throw new NotFoundException(`id: ${id}の映画は存在しません`);
-
-    try {
-      return found;
-    } catch (e) {
-      throw new InternalServerErrorException();
-    }
-  }
-
-  async getMoviesByUser(user: UserInfo): Promise<Movie[]> {
-    const usersRepository = getCustomRepository(UsersRepository);
-
-    const foundUser = await usersRepository.findOne({ sub: user.sub });
-    if (!foundUser) throw new NotFoundException('userが存在しません');
-
-    const found = await this.createQueryBuilder('movies')
-      .leftJoinAndSelect('movies.countries', 'countries')
-      .leftJoinAndSelect('movies.studios', 'studios')
-      .leftJoinAndSelect('movies.crews', 'crews')
-      .leftJoinAndSelect('movies.tags', 'tags')
-      .where('movies.userId = :userId', { userId: foundUser.id })
-      .orderBy('movies.createdAt', 'DESC')
-      .getMany();
 
     try {
       return found;
@@ -152,6 +214,12 @@ export class MoviesRepository extends Repository<Movie> {
       .leftJoinAndSelect('movies.crews', 'crews')
       .leftJoinAndSelect('movies.tags', 'tags')
       .where('movies.id = :id', { id })
+      .orderBy({
+        'countries.id': 'ASC',
+        'studios.id': 'ASC',
+        'crews.category': 'ASC',
+        'tags.id': 'ASC',
+      })
       .getOne();
 
     if (!movie) throw new NotFoundException(`id: ${id}の映画は存在しません`);
