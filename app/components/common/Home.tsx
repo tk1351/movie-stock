@@ -22,7 +22,6 @@ const Home: NextPage<HomePageProps> = () => {
       )}
       {user && (
         <div>
-          <img src={user.picture} />
           <p>{user.name}</p>
         </div>
       )}
