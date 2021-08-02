@@ -3,10 +3,11 @@ import { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useRecoilStateLoadable, useRecoilValueLoadable } from 'recoil'
-import { authState, Auth } from '../../atoms/auth'
+import { authState, Auth } from '../../recoil/atoms/auth'
 import { IMovie } from '../../types/movie'
-import { movieState } from '../../atoms/movie'
+import { movieState } from '../../recoil/atoms/movie'
 import { fetchMovieById } from '../../src/utils/api/movie'
+import Spinner from '../common/Spinner'
 
 interface MoviePageProps {}
 
@@ -37,7 +38,7 @@ const Movie: NextPage<MoviePageProps> = () => {
     })()
   }, [accessToken])
 
-  if (movie.state === 'loading') return <p>Loading ...</p>
+  if (movie.state === 'loading') return <Spinner />
   if (movie.state === 'hasError') return <p>Error</p>
 
   return (
@@ -50,32 +51,28 @@ const Movie: NextPage<MoviePageProps> = () => {
           <h2>詳細</h2>
           {movie.contents.countries.map((country) => (
             <li key={country.id}>
-              <p>
-                製作国：
-                <Link
-                  href={{
-                    pathname: '/countries',
-                    query: { country: country.country },
-                  }}
-                >
-                  <p>{country.country}</p>
-                </Link>
-              </p>
+              <p>製作国：</p>
+              <Link
+                href={{
+                  pathname: '/countries',
+                  query: { country: country.country },
+                }}
+              >
+                <p>{country.country}</p>
+              </Link>
             </li>
           ))}
           {movie.contents.studios.map((studio) => (
             <li key={studio.id}>
-              <p>
-                制作会社：
-                <Link
-                  href={{
-                    pathname: '/studios',
-                    query: { studio: studio.studio },
-                  }}
-                >
-                  <p>{studio.studio}</p>
-                </Link>
-              </p>
+              <p>制作会社：</p>
+              <Link
+                href={{
+                  pathname: '/studios',
+                  query: { studio: studio.studio },
+                }}
+              >
+                <p>{studio.studio}</p>
+              </Link>
             </li>
           ))}
           <h2>スタッフ</h2>
@@ -93,7 +90,7 @@ const Movie: NextPage<MoviePageProps> = () => {
           <ul>
             {movie.contents.tags.map((tag) => (
               <div key={tag.id}>
-                <Link href={{ pathname: '/tag', query: { tag: tag.text } }}>
+                <Link href={{ pathname: '/tags', query: { tag: tag.text } }}>
                   <p>#{tag.text}</p>
                 </Link>
               </div>
