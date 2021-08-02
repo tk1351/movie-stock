@@ -1,14 +1,67 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, Repository, getCustomRepository } from 'typeorm';
 import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Crew } from './models/crews.entity';
 import { CreateCrewsDto } from './dto/create-crews.dto';
-import { IMessage } from '../types/type';
+import { IMessage, UserInfo } from '../types/type';
+import { GetCrewsQueryParams } from './dto/get-crews-query-params.dto';
+import { UsersRepository } from '../users/users.repository';
 
 @EntityRepository(Crew)
 export class CrewsRepository extends Repository<Crew> {
+  async getCrews(params: GetCrewsQueryParams, user: UserInfo): Promise<Crew[]> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const { name, category, offset, limit } = params;
+
+    const crews = await this.createQueryBuilder('crews')
+      .leftJoinAndSelect('crews.movie', 'movie')
+      .where(name ? 'crews.name LIKE :name' : 'true', { name: `%${name}%` })
+      .andWhere(category ? 'crews.category = :category' : 'true', { category })
+      .take(limit)
+      .skip(offset)
+      .orderBy('movie.release', 'DESC')
+      .getMany();
+
+    try {
+      return crews;
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async getCrewsLength(
+    params: GetCrewsQueryParams,
+    user: UserInfo,
+  ): Promise<number> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const { name, category, offset, limit } = params;
+
+    const crews = await this.createQueryBuilder('crews')
+      .leftJoinAndSelect('crews.movie', 'movie')
+      .where(name ? 'crews.name LIKE :name' : 'true', { name: `%${name}%` })
+      .andWhere(category ? 'crews.category = :category' : 'true', { category })
+      .take(limit)
+      .skip(offset)
+      .orderBy('movie.release', 'DESC')
+      .getMany();
+
+    try {
+      return crews.length;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
   async registerCrew(createCrewsDto: CreateCrewsDto): Promise<Crew> {
     const { category, name, movieId } = createCrewsDto;
 
