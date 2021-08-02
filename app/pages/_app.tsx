@@ -2,19 +2,20 @@ import { useEffect } from 'react'
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react'
-import { RecoilRoot, useRecoilState } from 'recoil'
+import { RecoilRoot, useSetRecoilState } from 'recoil'
 import { ThemeProvider as StyledComponentsThemeProvider } from 'styled-components'
 import { ThemeProvider as MaterialUIThemeProvider } from '@material-ui/core/styles'
 import { StylesProvider } from '@material-ui/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import { setAuthToken } from '../src/utils/api/setAuthToken'
-import { authState } from '../atoms/auth'
+import { authState } from '../recoil/atoms/auth'
 import API from '../src/utils/api/api'
 import theme from '../src/theme'
+import Alert from '../components/common/Alert'
 
 const AppInit = () => {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0()
-  const [isAuth, setIsAuth] = useRecoilState(authState)
+  const setIsAuth = useSetRecoilState(authState)
 
   useEffect(() => {
     ;(async () => {
@@ -59,6 +60,7 @@ const MyApp = ({ Component, pageProps }: AppProps): JSX.Element => {
               <CssBaseline />
               <Component {...pageProps} />
               <AppInit />
+              <Alert />
             </StyledComponentsThemeProvider>
           </MaterialUIThemeProvider>
         </StylesProvider>
