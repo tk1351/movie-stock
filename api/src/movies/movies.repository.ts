@@ -25,7 +25,8 @@ export class MoviesRepository extends Repository<Movie> {
     const foundUser = await usersRepository.findOne({ sub: user.sub });
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
-    const { title, release, time, country, studio, name, tag } = params;
+    const { title, release, time, country, studio, name, tag, offset, limit } =
+      params;
 
     const movies = await this.createQueryBuilder('movies')
       .leftJoinAndSelect('movies.countries', 'countries')
@@ -33,6 +34,8 @@ export class MoviesRepository extends Repository<Movie> {
       .leftJoinAndSelect('movies.crews', 'crews')
       .leftJoinAndSelect('movies.tags', 'tags')
       .where('movies.userId = :userId', { userId: foundUser.id })
+      .take(limit)
+      .skip(offset)
       .andWhere(title ? 'movies.title LIKE :title' : 'true', {
         title: `%${title}%`,
       })
