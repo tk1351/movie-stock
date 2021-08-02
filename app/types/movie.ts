@@ -30,6 +30,17 @@ export interface Crew extends DefaultType {
   movieId: number
 }
 
+interface Movie extends DefaultType {
+  title: string
+  release: string
+  time: string
+  userId: number
+}
+
+export interface ICrew extends Crew {
+  movie: Movie
+}
+
 export interface IMovieInputs {
   title: string
   release: string

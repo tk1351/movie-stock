@@ -4,7 +4,7 @@ import { AppBar, Toolbar, IconButton, Button } from '@material-ui/core'
 import Link from 'next/link'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useRecoilValue } from 'recoil'
-import { authState } from '../../atoms/auth'
+import { authState } from '../../recoil/atoms/auth'
 
 interface NavbarProps {}
 

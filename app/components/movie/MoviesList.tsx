@@ -2,8 +2,8 @@ import React, { useEffect } from 'react'
 import { useRecoilState, useRecoilValueLoadable } from 'recoil'
 import { NextPage } from 'next'
 import { useAuth0 } from '@auth0/auth0-react'
-import { authState } from '../../atoms/auth'
-import { moviesState, watchedState } from '../../atoms/movie'
+import { authState } from '../../recoil/atoms/auth'
+import { moviesState, watchedState } from '../../recoil/atoms/movie'
 import { fetchMovies, fetchWatchedNumber } from '../../src/utils/api/movie'
 import { registerUser } from '../../src/utils/api/user'
 import { RegisterUser } from '../../types/user'
@@ -17,8 +17,6 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
   const [watched, setWatched] = useRecoilState(watchedState)
 
   const { user } = useAuth0()
-
-  console.log('token', accessToken.contents.accessToken)
 
   useEffect(() => {
     ;(async () => {
