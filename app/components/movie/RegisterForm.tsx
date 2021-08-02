@@ -14,16 +14,19 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  FormHelperText,
 } from '@material-ui/core'
 import { Add, Remove } from '@material-ui/icons'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { useRouter } from 'next/router'
-import { IMovieInputs, IMovie } from '../../types/movie'
-import { authState } from '../../atoms/auth'
+import { IMovieInputs } from '../../types/movie'
+import { authState } from '../../recoil/atoms/auth'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import API from '../../src/utils/api/api'
 import { IMessage } from '../../types/defaultType'
 import { movieValidationSchema } from '../../src/utils/movieValidation'
+import { IAlert } from '../../recoil/atoms/alert'
+import { setAlertState } from '../../recoil/selectors/alert'
 
 interface RegisterFormPageProps {}
 
@@ -31,6 +34,7 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
   const router = useRouter()
 
   const { accessToken } = useRecoilValue(authState)
+  const setIsAlert = useSetRecoilState<IAlert>(setAlertState)
 
   const defaultValues: IMovieInputs = {
     title: '',
@@ -84,19 +88,26 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/register`
     try {
       setAuthToken(accessToken)
-      await API.post<IMessage>(url, data)
+      const res = await API.post<IMessage>(url, data)
+      setIsAlert({
+        msg: res.data.message,
+        alertType: 'succeeded',
+        open: true,
+      })
       await router.push('/')
     } catch (e) {
       throw new Error(e)
     }
   }
+
   return (
     <div>
+      {/* <Alert /> */}
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Controller
           name="title"
           control={control}
-          render={({ field: { onChange, ref } }) => (
+          render={({ field: { onChange, ref }, formState: { errors } }) => (
             <TextField
               label={'タイトル'}
               id="title"
@@ -105,13 +116,15 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
               variant="outlined"
               onChange={onChange}
               inputRef={ref}
+              helperText={errors.title && errors.title.message}
+              error={Boolean(errors.title)}
             />
           )}
         />
         <Controller
           name="release"
           control={control}
-          render={({ field: { onChange, ref } }) => (
+          render={({ field: { onChange, ref }, formState: { errors } }) => (
             <TextField
               label={'製作年'}
               id="release"
@@ -120,13 +133,15 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
               variant="outlined"
               onChange={onChange}
               inputRef={ref}
+              helperText={errors.release && errors.release.message}
+              error={Boolean(errors.release)}
             />
           )}
         />
         <Controller
           name="time"
           control={control}
-          render={({ field: { onChange, ref } }) => (
+          render={({ field: { onChange, ref }, formState: { errors } }) => (
             <TextField
               label={'上映時間'}
               id="time"
@@ -135,6 +150,8 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
               variant="outlined"
               onChange={onChange}
               inputRef={ref}
+              helperText={errors.time && errors.time.message}
+              error={Boolean(errors.time)}
             />
           )}
         />
@@ -145,7 +162,10 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                 name={`countries.${index}.country`}
                 control={control}
                 defaultValue={field.country ? field.country : ''}
-                render={({ field: { onChange, ref } }) => (
+                render={({
+                  field: { onChange, ref },
+                  formState: { errors },
+                }) => (
                   <TextField
                     label={'製作国'}
                     id={`countries.${index}.country`}
@@ -155,6 +175,11 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                     onChange={onChange}
                     inputRef={ref}
                     defaultValue={field.country}
+                    helperText={
+                      errors.countries &&
+                      errors.countries[index]?.country?.message
+                    }
+                    error={Boolean(errors.countries && errors.countries[index])}
                   />
                 )}
               />
@@ -188,7 +213,10 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                 name={`studios.${index}.studio`}
                 control={control}
                 defaultValue={field.studio ? field.studio : ''}
-                render={({ field: { onChange, ref } }) => (
+                render={({
+                  field: { onChange, ref },
+                  formState: { errors },
+                }) => (
                   <TextField
                     label={'制作会社'}
                     id={`studios.${index}.studio`}
@@ -198,6 +226,10 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                     onChange={onChange}
                     inputRef={ref}
                     defaultValue={field.studio}
+                    helperText={
+                      errors.studios && errors.studios[index]?.studio?.message
+                    }
+                    error={Boolean(errors.studios && errors.studios[index])}
                   />
                 )}
               />
@@ -231,7 +263,10 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
               <Controller
                 name={`crews.${index}.category`}
                 control={control}
-                render={({ field: { onChange, value } }) => (
+                render={({
+                  field: { onChange, value },
+                  formState: { errors },
+                }) => (
                   <FormControl>
                     <InputLabel>役職</InputLabel>
                     <Select
@@ -242,12 +277,16 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                       defaultValue={1}
                       onChange={onChange}
                       value={value ? value : 1}
+                      error={Boolean(errors.crews && errors.crews[index])}
                     >
                       <MenuItem value={1}>監督</MenuItem>
                       <MenuItem value={2}>脚本</MenuItem>
                       <MenuItem value={3}>製作</MenuItem>
                       <MenuItem value={4}>撮影</MenuItem>
                     </Select>
+                    <FormHelperText>
+                      {errors.crews && errors.crews[index]?.category?.message}
+                    </FormHelperText>
                   </FormControl>
                 )}
               />
@@ -255,7 +294,10 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                 name={`crews.${index}.name`}
                 control={control}
                 defaultValue={field.name ? field.name : ''}
-                render={({ field: { onChange, ref } }) => (
+                render={({
+                  field: { onChange, ref },
+                  formState: { errors },
+                }) => (
                   <TextField
                     label={'名前'}
                     id={`crews[${index}].name`}
@@ -265,6 +307,10 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                     onChange={onChange}
                     inputRef={ref}
                     defaultValue={field.name}
+                    helperText={
+                      errors.crews && errors.crews[index]?.name?.message
+                    }
+                    error={Boolean(errors.crews && errors.crews[index])}
                   />
                 )}
               />
@@ -299,7 +345,10 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                 name={`tags.${index}.text`}
                 control={control}
                 defaultValue={field.text ? field.text : ''}
-                render={({ field: { onChange, ref } }) => (
+                render={({
+                  field: { onChange, ref },
+                  formState: { errors },
+                }) => (
                   <TextField
                     label={'タグ'}
                     id={`tags[${index}].text`}
@@ -309,6 +358,10 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                     onChange={onChange}
                     inputRef={ref}
                     defaultValue={field.text}
+                    helperText={
+                      errors.tags && errors.tags[index]?.text?.message
+                    }
+                    error={Boolean(errors.tags && errors.tags[index])}
                   />
                 )}
               />
