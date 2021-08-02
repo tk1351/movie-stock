@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from './models/users.entity';
 import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
-import { IMessage } from '../types/type';
+import { IMessage, UserInfo } from '../types/type';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { Token, JwtPayload } from './types/types';
 
@@ -18,6 +18,10 @@ export class UsersService {
 
   async getUsers(): Promise<User[]> {
     return await this.usersRepository.find();
+  }
+
+  async getUser(user: UserInfo): Promise<User> {
+    return await this.usersRepository.findOne({ sub: user.sub });
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<IMessage> {

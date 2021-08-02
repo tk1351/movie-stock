@@ -105,4 +105,13 @@ export class CrewsRepository extends Repository<Crew> {
       throw new InternalServerErrorException();
     }
   }
+
+  async deleteCrewByMovieId(movieId: number): Promise<IMessage> {
+    const targetIndex = await this.getCrewsByMovieId(movieId);
+
+    if (targetIndex.length > 0) {
+      targetIndex.map(async (index) => await this.delete({ id: index.id }));
+      return { message: 'スタッフを削除しました' };
+    }
+  }
 }

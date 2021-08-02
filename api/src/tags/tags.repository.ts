@@ -51,4 +51,13 @@ export class TagsRepository extends Repository<Tag> {
       throw new InternalServerErrorException();
     }
   }
+
+  async deleteTagByMovieId(movieId: number): Promise<IMessage> {
+    const targetIndex = await this.getTagsByMovieId(movieId);
+
+    if (targetIndex.length > 0) {
+      targetIndex.map(async (index) => await this.delete({ id: index.id }));
+      return { message: 'タグを削除しました' };
+    }
+  }
 }
