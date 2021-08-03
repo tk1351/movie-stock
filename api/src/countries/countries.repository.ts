@@ -52,4 +52,13 @@ export class CountriesRepository extends Repository<Country> {
       throw new InternalServerErrorException();
     }
   }
+
+  async deleteCountryByMovieId(movieId: number): Promise<IMessage> {
+    const targetIndex = await this.getCountriesByMovieId(movieId);
+
+    if (targetIndex.length > 0) {
+      targetIndex.map(async (index) => await this.delete({ id: index.id }));
+      return { message: '国を削除しました' };
+    }
+  }
 }

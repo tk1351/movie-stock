@@ -59,3 +59,22 @@ export interface IMovieInputs {
     text: string
   }[]
 }
+
+export interface IUpdateMovieInputs {
+  title: string
+  release: string
+  time: string
+  countries: {
+    country: string
+  }[]
+  studios: {
+    studio: string
+  }[]
+  crews: {
+    category: 1 | 2 | 3 | 4
+    name: string
+  }[]
+  tags: {
+    text: string
+  }[]
+}

@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Delete,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { Movie } from './models/movies.entity';
@@ -17,6 +18,7 @@ import { CurrentUser } from '../auth/get-user.decorator';
 import { IMessage, UserInfo } from '../types/type';
 import { AuthGuard } from '../auth/auth.guard';
 import { GetMoviesQueryParams } from './dto/get-movies-query-params.dto';
+import { UpdateMovieDto } from './dto/update-movie.dto';
 
 @Controller('movies')
 export class MoviesController {
@@ -25,7 +27,7 @@ export class MoviesController {
   @Get()
   @UseGuards(AuthGuard)
   getMovies(
-    @Query() params: GetMoviesQueryParams,
+    @Query(ValidationPipe) params: GetMoviesQueryParams,
     @CurrentUser() user: UserInfo,
   ): Promise<Movie[]> {
     return this.moviesService.getMovies(params, user);
@@ -34,7 +36,7 @@ export class MoviesController {
   @Get('/length')
   @UseGuards(AuthGuard)
   getMoviesLength(
-    @Query() params: GetMoviesQueryParams,
+    @Query(ValidationPipe) params: GetMoviesQueryParams,
     @CurrentUser() user: UserInfo,
   ): Promise<number> {
     return this.moviesService.getMoviesLength(params, user);
@@ -63,7 +65,17 @@ export class MoviesController {
     return this.moviesService.registerMovie(createMovieDto, user);
   }
 
-  @Delete('/:id')
+  @Patch('/update/:id')
+  @UseGuards(AuthGuard)
+  updateMovie(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(ValidationPipe) updateMovieDto: UpdateMovieDto,
+    @CurrentUser() user: UserInfo,
+  ): Promise<IMessage> {
+    return this.moviesService.updateMovie(id, updateMovieDto, user);
+  }
+
+  @Delete('/delete/:id')
   @UseGuards(AuthGuard)
   deleteMovie(
     @Param('id', ParseIntPipe) id: number,
