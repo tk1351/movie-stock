@@ -52,7 +52,7 @@ export interface IMovieInputs {
     studio: string
   }[]
   crews: {
-    category: 1 | 2 | 3 | 4
+    category: number
     name: string
   }[]
   tags: {
@@ -71,7 +71,7 @@ export interface IUpdateMovieInputs {
     studio: string
   }[]
   crews: {
-    category: 1 | 2 | 3 | 4
+    category: number
     name: string
   }[]
   tags: {
