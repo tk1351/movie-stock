@@ -65,7 +65,7 @@ export class MoviesController {
     return this.moviesService.registerMovie(createMovieDto, user);
   }
 
-  @Patch('/:id')
+  @Patch('/update/:id')
   @UseGuards(AuthGuard)
   updateMovie(
     @Param('id', ParseIntPipe) id: number,
@@ -75,7 +75,7 @@ export class MoviesController {
     return this.moviesService.updateMovie(id, updateMovieDto, user);
   }
 
-  @Delete('/:id')
+  @Delete('/delete/:id')
   @UseGuards(AuthGuard)
   deleteMovie(
     @Param('id', ParseIntPipe) id: number,
