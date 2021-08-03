@@ -14,9 +14,13 @@ export const movieValidationSchema = yup.object().shape({
   title: yup.string().required(requireTitle),
   release: yup.string().required(requireRelease),
   time: yup.string().required(requireTime),
-  details: yup.array(
+  countries: yup.array(
     yup.object().shape({
       country: yup.string().required(requireCountry),
+    })
+  ),
+  studios: yup.array(
+    yup.object().shape({
       studio: yup.string().required(requireStudio),
     })
   ),

@@ -18,6 +18,7 @@ import {
   FormHelperText,
 } from '@material-ui/core'
 import { Remove, Add } from '@material-ui/icons'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { movieState } from '../../recoil/atoms/movie'
 import { Auth, authState } from '../../recoil/atoms/auth'
 import { fetchMovieById } from '../../src/utils/api/movie'
@@ -27,6 +28,7 @@ import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import { IMessage } from '../../types/defaultType'
 import { IAlert } from '../../recoil/atoms/alert'
 import { setAlertState } from '../../recoil/selectors/alert'
+import { movieValidationSchema } from '../../src/utils/movieValidation'
 
 interface UpdateFormPageProps {}
 
@@ -63,6 +65,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
 
   const { control, handleSubmit } = useForm<IUpdateMovieInputs>({
     defaultValues,
+    resolver: yupResolver(movieValidationSchema),
   })
 
   const {
@@ -279,7 +282,9 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
                 <Controller
                   name={`crews.${index}.category`}
                   control={control}
-                  defaultValue={field.category ? field.category : 1}
+                  defaultValue={
+                    Number(field.category) ? Number(field.category) : 1
+                  }
                   render={({
                     field: { onChange, value },
                     formState: { errors },
@@ -291,7 +296,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
                         label={'役職'}
                         name={`crews[${index}].category`}
                         id={`crews[${index}].category`}
-                        defaultValue={field.category}
+                        defaultValue={Number(field.category)}
                         onChange={onChange}
                         value={value ? value : 1}
                         error={Boolean(errors.crews && errors.crews[index])}
