@@ -102,7 +102,6 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
 
   return (
     <div>
-      {/* <Alert /> */}
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <Controller
           name="title"
