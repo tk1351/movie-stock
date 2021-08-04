@@ -5,13 +5,7 @@ import { useAuth0 } from '@auth0/auth0-react'
 interface HomePageProps {}
 
 const Home: NextPage<HomePageProps> = () => {
-  const {
-    loginWithRedirect,
-    logout,
-    isAuthenticated,
-    user,
-    isLoading,
-  } = useAuth0()
+  const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0()
 
   if (isLoading) return <div>Loading ...</div>
 
@@ -19,11 +13,6 @@ const Home: NextPage<HomePageProps> = () => {
     <div>
       {!isAuthenticated && (
         <button onClick={() => loginWithRedirect()}>Login</button>
-      )}
-      {user && (
-        <div>
-          <p>{user.name}</p>
-        </div>
       )}
       {isAuthenticated && (
         <>

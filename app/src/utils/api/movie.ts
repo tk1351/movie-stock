@@ -5,7 +5,9 @@ import { IMovie, ICrew } from '../../../types/movie'
 const offset: number = 0
 const limit: number = 30
 
-export const fetchMovies = async (accessToken: string): Promise<IMovie[]> => {
+export const fetchMoviesByUser = async (
+  accessToken: string
+): Promise<IMovie[]> => {
   setAuthToken(accessToken)
   const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?offset=${offset}&limit=${limit}`
   const res = await API.get<IMovie[]>(url)

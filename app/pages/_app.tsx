@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import '../styles/globals.css'
+import '../styles/reset.css'
 import type { AppProps } from 'next/app'
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react'
 import { RecoilRoot, useSetRecoilState } from 'recoil'
@@ -28,7 +29,7 @@ const AppInit = () => {
           const res = await API.get(url)
 
           const { id, name, role } = res.data
-          const currentUser = { user: { id, name, role }, accessToken }
+          const currentUser = { userInfo: { id, name, role }, accessToken }
           setIsAuth(currentUser)
         } catch (e) {
           throw new Error(e)

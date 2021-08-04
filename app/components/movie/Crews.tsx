@@ -112,7 +112,8 @@ const Crews: NextPage<CrewsPageProps> = () => {
         </Select>
       </FormControl>
       <InfiniteScroll loadMore={loadMore} hasMore={hasMore} loader={loader}>
-        <CrewItem crews={crews.contents} />
+        {crews.state === 'hasValue' &&
+          crews.contents.map((crew) => <CrewItem key={crew.id} crew={crew} />)}
       </InfiniteScroll>
     </div>
   )

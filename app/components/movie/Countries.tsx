@@ -73,7 +73,10 @@ const Countries: NextPage<CountriesPageProps> = () => {
       <h1>製作国: {country}の検索結果</h1>
       <p>{watched}件</p>
       <InfiniteScroll loadMore={loadMore} hasMore={hasMore} loader={loader}>
-        {movies.state === 'hasValue' && <MovieItem movies={movies.contents} />}
+        {movies.state === 'hasValue' &&
+          movies.contents.map((movie) => (
+            <MovieItem key={movie.id} movie={movie} />
+          ))}
       </InfiniteScroll>
     </div>
   )
