@@ -1,0 +1,9 @@
+.details {
+  display: flex;
+}
+
+.linkText:hover {
+  text-decoration: underline;
+  cursor: pointer;
+  opacity: 0.5;
+}

@@ -4,7 +4,7 @@ import { Grid, CircularProgress } from '@material-ui/core'
 
 const Spinner: NextPage = () => {
   return (
-    <Grid container justify="center">
+    <Grid container justifyContent="center">
       <CircularProgress />
     </Grid>
   )
