@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, ChangeEvent } from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -7,7 +7,19 @@ import {
   useRecoilValueLoadable,
   useSetRecoilState,
 } from 'recoil'
-import { Button, Dialog, DialogTitle, DialogActions } from '@material-ui/core'
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  Grid,
+  Typography,
+  Box,
+  Paper,
+  Tabs,
+  Tab,
+} from '@material-ui/core'
+import { Delete, Edit } from '@material-ui/icons'
 import { authState, Auth } from '../../recoil/atoms/auth'
 import { IMovie } from '../../types/movie'
 import { movieState } from '../../recoil/atoms/movie'
@@ -18,6 +30,7 @@ import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import API from '../../src/utils/api/api'
 import { IAlert } from '../../recoil/atoms/alert'
 import { setAlertState } from '../../recoil/selectors/alert'
+import styles from '../../styles/components/movie/movie.module.css'
 
 interface MoviePageProps {}
 
@@ -26,6 +39,26 @@ const crewCategory = {
   2: '脚本',
   3: '製作',
   4: '撮影',
+}
+
+interface TabPanelProps {
+  children?: React.ReactNode
+  index: any
+  value: any
+}
+
+const TabPanel = (props: TabPanelProps) => {
+  const { children, index, value, ...other } = props
+
+  return (
+    <div role="tabpanel" hidden={value !== index} {...other}>
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  )
 }
 
 const Movie: NextPage<MoviePageProps> = () => {
@@ -80,65 +113,137 @@ const Movie: NextPage<MoviePageProps> = () => {
     }
   }
 
+  const [value, setValue] = useState(0)
+
+  const handleChange = (e: ChangeEvent<{}>, newValue: number) => {
+    setValue(newValue)
+  }
+
   return (
-    <div>
+    <Grid container>
       {movie.state === 'hasValue' && (
-        <>
-          <h1>{movie.contents.title}</h1>
-          <p>{movie.contents.release}年</p>
-          <p>{movie.contents.time}分</p>
-          <h2>詳細</h2>
-          {movie.contents.countries.map((country) => (
-            <li key={country.id}>
-              <p>製作国：</p>
-              <Link
-                href={{
-                  pathname: '/countries',
-                  query: { country: country.country },
-                }}
-              >
-                <p>{country.country}</p>
+        <Grid item xs={12}>
+          <Grid container>
+            <Typography gutterBottom variant="h4" component="h2">
+              <Box fontWeight="fontWeightBold">{movie.contents.title}</Box>
+            </Typography>
+            <Typography variant="h5" color="textPrimary" component="h4">
+              {movie.contents.release}年
+            </Typography>
+            {movie.contents.crews.map(
+              (crew) =>
+                crew.category === 1 && (
+                  <Typography
+                    variant="h5"
+                    color="textPrimary"
+                    component="h4"
+                    key={crew.id}
+                  >
+                    監督: {crew.name}
+                  </Typography>
+                )
+            )}
+          </Grid>
+          <Typography variant="body2" color="textPrimary" component="p">
+            {movie.contents.time}分
+          </Typography>
+          {movie.contents.tags.map((tag) => (
+            <div key={tag.id}>
+              <Link href={{ pathname: '/tags', query: { tag: tag.text } }}>
+                <Typography variant="body2" color="textPrimary" component="a">
+                  #{tag.text}
+                </Typography>
               </Link>
-            </li>
+            </div>
           ))}
-          {movie.contents.studios.map((studio) => (
-            <li key={studio.id}>
-              <p>制作会社：</p>
-              <Link
-                href={{
-                  pathname: '/studios',
-                  query: { studio: studio.studio },
-                }}
-              >
-                <p>{studio.studio}</p>
-              </Link>
-            </li>
-          ))}
-          <h2>スタッフ</h2>
-          {movie.contents.crews.map((crew) => (
-            <li key={crew.id}>
-              <p>{crewCategory[crew.category]} </p>
-              <Link href={{ pathname: '/crews', query: { name: crew.name } }}>
-                <p>: {crew.name}</p>
-              </Link>
-            </li>
-          ))}
-          <h2>タグ</h2>
-          <ul>
-            {movie.contents.tags.map((tag) => (
-              <div key={tag.id}>
-                <Link href={{ pathname: '/tags', query: { tag: tag.text } }}>
-                  <p>#{tag.text}</p>
-                </Link>
-              </div>
-            ))}
-          </ul>
-        </>
+          <Paper square>
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              indicatorColor="primary"
+              textColor="inherit"
+            >
+              <Tab label="スタッフ" />
+              <Tab label="詳細" />
+            </Tabs>
+            <TabPanel value={value} index={0}>
+              {movie.contents.crews.map((crew) => (
+                <div key={crew.id}>
+                  <Link
+                    href={{ pathname: '/crews', query: { name: crew.name } }}
+                  >
+                    <Typography
+                      variant="body2"
+                      color="textPrimary"
+                      component="p"
+                    >
+                      {crewCategory[crew.category]}: {crew.name}
+                    </Typography>
+                  </Link>
+                </div>
+              ))}
+            </TabPanel>
+            <TabPanel value={value} index={1}>
+              {movie.contents.studios.map((studio) => (
+                <div key={studio.id}>
+                  <Link
+                    href={{
+                      pathname: '/studios',
+                      query: { studio: studio.studio },
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      color="textPrimary"
+                      component="p"
+                    >
+                      制作会社: {studio.studio}
+                    </Typography>
+                  </Link>
+                </div>
+              ))}
+              {movie.contents.countries.map((country) => (
+                <div key={country.id}>
+                  <Link
+                    href={{
+                      pathname: '/countries',
+                      query: { country: country.country },
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      color="textPrimary"
+                      component="p"
+                    >
+                      製作国: {country.country}
+                    </Typography>
+                  </Link>
+                </div>
+              ))}
+            </TabPanel>
+          </Paper>
+        </Grid>
       )}
-      <Link href={`/update/${movie.contents.id}`}>更新する</Link>
-      <Button color="secondary" variant="contained" onClick={handleClickOpen}>
-        削除する
-      </Button>
+      <Grid container>
+        <div className={styles.buttonWrapper}>
+          <div>
+            <Button size="small" color="primary" variant="contained">
+              <Link href={`/update/${movie.contents.id}`}>
+                <Edit />
+              </Link>
+            </Button>
+          </div>
+          <Button
+            size="small"
+            color="secondary"
+            variant="contained"
+            type="button"
+            onClick={handleClickOpen}
+          >
+            <Delete />
+          </Button>
+        </div>
+      </Grid>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>{movie.contents.title}を削除しますか？</DialogTitle>
         <DialogActions>
@@ -153,8 +258,12 @@ const Movie: NextPage<MoviePageProps> = () => {
           </Button>
         </DialogActions>
       </Dialog>
-      <Link href="/">戻る</Link>
-    </div>
+      <Grid container>
+        <Link href="/">
+          <p>戻る</p>
+        </Link>
+      </Grid>
+    </Grid>
   )
 }
 
