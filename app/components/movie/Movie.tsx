@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -51,7 +51,13 @@ const TabPanel = (props: TabPanelProps) => {
   const { children, index, value, ...other } = props
 
   return (
-    <div role="tabpanel" hidden={value !== index} {...other}>
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      {...other}
+      id={`tabpanel-${index}`}
+      aria-labelledby={`tab-${index}`}
+    >
       {value === index && (
         <Box p={3}>
           <Typography>{children}</Typography>
@@ -59,6 +65,13 @@ const TabPanel = (props: TabPanelProps) => {
       )}
     </div>
   )
+}
+
+const a11yProps = (index: any) => {
+  return {
+    id: `tab-${index}`,
+    'aria-controls': `tabpanel-${index}`,
+  }
 }
 
 const Movie: NextPage<MoviePageProps> = () => {
@@ -83,9 +96,6 @@ const Movie: NextPage<MoviePageProps> = () => {
       }
     })()
   }, [accessToken])
-
-  if (movie.state === 'loading') return <Spinner />
-  if (movie.state === 'hasError') return <p>Error</p>
 
   const handleClickOpen = () => {
     setOpen(true)
@@ -115,7 +125,7 @@ const Movie: NextPage<MoviePageProps> = () => {
 
   const [value, setValue] = useState(0)
 
-  const handleChange = (e: ChangeEvent<{}>, newValue: number) => {
+  const handleChange = (e: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue)
   }
 
@@ -163,8 +173,8 @@ const Movie: NextPage<MoviePageProps> = () => {
               indicatorColor="primary"
               textColor="inherit"
             >
-              <Tab label="スタッフ" />
-              <Tab label="詳細" />
+              <Tab label="スタッフ" {...a11yProps(0)} />
+              <Tab label="詳細" {...a11yProps(1)} />
             </Tabs>
             <TabPanel value={value} index={0}>
               {movie.contents.crews.map((crew) => (
