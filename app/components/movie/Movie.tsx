@@ -15,64 +15,21 @@ import {
   Grid,
   Typography,
   Box,
-  Paper,
-  Tabs,
-  Tab,
 } from '@material-ui/core'
 import { Delete, Edit } from '@material-ui/icons'
 import { authState, Auth } from '../../recoil/atoms/auth'
 import { IMovie } from '../../types/movie'
 import { movieState } from '../../recoil/atoms/movie'
 import { fetchMovieById } from '../../src/utils/api/movie'
-import Spinner from '../common/Spinner'
 import { IMessage } from '../../types/defaultType'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import API from '../../src/utils/api/api'
 import { IAlert } from '../../recoil/atoms/alert'
 import { setAlertState } from '../../recoil/selectors/alert'
 import styles from '../../styles/components/movie/movie.module.css'
+import DetailTabs from './DetailTabs'
 
 interface MoviePageProps {}
-
-const crewCategory = {
-  1: '監督',
-  2: '脚本',
-  3: '製作',
-  4: '撮影',
-}
-
-interface TabPanelProps {
-  children?: React.ReactNode
-  index: any
-  value: any
-}
-
-const TabPanel = (props: TabPanelProps) => {
-  const { children, index, value, ...other } = props
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      {...other}
-      id={`tabpanel-${index}`}
-      aria-labelledby={`tab-${index}`}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  )
-}
-
-const a11yProps = (index: any) => {
-  return {
-    id: `tab-${index}`,
-    'aria-controls': `tabpanel-${index}`,
-  }
-}
 
 const Movie: NextPage<MoviePageProps> = () => {
   const accessToken = useRecoilValueLoadable<Auth>(authState)
@@ -123,21 +80,25 @@ const Movie: NextPage<MoviePageProps> = () => {
     }
   }
 
-  const [value, setValue] = useState(0)
-
-  const handleChange = (e: React.ChangeEvent<{}>, newValue: number) => {
-    setValue(newValue)
-  }
-
   return (
-    <Grid container>
+    <Grid container className={styles.movieWrapper}>
       {movie.state === 'hasValue' && (
         <Grid item xs={12}>
-          <Grid container>
-            <Typography gutterBottom variant="h4" component="h2">
+          <Grid container className={styles.header}>
+            <Typography
+              gutterBottom
+              variant="h4"
+              component="h2"
+              className={styles.title}
+            >
               <Box fontWeight="fontWeightBold">{movie.contents.title}</Box>
             </Typography>
-            <Typography variant="h5" color="textPrimary" component="h4">
+            <Typography
+              variant="h5"
+              color="textPrimary"
+              component="h4"
+              className={styles.release}
+            >
               {movie.contents.release}年
             </Typography>
             {movie.contents.crews.map(
@@ -158,7 +119,7 @@ const Movie: NextPage<MoviePageProps> = () => {
             {movie.contents.time}分
           </Typography>
           {movie.contents.tags.map((tag) => (
-            <div key={tag.id}>
+            <div key={tag.id} className={styles.tags}>
               <Link href={{ pathname: '/tags', query: { tag: tag.text } }}>
                 <Typography variant="body2" color="textPrimary" component="a">
                   #{tag.text}
@@ -166,77 +127,12 @@ const Movie: NextPage<MoviePageProps> = () => {
               </Link>
             </div>
           ))}
-          <Paper square>
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              indicatorColor="primary"
-              textColor="inherit"
-            >
-              <Tab label="スタッフ" {...a11yProps(0)} />
-              <Tab label="詳細" {...a11yProps(1)} />
-            </Tabs>
-            <TabPanel value={value} index={0}>
-              {movie.contents.crews.map((crew) => (
-                <div key={crew.id}>
-                  <Link
-                    href={{ pathname: '/crews', query: { name: crew.name } }}
-                  >
-                    <Typography
-                      variant="body2"
-                      color="textPrimary"
-                      component="p"
-                    >
-                      {crewCategory[crew.category]}: {crew.name}
-                    </Typography>
-                  </Link>
-                </div>
-              ))}
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-              {movie.contents.studios.map((studio) => (
-                <div key={studio.id}>
-                  <Link
-                    href={{
-                      pathname: '/studios',
-                      query: { studio: studio.studio },
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
-                      color="textPrimary"
-                      component="p"
-                    >
-                      制作会社: {studio.studio}
-                    </Typography>
-                  </Link>
-                </div>
-              ))}
-              {movie.contents.countries.map((country) => (
-                <div key={country.id}>
-                  <Link
-                    href={{
-                      pathname: '/countries',
-                      query: { country: country.country },
-                    }}
-                  >
-                    <Typography
-                      variant="body2"
-                      color="textPrimary"
-                      component="p"
-                    >
-                      製作国: {country.country}
-                    </Typography>
-                  </Link>
-                </div>
-              ))}
-            </TabPanel>
-          </Paper>
+          <DetailTabs movie={movie.contents} />
         </Grid>
       )}
       <Grid container>
         <div className={styles.buttonWrapper}>
-          <div>
+          <div className={styles.editButton}>
             <Button size="small" color="primary" variant="contained">
               <Link href={`/update/${movie.contents.id}`}>
                 <Edit />
