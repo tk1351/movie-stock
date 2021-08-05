@@ -7,6 +7,7 @@ import {
   useRecoilState,
   useSetRecoilState,
 } from 'recoil'
+import { Grid, Typography, Box } from '@material-ui/core'
 import { authState } from '../../recoil/atoms/auth'
 import { moviesState, watchedState } from '../../recoil/atoms/movie'
 import { fetchMovies } from '../../recoil/selectors/movie'
@@ -14,6 +15,7 @@ import { IMovie } from '../../types/movie'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import API from '../../src/utils/api/api'
 import MovieItem from './MovieItem'
+import styles from '../../styles/components/movie/search.module.css'
 
 interface SearchPageProps {}
 
@@ -41,11 +43,24 @@ const Search: NextPage<SearchPageProps> = () => {
   }, [accessToken])
   return (
     <div>
-      <h1>{title}の検索結果</h1>
-      {movies.state === 'hasValue' &&
-        movies.contents.map((movie) => (
-          <MovieItem key={movie.id} movie={movie} />
-        ))}
+      <Grid container justifyContent="center" className={styles.header}>
+        <Typography gutterBottom variant="h4" component="h2">
+          <Box fontWeight="fontWeightBold">
+            {title}の検索結果 {watched}件
+          </Box>
+        </Typography>
+      </Grid>
+      <Grid container spacing={2} className={styles.list}>
+        <Grid item xs={2} />
+        <Grid item xs={8}>
+          <Grid container spacing={10}>
+            {movies.state === 'hasValue' &&
+              movies.contents.map((movie) => (
+                <MovieItem key={movie.id} movie={movie} />
+              ))}
+          </Grid>
+        </Grid>
+      </Grid>
     </div>
   )
 }

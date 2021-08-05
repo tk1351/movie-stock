@@ -1,0 +1,12 @@
+.tabPanel {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.chip {
+  margin-left: 15rem;
+}
+
+.typography {
+  margin-top: 0.4rem;
+}

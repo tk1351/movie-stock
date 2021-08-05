@@ -8,6 +8,7 @@ import {
   useSetRecoilState,
 } from 'recoil'
 import InfiniteScroll from 'react-infinite-scroller'
+import { Grid, Typography, Box } from '@material-ui/core'
 import { authState } from '../../recoil/atoms/auth'
 import { moviesState, watchedState } from '../../recoil/atoms/movie'
 import {
@@ -19,6 +20,7 @@ import Spinner from '../common/Spinner'
 import { fetchMovies } from '../../recoil/selectors/movie'
 import { IMovie } from '../../types/movie'
 import API from '../../src/utils/api/api'
+import styles from '../../styles/components/movie/studios.module.css'
 
 interface StudiosPageProps {}
 
@@ -31,6 +33,7 @@ const Studios: NextPage<StudiosPageProps> = () => {
   const setIsFetched = useSetRecoilState<IMovie[]>(fetchMovies)
 
   const [hasMore, setHasMore] = useState(true)
+  const [isFetching, setIsFetching] = useState(false)
 
   const studio = router.query.studio as string
 
@@ -60,8 +63,14 @@ const Studios: NextPage<StudiosPageProps> = () => {
     const res = await API.get<IMovie[]>(url)
 
     try {
-      setIsFetched([...movies.contents, ...res.data])
+      if (watched > movies.contents.length) {
+        setIsFetched([...movies.contents, ...res.data])
+        setIsFetching(true)
+      }
+    } catch (e) {
+      throw new Error(e)
     } finally {
+      setIsFetching(false)
       setHasMore(false)
     }
   }
@@ -70,13 +79,29 @@ const Studios: NextPage<StudiosPageProps> = () => {
 
   return (
     <div>
-      <h1>制作会社: {studio}の検索結果</h1>
-      <p>{watched}件</p>
-      <InfiniteScroll loadMore={loadMore} hasMore={hasMore} loader={loader}>
-        {movies.state === 'hasValue' &&
-          movies.contents.map((movie) => (
-            <MovieItem key={movie.id} movie={movie} />
-          ))}
+      <Grid container justifyContent="center" className={styles.header}>
+        <Typography gutterBottom variant="h4" component="h2">
+          <Box fontWeight="fontWeightBold">
+            {studio}の検索結果 {watched}件
+          </Box>
+        </Typography>
+      </Grid>
+      <InfiniteScroll
+        loadMore={loadMore}
+        hasMore={!isFetching && hasMore}
+        loader={loader}
+      >
+        <Grid container spacing={2} className={styles.list}>
+          <Grid item xs={2} />
+          <Grid item xs={8}>
+            <Grid container spacing={10}>
+              {movies.state === 'hasValue' &&
+                movies.contents.map((movie) => (
+                  <MovieItem key={movie.id} movie={movie} />
+                ))}
+            </Grid>
+          </Grid>
+        </Grid>
       </InfiniteScroll>
     </div>
   )
