@@ -15,6 +15,7 @@ import {
   Grid,
   Typography,
   Box,
+  Chip,
 } from '@material-ui/core'
 import { Delete, Edit } from '@material-ui/icons'
 import { authState, Auth } from '../../recoil/atoms/auth'
@@ -121,9 +122,7 @@ const Movie: NextPage<MoviePageProps> = () => {
           {movie.contents.tags.map((tag) => (
             <div key={tag.id} className={styles.tags}>
               <Link href={{ pathname: '/tags', query: { tag: tag.text } }}>
-                <Typography variant="body2" color="textPrimary" component="a">
-                  #{tag.text}
-                </Typography>
+                <Chip label={tag.text} />
               </Link>
             </div>
           ))}

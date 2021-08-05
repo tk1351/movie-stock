@@ -33,6 +33,7 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
   const setIsFetched = useSetRecoilState<IMovie[]>(fetchMovies)
 
   const [hasMore, setHasMore] = useState(true)
+  const [isFetching, setIsFetching] = useState(false)
 
   const { user } = useAuth0()
 
@@ -68,8 +69,14 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
     const res = await API.get<IMovie[]>(url)
 
     try {
-      setIsFetched([...movies.contents, ...res.data])
+      if (watched > movies.contents.length) {
+        setIsFetched([...movies.contents, ...res.data])
+        setIsFetching(true)
+      }
+    } catch (e) {
+      throw new Error(e)
     } finally {
+      setIsFetching(false)
       setHasMore(false)
     }
   }
@@ -85,7 +92,11 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
           </Typography>
         )}
       </Grid>
-      <InfiniteScroll loadMore={loadMore} hasMore={hasMore} loader={loader}>
+      <InfiniteScroll
+        loadMore={loadMore}
+        hasMore={!isFetching && hasMore}
+        loader={loader}
+      >
         <Grid container spacing={2} className={styles.list}>
           <Grid item xs={2} />
           <Grid item xs={8}>
