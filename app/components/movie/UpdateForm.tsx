@@ -16,6 +16,10 @@ import {
   Select,
   MenuItem,
   FormHelperText,
+  Container,
+  Grid,
+  Typography,
+  Box,
 } from '@material-ui/core'
 import { Remove, Add } from '@material-ui/icons'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -29,6 +33,7 @@ import { IMessage } from '../../types/defaultType'
 import { IAlert } from '../../recoil/atoms/alert'
 import { setAlertState } from '../../recoil/selectors/alert'
 import { movieValidationSchema } from '../../src/utils/movieValidation'
+import styles from '../../styles/components/movie/updateForm.module.css'
 
 interface UpdateFormPageProps {}
 
@@ -114,102 +119,111 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
   }
 
   return (
-    <div>
-      <h1>Update</h1>
+    <Container component="main" maxWidth={false} className={styles.container}>
+      <Grid container justifyContent="center" className={styles.header}>
+        <Typography gutterBottom variant="h4" component="h2">
+          <Box fontWeight="fontWeightBold">映画の編集</Box>
+        </Typography>
+      </Grid>
       {movie.state === 'hasValue' && (
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <Controller
-            name="title"
-            control={control}
-            render={({ field: { onChange, ref }, formState: { errors } }) => (
-              <TextField
-                label={'タイトル'}
-                id="title"
-                type="text"
-                name="title"
-                variant="outlined"
-                defaultValue={movie.contents.title}
-                onChange={onChange}
-                inputRef={ref}
-                helperText={errors.title && errors.title.message}
-                error={Boolean(errors.title)}
-              />
-            )}
-          />
-          <Controller
-            name="release"
-            control={control}
-            render={({ field: { onChange, ref }, formState: { errors } }) => (
-              <TextField
-                label={'製作年'}
-                id="release"
-                type="text"
-                name="release"
-                variant="outlined"
-                defaultValue={movie.contents.release}
-                onChange={onChange}
-                inputRef={ref}
-                helperText={errors.release && errors.release.message}
-                error={Boolean(errors.release)}
-              />
-            )}
-          />
-          <Controller
-            name="time"
-            control={control}
-            render={({ field: { onChange, ref }, formState: { errors } }) => (
-              <TextField
-                label={'上映時間'}
-                id="time"
-                type="text"
-                name="time"
-                variant="outlined"
-                defaultValue={movie.contents.time}
-                onChange={onChange}
-                inputRef={ref}
-                helperText={errors.time && errors.time.message}
-                error={Boolean(errors.time)}
-              />
-            )}
-          />
+          <div className={styles.textFieldWrapper}>
+            <Controller
+              name="title"
+              control={control}
+              render={({ field: { onChange, ref }, formState: { errors } }) => (
+                <TextField
+                  label={'タイトル'}
+                  id="title"
+                  type="text"
+                  name="title"
+                  variant="outlined"
+                  defaultValue={movie.contents.title}
+                  onChange={onChange}
+                  inputRef={ref}
+                  helperText={errors.title && errors.title.message}
+                  error={Boolean(errors.title)}
+                />
+              )}
+            />
+            <Controller
+              name="release"
+              control={control}
+              render={({ field: { onChange, ref }, formState: { errors } }) => (
+                <TextField
+                  label={'製作年'}
+                  id="release"
+                  type="text"
+                  name="release"
+                  variant="outlined"
+                  defaultValue={movie.contents.release}
+                  onChange={onChange}
+                  inputRef={ref}
+                  helperText={errors.release && errors.release.message}
+                  error={Boolean(errors.release)}
+                />
+              )}
+            />
+            <Controller
+              name="time"
+              control={control}
+              render={({ field: { onChange, ref }, formState: { errors } }) => (
+                <TextField
+                  label={'上映時間'}
+                  id="time"
+                  type="text"
+                  name="time"
+                  variant="outlined"
+                  defaultValue={movie.contents.time}
+                  onChange={onChange}
+                  inputRef={ref}
+                  helperText={errors.time && errors.time.message}
+                  error={Boolean(errors.time)}
+                />
+              )}
+            />
+          </div>
           <ul>
             {countryFields.map((field, index) => (
               <li key={field.id}>
-                <Controller
-                  name={`countries.${index}.country`}
-                  control={control}
-                  defaultValue={field.country ? field.country : ''}
-                  render={({
-                    field: { onChange, ref },
-                    formState: { errors },
-                  }) => (
-                    <TextField
-                      label={'製作国'}
-                      id={`countries.${index}.country`}
-                      type="text"
-                      name={`countries.${index}.country`}
-                      variant="outlined"
-                      onChange={onChange}
-                      inputRef={ref}
-                      defaultValue={field.country}
-                      helperText={
-                        errors.countries &&
-                        errors.countries[index]?.country?.message
-                      }
-                      error={Boolean(
-                        errors.countries && errors.countries[index]
-                      )}
-                    />
-                  )}
-                />
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  type="button"
-                  onClick={() => countryRemove(index)}
-                >
-                  <Remove />
-                </Button>
+                <div className={styles.textFieldWrapper}>
+                  <Controller
+                    name={`countries.${index}.country`}
+                    control={control}
+                    defaultValue={field.country ? field.country : ''}
+                    render={({
+                      field: { onChange, ref },
+                      formState: { errors },
+                    }) => (
+                      <TextField
+                        label={'製作国'}
+                        id={`countries.${index}.country`}
+                        type="text"
+                        name={`countries.${index}.country`}
+                        variant="outlined"
+                        onChange={onChange}
+                        inputRef={ref}
+                        defaultValue={field.country}
+                        className={styles.textField}
+                        helperText={
+                          errors.countries &&
+                          errors.countries[index]?.country?.message
+                        }
+                        error={Boolean(
+                          errors.countries && errors.countries[index]
+                        )}
+                      />
+                    )}
+                  />
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    type="button"
+                    onClick={() => countryRemove(index)}
+                  >
+                    <Remove />
+                  </Button>
+                </div>
               </li>
             ))}
           </ul>
@@ -217,6 +231,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
             variant="contained"
             color="primary"
             type="button"
+            className={styles.appendButton}
             onClick={() =>
               countryAppend({
                 country: '',
@@ -228,38 +243,42 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
           <ul>
             {studioFields.map((field, index) => (
               <li key={field.id}>
-                <Controller
-                  name={`studios.${index}.studio`}
-                  control={control}
-                  defaultValue={field.studio ? field.studio : ''}
-                  render={({
-                    field: { onChange, ref },
-                    formState: { errors },
-                  }) => (
-                    <TextField
-                      label={'制作会社'}
-                      id={`studios.${index}.studio`}
-                      type="text"
-                      name={`studios.${index}.studio`}
-                      variant="outlined"
-                      onChange={onChange}
-                      inputRef={ref}
-                      defaultValue={field.studio}
-                      helperText={
-                        errors.studios && errors.studios[index]?.studio?.message
-                      }
-                      error={Boolean(errors.studios && errors.studios[index])}
-                    />
-                  )}
-                />
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  type="button"
-                  onClick={() => studioRemove(index)}
-                >
-                  <Remove />
-                </Button>
+                <div className={styles.textFieldWrapper}>
+                  <Controller
+                    name={`studios.${index}.studio`}
+                    control={control}
+                    defaultValue={field.studio ? field.studio : ''}
+                    render={({
+                      field: { onChange, ref },
+                      formState: { errors },
+                    }) => (
+                      <TextField
+                        label={'制作会社'}
+                        id={`studios.${index}.studio`}
+                        type="text"
+                        name={`studios.${index}.studio`}
+                        variant="outlined"
+                        onChange={onChange}
+                        inputRef={ref}
+                        defaultValue={field.studio}
+                        className={styles.textField}
+                        helperText={
+                          errors.studios &&
+                          errors.studios[index]?.studio?.message
+                        }
+                        error={Boolean(errors.studios && errors.studios[index])}
+                      />
+                    )}
+                  />
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    type="button"
+                    onClick={() => studioRemove(index)}
+                  >
+                    <Remove />
+                  </Button>
+                </div>
               </li>
             ))}
           </ul>
@@ -267,6 +286,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
             variant="contained"
             color="primary"
             type="button"
+            className={styles.appendButton}
             onClick={() =>
               studioAppend({
                 studio: '',
@@ -279,71 +299,75 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
           <ul>
             {crewFields.map((field, index) => (
               <li key={field.id}>
-                <Controller
-                  name={`crews.${index}.category`}
-                  control={control}
-                  defaultValue={
-                    Number(field.category) ? Number(field.category) : 1
-                  }
-                  render={({
-                    field: { onChange, value },
-                    formState: { errors },
-                  }) => (
-                    <FormControl>
-                      <InputLabel>役職</InputLabel>
-                      <Select
-                        aria-label={'役職'}
-                        label={'役職'}
-                        name={`crews[${index}].category`}
-                        id={`crews[${index}].category`}
-                        defaultValue={Number(field.category)}
+                <div className={styles.textFieldWrapper}>
+                  <Controller
+                    name={`crews.${index}.category`}
+                    control={control}
+                    defaultValue={
+                      Number(field.category) ? Number(field.category) : 1
+                    }
+                    render={({
+                      field: { onChange, value },
+                      formState: { errors },
+                    }) => (
+                      <FormControl className={styles.formControl}>
+                        <InputLabel>役職</InputLabel>
+                        <Select
+                          aria-label={'役職'}
+                          label={'役職'}
+                          name={`crews[${index}].category`}
+                          id={`crews[${index}].category`}
+                          defaultValue={Number(field.category)}
+                          onChange={onChange}
+                          value={value ? value : 1}
+                          error={Boolean(errors.crews && errors.crews[index])}
+                        >
+                          <MenuItem value={1}>監督</MenuItem>
+                          <MenuItem value={2}>脚本</MenuItem>
+                          <MenuItem value={3}>製作</MenuItem>
+                          <MenuItem value={4}>撮影</MenuItem>
+                        </Select>
+                        <FormHelperText>
+                          {errors.crews &&
+                            errors.crews[index]?.category?.message}
+                        </FormHelperText>
+                      </FormControl>
+                    )}
+                  />
+                  <Controller
+                    name={`crews.${index}.name`}
+                    control={control}
+                    defaultValue={field.name ? field.name : ''}
+                    render={({
+                      field: { onChange, ref },
+                      formState: { errors },
+                    }) => (
+                      <TextField
+                        label={'名前'}
+                        id={`crews[${index}].name`}
+                        type="text"
+                        name={`crews[${index}].name`}
+                        variant="outlined"
                         onChange={onChange}
-                        value={value ? value : 1}
+                        inputRef={ref}
+                        defaultValue={field.name}
+                        className={styles.crewTextField}
+                        helperText={
+                          errors.crews && errors.crews[index]?.name?.message
+                        }
                         error={Boolean(errors.crews && errors.crews[index])}
-                      >
-                        <MenuItem value={1}>監督</MenuItem>
-                        <MenuItem value={2}>脚本</MenuItem>
-                        <MenuItem value={3}>製作</MenuItem>
-                        <MenuItem value={4}>撮影</MenuItem>
-                      </Select>
-                      <FormHelperText>
-                        {errors.crews && errors.crews[index]?.category?.message}
-                      </FormHelperText>
-                    </FormControl>
-                  )}
-                />
-                <Controller
-                  name={`crews.${index}.name`}
-                  control={control}
-                  defaultValue={field.name ? field.name : ''}
-                  render={({
-                    field: { onChange, ref },
-                    formState: { errors },
-                  }) => (
-                    <TextField
-                      label={'名前'}
-                      id={`crews[${index}].name`}
-                      type="text"
-                      name={`crews[${index}].name`}
-                      variant="outlined"
-                      onChange={onChange}
-                      inputRef={ref}
-                      defaultValue={field.name}
-                      helperText={
-                        errors.crews && errors.crews[index]?.name?.message
-                      }
-                      error={Boolean(errors.crews && errors.crews[index])}
-                    />
-                  )}
-                />
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  type="button"
-                  onClick={() => crewRemove(index)}
-                >
-                  <Remove />
-                </Button>
+                      />
+                    )}
+                  />
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    type="button"
+                    onClick={() => crewRemove(index)}
+                  >
+                    <Remove />
+                  </Button>
+                </div>
               </li>
             ))}
           </ul>
@@ -351,6 +375,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
             variant="contained"
             color="primary"
             type="button"
+            className={styles.appendButton}
             onClick={() =>
               crewAppend({
                 category: 1,
@@ -363,38 +388,41 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
           <ul>
             {tagFields.map((field, index) => (
               <li key={field.id}>
-                <Controller
-                  name={`tags.${index}.text`}
-                  control={control}
-                  defaultValue={field.text ? field.text : ''}
-                  render={({
-                    field: { onChange, ref },
-                    formState: { errors },
-                  }) => (
-                    <TextField
-                      label={'タグ'}
-                      id={`tags[${index}].text`}
-                      type="text"
-                      name={`tags[${index}].text`}
-                      variant="outlined"
-                      onChange={onChange}
-                      inputRef={ref}
-                      defaultValue={field.text}
-                      helperText={
-                        errors.tags && errors.tags[index]?.text?.message
-                      }
-                      error={Boolean(errors.tags && errors.tags[index])}
-                    />
-                  )}
-                />
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  type="button"
-                  onClick={() => tagRemove(index)}
-                >
-                  <Remove />
-                </Button>
+                <div className={styles.textFieldWrapper}>
+                  <Controller
+                    name={`tags.${index}.text`}
+                    control={control}
+                    defaultValue={field.text ? field.text : ''}
+                    render={({
+                      field: { onChange, ref },
+                      formState: { errors },
+                    }) => (
+                      <TextField
+                        label={'タグ'}
+                        id={`tags[${index}].text`}
+                        type="text"
+                        name={`tags[${index}].text`}
+                        variant="outlined"
+                        onChange={onChange}
+                        inputRef={ref}
+                        defaultValue={field.text}
+                        className={styles.textField}
+                        helperText={
+                          errors.tags && errors.tags[index]?.text?.message
+                        }
+                        error={Boolean(errors.tags && errors.tags[index])}
+                      />
+                    )}
+                  />
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    type="button"
+                    onClick={() => tagRemove(index)}
+                  >
+                    <Remove />
+                  </Button>
+                </div>
               </li>
             ))}
           </ul>
@@ -402,6 +430,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
             variant="contained"
             color="primary"
             type="button"
+            className={styles.appendButton}
             onClick={() =>
               tagAppend({
                 text: '',
@@ -410,14 +439,19 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
           >
             <Add />
           </Button>
-          <div>
-            <Button type="submit" color="primary" variant="contained" fullWidth>
+          <Grid container justifyContent="center">
+            <Button
+              type="submit"
+              color="primary"
+              variant="contained"
+              className={styles.registerButton}
+            >
               更新
             </Button>
-          </div>
+          </Grid>
         </form>
       )}
-    </div>
+    </Container>
   )
 }
 
