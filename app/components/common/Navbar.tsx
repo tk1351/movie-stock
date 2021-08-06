@@ -13,11 +13,13 @@ import { Add } from '@material-ui/icons'
 import Link from 'next/link'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useRecoilValue } from 'recoil'
+import { useRouter } from 'next/router'
 import { authState } from '../../recoil/atoms/auth'
 
 interface NavbarProps {}
 
 const Navbar: NextPage<NavbarProps> = () => {
+  const router = useRouter()
   const {
     isAuthenticated,
     isLoading,
@@ -61,6 +63,9 @@ const Navbar: NextPage<NavbarProps> = () => {
         keepMounted
         anchorEl={anchorEl}
       >
+        <MenuItem onClick={() => router.push(`/user/${userInfo.id}`)}>
+          マイページ
+        </MenuItem>
         <MenuItem onClick={() => logout()}>ログアウト</MenuItem>
       </Menu>
       <Button color="inherit">
