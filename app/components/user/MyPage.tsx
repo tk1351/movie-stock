@@ -37,26 +37,28 @@ const MyPage: NextPage<MyPageProps> = () => {
 
   useEffect(() => {
     ;(async () => {
-      const directors = await fetchCrewsRankByCategory(
-        isAuth.contents.accessToken,
-        1
-      )
-      const writers = await fetchCrewsRankByCategory(
-        isAuth.contents.accessToken,
-        2
-      )
-      const producers = await fetchCrewsRankByCategory(
-        isAuth.contents.accessToken,
-        3
-      )
-      const photographers = await fetchCrewsRankByCategory(
-        isAuth.contents.accessToken,
-        4
-      )
-      setDirectorsRank(directors)
-      setWritersRank(writers)
-      setProducersRank(producers)
-      setPhotographersRank(photographers)
+      if (isAuth.state === 'hasValue') {
+        const directors = await fetchCrewsRankByCategory(
+          isAuth.contents.accessToken,
+          1
+        )
+        const writers = await fetchCrewsRankByCategory(
+          isAuth.contents.accessToken,
+          2
+        )
+        const producers = await fetchCrewsRankByCategory(
+          isAuth.contents.accessToken,
+          3
+        )
+        const photographers = await fetchCrewsRankByCategory(
+          isAuth.contents.accessToken,
+          4
+        )
+        setDirectorsRank(directors)
+        setWritersRank(writers)
+        setProducersRank(producers)
+        setPhotographersRank(photographers)
+      }
     })()
   }, [isAuth])
 
