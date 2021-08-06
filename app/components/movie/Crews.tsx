@@ -24,7 +24,7 @@ import {
   fetchCrews,
   fetchCrewsLength,
   fetchCrewsLengthByCategory,
-} from '../../src/utils/api/movie'
+} from '../../src/utils/api/crew'
 import Spinner from '../common/Spinner'
 import { ICrew } from '../../types/movie'
 import API from '../../src/utils/api/api'

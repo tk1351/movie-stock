@@ -2,13 +2,51 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository, Repository, getCustomRepository } from 'typeorm';
 import { Country } from './models/countries.entity';
-import { IMessage } from '../types/type';
+import { IMessage, UserInfo } from '../types/type';
 import { CreateCountriesDto } from './dto/create-countries.dto';
+import { UsersRepository } from '../users/users.repository';
 
 @EntityRepository(Country)
 export class CountriesRepository extends Repository<Country> {
+  async getCountries(user: UserInfo): Promise<Country[]> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const countries = await this.createQueryBuilder('countries')
+      .leftJoinAndSelect('countries.movie', 'movie')
+      .getMany();
+
+    try {
+      return countries;
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async getCountriesRank(user: UserInfo): Promise<any[]> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const result = await this.createQueryBuilder('countries')
+      .select(['countries.country', 'COUNT(*) AS cnt'])
+      .take(5)
+      .groupBy('countries.country')
+      .orderBy('cnt', 'DESC')
+      .getRawMany();
+
+    try {
+      return result;
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
   async registerCountry(
     createCountriesDto: CreateCountriesDto,
   ): Promise<Country> {

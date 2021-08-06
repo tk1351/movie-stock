@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StudiosRepository } from './studios.repository';
-import { IMessage } from '../types/type';
+import { IMessage, UserInfo } from '../types/type';
 import { CreateStudioDtos } from './dto/create-studio.dtos';
 import { Studio } from './models/studios.entity';
 
@@ -11,6 +11,14 @@ export class StudiosService {
     @InjectRepository(StudiosRepository)
     private studiosRepository: StudiosRepository,
   ) {}
+
+  async getStudios(user: UserInfo): Promise<Studio[]> {
+    return await this.studiosRepository.getStudios(user);
+  }
+
+  async getStudiosRank(user: UserInfo): Promise<any[]> {
+    return await this.studiosRepository.getStudiosRank(user);
+  }
 
   async createStudios(createStudioDtos: CreateStudioDtos[]): Promise<Studio[]> {
     const newStudios = Promise.all(

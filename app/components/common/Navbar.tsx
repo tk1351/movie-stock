@@ -13,11 +13,14 @@ import { Add } from '@material-ui/icons'
 import Link from 'next/link'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useRecoilValue } from 'recoil'
+import { useRouter } from 'next/router'
 import { authState } from '../../recoil/atoms/auth'
+import styles from '../../styles/components/common/navbar.module.css'
 
 interface NavbarProps {}
 
 const Navbar: NextPage<NavbarProps> = () => {
+  const router = useRouter()
   const {
     isAuthenticated,
     isLoading,
@@ -28,7 +31,7 @@ const Navbar: NextPage<NavbarProps> = () => {
   const { userInfo } = useRecoilValue(authState)
 
   const guestLinks = (
-    <div>
+    <div className={styles.links}>
       <Button color="inherit" onClick={() => loginWithRedirect()}>
         ログイン
       </Button>
@@ -46,7 +49,7 @@ const Navbar: NextPage<NavbarProps> = () => {
   }
 
   const userLinks = (
-    <div>
+    <div className={styles.links}>
       <Button
         onClick={handleClick}
         aria-haspopup="true"
@@ -61,6 +64,9 @@ const Navbar: NextPage<NavbarProps> = () => {
         keepMounted
         anchorEl={anchorEl}
       >
+        <MenuItem onClick={() => router.push(`/user/${userInfo.id}`)}>
+          マイページ
+        </MenuItem>
         <MenuItem onClick={() => logout()}>ログアウト</MenuItem>
       </Menu>
       <Button color="inherit">
@@ -82,7 +88,7 @@ const Navbar: NextPage<NavbarProps> = () => {
   return (
     <div>
       <AppBar position="static">
-        <Toolbar>
+        <Toolbar className={styles.toolbar}>
           <IconButton edge="start" color="inherit" aria-label="open drawer">
             <Link href="/">
               <p>CineStock</p>

@@ -78,3 +78,8 @@ export interface IUpdateMovieInputs {
     text: string
   }[]
 }
+
+export interface CrewsRank {
+  cnt: string
+  crews_name: string
+}

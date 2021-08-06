@@ -2,13 +2,51 @@ import {
   NotFoundException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { Repository, EntityRepository } from 'typeorm';
+import { Repository, EntityRepository, getCustomRepository } from 'typeorm';
 import { Studio } from './models/studios.entity';
-import { IMessage } from '../types/type';
+import { IMessage, UserInfo } from '../types/type';
 import { CreateStudiosDto } from './dto/create-studios.dto';
+import { UsersRepository } from '../users/users.repository';
 
 @EntityRepository(Studio)
 export class StudiosRepository extends Repository<Studio> {
+  async getStudios(user: UserInfo): Promise<Studio[]> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const studios = await this.createQueryBuilder('studios')
+      .leftJoinAndSelect('studios.movie', 'movie')
+      .getMany();
+
+    try {
+      return studios;
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async getStudiosRank(user: UserInfo): Promise<any[]> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const result = await this.createQueryBuilder('studios')
+      .select(['studios.studio', 'COUNT(*) AS cnt'])
+      .take(5)
+      .groupBy('studios.studio')
+      .orderBy('cnt', 'DESC')
+      .getRawMany();
+
+    try {
+      return result;
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
   async registerStudio(createStudiosDto: CreateStudiosDto): Promise<Studio> {
     const { studio, movieId } = createStudiosDto;
 
