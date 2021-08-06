@@ -24,25 +24,39 @@ import { CrewsRank } from '../../types/movie'
 
 interface MyPageProps {}
 
-const initialState: CrewsRank = {
-  cnt: '',
-  crews_name: '',
-}
+const initialState: CrewsRank[] = [
+  {
+    cnt: '',
+    crews_name: '',
+  },
+  {
+    cnt: '',
+    crews_name: '',
+  },
+  {
+    cnt: '',
+    crews_name: '',
+  },
+  {
+    cnt: '',
+    crews_name: '',
+  },
+  {
+    cnt: '',
+    crews_name: '',
+  },
+]
 
 const MyPage: NextPage<MyPageProps> = () => {
   const isAuth = useRecoilValueLoadable(authState)
   const [watched, setWatched] = useRecoilState(watchedState)
 
-  const [directorsRank, setDirectorsRank] = useState<CrewsRank[]>([
-    initialState,
-  ])
-  const [writersRank, setWritersRank] = useState<CrewsRank[]>([initialState])
-  const [producersRank, setProducersRank] = useState<CrewsRank[]>([
-    initialState,
-  ])
-  const [photographersRank, setPhotographersRank] = useState<CrewsRank[]>([
-    initialState,
-  ])
+  const [directorsRank, setDirectorsRank] = useState<CrewsRank[]>(initialState)
+  const [writersRank, setWritersRank] = useState<CrewsRank[]>(initialState)
+  const [producersRank, setProducersRank] = useState<CrewsRank[]>(initialState)
+  const [photographersRank, setPhotographersRank] = useState<CrewsRank[]>(
+    initialState
+  )
 
   const { isAuthenticated, isLoading } = useAuth0()
 
