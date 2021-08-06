@@ -28,7 +28,12 @@ const MyPage: NextPage<MyPageProps> = () => {
   const isAuth = useRecoilValueLoadable(authState)
   const [watched, setWatched] = useRecoilState(watchedState)
 
-  const [directorsRank, setDirectorsRank] = useState<CrewsRank[]>([])
+  const [directorsRank, setDirectorsRank] = useState<CrewsRank[]>([
+    {
+      cnt: '',
+      crews_name: '',
+    },
+  ])
   const [writersRank, setWritersRank] = useState<CrewsRank[]>([])
   const [producersRank, setProducersRank] = useState<CrewsRank[]>([])
   const [photographersRank, setPhotographersRank] = useState<CrewsRank[]>([])
