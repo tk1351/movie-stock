@@ -41,4 +41,13 @@ export class CrewsController {
   ): Promise<Crew[]> {
     return this.crewsService.getCrewsByMovieId(movieId);
   }
+
+  @Get('/rank/:category')
+  @UseGuards(AuthGuard)
+  getCrewsRankByCategory(
+    @Param('category', ParseIntPipe) category: number,
+    @CurrentUser() user: UserInfo,
+  ): Promise<any[]> {
+    return this.crewsService.getCrewsRankByCategory(category, user);
+  }
 }

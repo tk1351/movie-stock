@@ -46,18 +46,42 @@ export class CrewsRepository extends Repository<Crew> {
 
     const { name, category, offset, limit } = params;
 
-    const crews = await this.createQueryBuilder('crews')
+    const result = await this.createQueryBuilder('crews')
       .leftJoinAndSelect('crews.movie', 'movie')
       .where(name ? 'crews.name LIKE :name' : 'true', { name: `%${name}%` })
       .andWhere(category ? 'crews.category = :category' : 'true', { category })
       .take(limit)
       .skip(offset)
       .orderBy('movie.release', 'DESC')
-      .getMany();
+      .getCount();
 
     try {
-      return crews.length;
+      return result;
     } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async getCrewsRankByCategory(
+    category: number,
+    user: UserInfo,
+  ): Promise<any[]> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const result = await this.createQueryBuilder('crews')
+      .select(['crews.name', 'COUNT(*) AS cnt'])
+      .where('crews.category = :category', { category })
+      .take(5)
+      .groupBy('crews.name')
+      .orderBy('cnt', 'DESC')
+      .getRawMany();
+
+    try {
+      return result;
+    } catch (e) {
       throw new InternalServerErrorException();
     }
   }

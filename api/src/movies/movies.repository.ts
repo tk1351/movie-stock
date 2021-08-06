@@ -114,7 +114,7 @@ export class MoviesRepository extends Repository<Movie> {
 
     const { title, release, time, country, studio, name, tag } = params;
 
-    const movies = await this.createQueryBuilder('movies')
+    const result = await this.createQueryBuilder('movies')
       .leftJoinAndSelect('movies.countries', 'countries')
       .leftJoinAndSelect('movies.studios', 'studios')
       .leftJoinAndSelect('movies.crews', 'crews')
@@ -178,10 +178,10 @@ export class MoviesRepository extends Repository<Movie> {
           : 'true',
       )
       .orderBy('movies.createdAt', 'DESC')
-      .getMany();
+      .getCount();
 
     try {
-      return movies.length;
+      return result;
     } catch (e) {
       throw new InternalServerErrorException();
     }

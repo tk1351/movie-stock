@@ -28,6 +28,13 @@ export class CrewsService {
     return await this.crewsRepository.getCrewsByMovieId(movieId);
   }
 
+  async getCrewsRankByCategory(
+    category: number,
+    user: UserInfo,
+  ): Promise<any[]> {
+    return await this.crewsRepository.getCrewsRankByCategory(category, user);
+  }
+
   async createCrews(createCrewDtos: CreateCrewDtos[]): Promise<Crew[]> {
     const newCrews = Promise.all(
       createCrewDtos.map(async (createCrewDto) => {
