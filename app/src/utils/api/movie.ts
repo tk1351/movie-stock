@@ -1,9 +1,6 @@
 import { setAuthToken } from './setAuthToken'
-import API from '../api/api'
-import { IMovie, ICrew } from '../../../types/movie'
-
-const offset: number = 0
-const limit: number = 30
+import API, { offset, limit } from '../api/api'
+import { IMovie } from '../../../types/movie'
 
 export const fetchMoviesByUser = async (
   accessToken: string
@@ -125,56 +122,6 @@ export const fetchWatchedNumberByCrew = async (
   const url = `${
     process.env.NEXT_PUBLIC_API_URL
   }/movies/length?name=${encodeURI(name)}`
-  const res = await API.get<number>(url)
-  return res.data
-}
-
-export const fetchCrews = async (
-  accessToken: string,
-  name: string
-): Promise<ICrew[]> => {
-  setAuthToken(accessToken)
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/crews?name=${encodeURI(
-    name
-  )}&offset=${offset}&limit=${limit}`
-  const res = await API.get<ICrew[]>(url)
-  return res.data
-}
-
-export const fetchCrewsByCategory = async (
-  accessToken: string,
-  name: string,
-  category: number
-): Promise<ICrew[]> => {
-  setAuthToken(accessToken)
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/crews?name=${encodeURI(
-    name
-  )}&category=${category}&offset=${offset}&limit=${limit}`
-  const res = await API.get<ICrew[]>(url)
-  return res.data
-}
-
-export const fetchCrewsLength = async (
-  accessToken: string,
-  name: string
-): Promise<number> => {
-  setAuthToken(accessToken)
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/crews/length?name=${encodeURI(
-    name
-  )}`
-  const res = await API.get<number>(url)
-  return res.data
-}
-
-export const fetchCrewsLengthByCategory = async (
-  accessToken: string,
-  name: string,
-  category: number
-): Promise<number> => {
-  setAuthToken(accessToken)
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/crews/length?name=${encodeURI(
-    name
-  )}&category=${category}`
   const res = await API.get<number>(url)
   return res.data
 }
