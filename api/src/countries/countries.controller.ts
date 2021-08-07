@@ -2,7 +2,7 @@ import { Controller, Get, UseGuards } from '@nestjs/common';
 import { CountriesService } from './countries.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { CurrentUser } from 'src/auth/get-user.decorator';
-import { UserInfo } from '../types/type';
+import { UserInfo, CountryRank } from '../types/type';
 import { Country } from './models/countries.entity';
 
 @Controller('countries')
@@ -17,7 +17,7 @@ export class CountriesController {
 
   @Get('/rank')
   @UseGuards(AuthGuard)
-  getCountriesRank(@CurrentUser() user: UserInfo): Promise<any[]> {
+  getCountriesRank(@CurrentUser() user: UserInfo): Promise<CountryRank[]> {
     return this.countriesService.getCountriesRank(user);
   }
 }

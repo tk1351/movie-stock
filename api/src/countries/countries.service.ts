@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CountriesRepository } from './countries.repository';
-import { IMessage, UserInfo } from '../types/type';
+import { IMessage, UserInfo, CountryRank } from '../types/type';
 import { CreateCountryDtos } from './dto/create-country.dtos';
 import { Country } from './models/countries.entity';
 
@@ -16,7 +16,7 @@ export class CountriesService {
     return await this.countriesRepository.getCountries(user);
   }
 
-  async getCountriesRank(user: UserInfo): Promise<any[]> {
+  async getCountriesRank(user: UserInfo): Promise<CountryRank[]> {
     return await this.countriesRepository.getCountriesRank(user);
   }
 

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Crew } from './models/crews.entity';
 import { CreateCrewsDto } from './dto/create-crews.dto';
-import { IMessage, UserInfo } from '../types/type';
+import { IMessage, UserInfo, CrewRank } from '../types/type';
 import { GetCrewsQueryParams } from './dto/get-crews-query-params.dto';
 import { UsersRepository } from '../users/users.repository';
 
@@ -65,19 +65,21 @@ export class CrewsRepository extends Repository<Crew> {
   async getCrewsRankByCategory(
     category: number,
     user: UserInfo,
-  ): Promise<any[]> {
+  ): Promise<CrewRank[]> {
     const usersRepository = getCustomRepository(UsersRepository);
 
     const foundUser = await usersRepository.findOne({ sub: user.sub });
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
     const result = await this.createQueryBuilder('crews')
-      .select(['crews.name', 'COUNT(*) AS cnt'])
+      .select('crews.category')
+      .addSelect(['crews.name', 'COUNT(*) AS cnt'])
       .where('crews.category = :category', { category })
       .take(5)
       .groupBy('crews.name')
+      .addGroupBy('crews.category')
       .orderBy('cnt', 'DESC')
-      .getRawMany();
+      .getRawMany<CrewRank>();
 
     try {
       return result;

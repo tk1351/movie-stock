@@ -10,7 +10,7 @@ import { CrewsService } from './crews.service';
 import { Crew } from './models/crews.entity';
 import { GetCrewsQueryParams } from './dto/get-crews-query-params.dto';
 import { CurrentUser } from '../auth/get-user.decorator';
-import { UserInfo } from '../types/type';
+import { UserInfo, CrewRank } from '../types/type';
 import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('crews')
@@ -47,7 +47,7 @@ export class CrewsController {
   getCrewsRankByCategory(
     @Param('category', ParseIntPipe) category: number,
     @CurrentUser() user: UserInfo,
-  ): Promise<any[]> {
+  ): Promise<CrewRank[]> {
     return this.crewsService.getCrewsRankByCategory(category, user);
   }
 }

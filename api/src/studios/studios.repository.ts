@@ -4,7 +4,7 @@ import {
 } from '@nestjs/common';
 import { Repository, EntityRepository, getCustomRepository } from 'typeorm';
 import { Studio } from './models/studios.entity';
-import { IMessage, UserInfo } from '../types/type';
+import { IMessage, UserInfo, StudioRank } from '../types/type';
 import { CreateStudiosDto } from './dto/create-studios.dto';
 import { UsersRepository } from '../users/users.repository';
 
@@ -27,7 +27,7 @@ export class StudiosRepository extends Repository<Studio> {
     }
   }
 
-  async getStudiosRank(user: UserInfo): Promise<any[]> {
+  async getStudiosRank(user: UserInfo): Promise<StudioRank[]> {
     const usersRepository = getCustomRepository(UsersRepository);
 
     const foundUser = await usersRepository.findOne({ sub: user.sub });
@@ -38,7 +38,7 @@ export class StudiosRepository extends Repository<Studio> {
       .take(5)
       .groupBy('studios.studio')
       .orderBy('cnt', 'DESC')
-      .getRawMany();
+      .getRawMany<StudioRank>();
 
     try {
       return result;
