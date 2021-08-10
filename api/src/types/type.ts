@@ -11,3 +11,20 @@ export interface UserInfo {
   azp: string;
   scope: string;
 }
+
+interface DefaultRank {
+  cnt: string;
+}
+
+export interface CrewRank extends DefaultRank {
+  crews_category: number;
+  crews_name: string;
+}
+
+export interface StudioRank extends DefaultRank {
+  studios_name: string;
+}
+
+export interface CountryRank extends DefaultRank {
+  countries_name: string;
+}

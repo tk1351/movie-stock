@@ -4,7 +4,7 @@ import {
 } from '@nestjs/common';
 import { EntityRepository, Repository, getCustomRepository } from 'typeorm';
 import { Country } from './models/countries.entity';
-import { IMessage, UserInfo } from '../types/type';
+import { IMessage, UserInfo, CountryRank } from '../types/type';
 import { CreateCountriesDto } from './dto/create-countries.dto';
 import { UsersRepository } from '../users/users.repository';
 
@@ -27,7 +27,7 @@ export class CountriesRepository extends Repository<Country> {
     }
   }
 
-  async getCountriesRank(user: UserInfo): Promise<any[]> {
+  async getCountriesRank(user: UserInfo): Promise<CountryRank[]> {
     const usersRepository = getCustomRepository(UsersRepository);
 
     const foundUser = await usersRepository.findOne({ sub: user.sub });
@@ -38,7 +38,7 @@ export class CountriesRepository extends Repository<Country> {
       .take(5)
       .groupBy('countries.country')
       .orderBy('cnt', 'DESC')
-      .getRawMany();
+      .getRawMany<CountryRank>();
 
     try {
       return result;
