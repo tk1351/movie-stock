@@ -10,7 +10,7 @@ const Alert: NextPage = () => {
   const setRemoveAlert = useSetRecoilState<IAlert>(removeAlertState)
 
   const [state, setState] = useState<SnackbarOrigin>({
-    vertical: 'top',
+    vertical: 'bottom',
     horizontal: 'right',
   })
 
