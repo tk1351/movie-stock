@@ -35,7 +35,7 @@ export class StudiosRepository extends Repository<Studio> {
 
     const result = await this.createQueryBuilder('studios')
       .select(['studios.studio', 'COUNT(*) AS cnt'])
-      .take(5)
+      .take(50)
       .groupBy('studios.studio')
       .orderBy('cnt', 'DESC')
       .getRawMany<StudioRank>();
