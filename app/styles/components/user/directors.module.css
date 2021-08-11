@@ -1,0 +1,16 @@
+.tableHead {
+  background-color: rgb(0, 0, 0);
+}
+
+.tableContainer {
+  margin-top: 1rem;
+}
+
+.directorsPageWrapper {
+  width: 50vw;
+  margin: 0 auto;
+}
+
+.link {
+  margin-top: 1rem;
+}
