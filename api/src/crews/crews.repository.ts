@@ -75,7 +75,7 @@ export class CrewsRepository extends Repository<Crew> {
       .select('crews.category')
       .addSelect(['crews.name', 'COUNT(*) AS cnt'])
       .where('crews.category = :category', { category })
-      .take(5)
+      .take(50)
       .groupBy('crews.name')
       .addGroupBy('crews.category')
       .orderBy('cnt', 'DESC')

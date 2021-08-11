@@ -35,7 +35,7 @@ export class CountriesRepository extends Repository<Country> {
 
     const result = await this.createQueryBuilder('countries')
       .select(['countries.country', 'COUNT(*) AS cnt'])
-      .take(5)
+      .take(50)
       .groupBy('countries.country')
       .orderBy('cnt', 'DESC')
       .getRawMany<CountryRank>();

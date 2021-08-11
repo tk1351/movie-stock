@@ -1,0 +1,12 @@
+.tableHead {
+  background-color: rgb(0, 0, 0);
+}
+
+.tableContainer {
+  margin-top: 1rem;
+}
+
+.link:hover {
+  cursor: pointer;
+  opacity: 0.5;
+}
