@@ -1,63 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import {
-  useRecoilValueLoadable,
-  useRecoilState,
-  useRecoilStateLoadable,
-  useSetRecoilState,
-} from 'recoil'
+import { useSetRecoilState } from 'recoil'
 import InfiniteScroll from 'react-infinite-scroller'
 import { Grid, Typography, Box } from '@material-ui/core'
-import { authState } from '../../recoil/atoms/auth'
-import { moviesState, watchedState } from '../../recoil/atoms/movie'
-import { fetchWatchedNumberByCountry } from '../../src/utils/api/movie'
 import MovieItem from './MovieItem'
 import Spinner from '../common/Spinner'
 import { fetchMovies } from '../../recoil/selectors/movie'
 import { IMovie } from '../../types/movie'
-import API, { offset, limit } from '../../src/utils/api/api'
+import API from '../../src/utils/api/api'
 import styles from '../../styles/components/movie/countries.module.css'
-import { setAuthToken } from '../../src/utils/api/setAuthToken'
+import { useFetchMovies } from '../../src/utils/hooks/useFetchMovies'
 
 interface CountriesPageProps {}
-
-const useFetchCountries = () => {
-  const router = useRouter()
-
-  const accessToken = useRecoilValueLoadable(authState)
-  const [movies, setMovies] = useRecoilStateLoadable(moviesState)
-  const [watched, setWatched] = useRecoilState(watchedState)
-
-  const [isLoading, setIsLoading] = useState(true)
-  const country = router.query.country as string
-
-  useEffect(() => {
-    ;(async () => {
-      if (accessToken.state === 'hasValue') {
-        const fetchMoviesByCountry = async () => {
-          setAuthToken(accessToken.contents.accessToken)
-          const url = `${
-            process.env.NEXT_PUBLIC_API_URL
-          }/movies?country=${encodeURI(
-            country
-          )}&offset=${offset}&limit=${limit}`
-          const res = await API.get<IMovie[]>(url)
-          setMovies(res.data)
-          setIsLoading(false)
-        }
-        const watchedNumber = await fetchWatchedNumberByCountry(
-          accessToken.contents.accessToken,
-          country
-        )
-        fetchMoviesByCountry()
-        setWatched(watchedNumber)
-      }
-    })()
-  }, [accessToken])
-
-  return [movies, watched, isLoading] as const
-}
 
 const Countries: NextPage<CountriesPageProps> = () => {
   const router = useRouter()
@@ -69,7 +24,10 @@ const Countries: NextPage<CountriesPageProps> = () => {
 
   const country = router.query.country as string
 
-  const [movies, watched, isLoading] = useFetchCountries()
+  const [movies, watched, isLoading] = useFetchMovies({
+    category: 'country',
+    query: country,
+  })
 
   const loadMore = async () => {
     const limit: number = 30

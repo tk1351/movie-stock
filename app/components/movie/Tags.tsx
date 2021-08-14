@@ -1,62 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import {
-  useRecoilStateLoadable,
-  useRecoilValueLoadable,
-  useRecoilState,
-  useSetRecoilState,
-} from 'recoil'
+import { useSetRecoilState } from 'recoil'
 import InfiniteScroll from 'react-infinite-scroller'
 import { Grid, Typography, Box } from '@material-ui/core'
-import { authState } from '../../recoil/atoms/auth'
-import { moviesState, watchedState } from '../../recoil/atoms/movie'
-import { fetchWatchedNumberByTag } from '../../src/utils/api/movie'
 import MovieItem from './MovieItem'
 import Spinner from '../common/Spinner'
 import { IMovie } from '../../types/movie'
-import API, { offset, limit } from '../../src/utils/api/api'
+import API from '../../src/utils/api/api'
 import { fetchMovies } from '../../recoil/selectors/movie'
 import styles from '../../styles/components/movie/tags.module.css'
-import { setAuthToken } from '../../src/utils/api/setAuthToken'
+import { useFetchMovies } from '../../src/utils/hooks/useFetchMovies'
 
 interface TagsPageProps {}
-
-const useFetchMovies = () => {
-  const router = useRouter()
-
-  const accessToken = useRecoilValueLoadable(authState)
-  const [movies, setMovies] = useRecoilStateLoadable(moviesState)
-  const [watched, setWatched] = useRecoilState(watchedState)
-
-  const [isLoading, setIsLoading] = useState(true)
-
-  const tagText = router.query.tag as string
-
-  useEffect(() => {
-    ;(async () => {
-      if (accessToken.state === 'hasValue') {
-        const fetchMoviesByTag = async () => {
-          setAuthToken(accessToken.contents.accessToken)
-          const url = `${
-            process.env.NEXT_PUBLIC_API_URL
-          }/movies?tag=${encodeURI(tagText)}&offset=${offset}&limit=${limit}`
-          const res = await API.get<IMovie[]>(url)
-          setMovies(res.data)
-          setIsLoading(false)
-        }
-        const watchedNumber = await fetchWatchedNumberByTag(
-          accessToken.contents.accessToken,
-          tagText
-        )
-        fetchMoviesByTag()
-        setWatched(watchedNumber)
-      }
-    })()
-  }, [accessToken])
-
-  return [movies, watched, isLoading] as const
-}
 
 const Tags: NextPage<TagsPageProps> = () => {
   const router = useRouter()
@@ -67,7 +23,10 @@ const Tags: NextPage<TagsPageProps> = () => {
 
   const tagText = router.query.tag as string
 
-  const [movies, watched, isLoading] = useFetchMovies()
+  const [movies, watched, isLoading] = useFetchMovies({
+    category: 'tag',
+    query: tagText,
+  })
 
   const loadMore = async () => {
     const limit: number = 30
