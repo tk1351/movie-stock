@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
-import { useRecoilValueLoadable, useRecoilValue } from 'recoil'
-import { useAuth0 } from '@auth0/auth0-react'
+import { useRecoilValue } from 'recoil'
 import {
   TableBody,
   TableRow,
@@ -12,38 +11,24 @@ import {
   Table,
   TableHead,
 } from '@material-ui/core'
-import { fetchCrewsRankByCategory } from '../../src/utils/api/crew'
-import { CrewsRank } from '../../types/movie'
 import { authState } from '../../recoil/atoms/auth'
 import Spinner from '../common/Spinner'
 import styles from '../../styles/components/user/producers.module.css'
+import { useFetchCrewsRank } from '../../src/utils/hooks/useFetchCrewsRank'
 
 interface ProducersProps {}
 
 const Producers: NextPage<ProducersProps> = () => {
-  const [producersRank, setProducersRank] = useState<CrewsRank[]>([])
-
-  const isAuth = useRecoilValueLoadable(authState)
   const { userInfo } = useRecoilValue(authState)
-  const { isAuthenticated } = useAuth0()
 
-  useEffect(() => {
-    ;(async () => {
-      if (isAuth.state === 'hasValue') {
-        const producers = await fetchCrewsRankByCategory(
-          isAuth.contents.accessToken,
-          3
-        )
-        setProducersRank(producers)
-      }
-    })()
-  }, [isAuth])
+  const [crewsRank, isLoading, isAuth] = useFetchCrewsRank(3)
 
   if (isAuth.state === 'hasValue') {
     return (
       <>
-        {producersRank.length === 0 && <Spinner />}
-        {isAuthenticated && (
+        {isLoading ? (
+          <Spinner />
+        ) : (
           <div className={styles.producersPageWrapper}>
             <TableContainer component={Paper} className={styles.tableContainer}>
               <Table>
@@ -58,7 +43,7 @@ const Producers: NextPage<ProducersProps> = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {producersRank.map((producer, index) => (
+                  {crewsRank.map((producer, index) => (
                     <TableRow key={index}>
                       <TableCell component="th" scope="row">
                         {index + 1}: {producer.crews_name}

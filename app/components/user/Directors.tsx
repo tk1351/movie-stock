@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
-import { useRecoilValueLoadable, useRecoilValue } from 'recoil'
-import { useAuth0 } from '@auth0/auth0-react'
+import { useRecoilValue } from 'recoil'
 import {
   TableBody,
   TableRow,
@@ -12,38 +11,24 @@ import {
   Table,
   TableHead,
 } from '@material-ui/core'
-import { CrewsRank } from '../../types/movie'
 import { authState } from '../../recoil/atoms/auth'
-import { fetchCrewsRankByCategory } from '../../src/utils/api/crew'
 import Spinner from '../common/Spinner'
 import styles from '../../styles/components/user/directors.module.css'
+import { useFetchCrewsRank } from '../../src/utils/hooks/useFetchCrewsRank'
 
 interface DirectorsProps {}
 
 const Directors: NextPage<DirectorsProps> = () => {
-  const [directorsRank, setDirectorsRank] = useState<CrewsRank[]>([])
-
-  const isAuth = useRecoilValueLoadable(authState)
   const { userInfo } = useRecoilValue(authState)
-  const { isAuthenticated } = useAuth0()
 
-  useEffect(() => {
-    ;(async () => {
-      if (isAuth.state === 'hasValue') {
-        const directors = await fetchCrewsRankByCategory(
-          isAuth.contents.accessToken,
-          1
-        )
-        setDirectorsRank(directors)
-      }
-    })()
-  }, [isAuth])
+  const [crewsRank, isLoading, isAuth] = useFetchCrewsRank(1)
 
   if (isAuth.state === 'hasValue') {
     return (
       <>
-        {directorsRank.length === 0 && <Spinner />}
-        {isAuthenticated && (
+        {isLoading ? (
+          <Spinner />
+        ) : (
           <div className={styles.directorsPageWrapper}>
             <TableContainer component={Paper} className={styles.tableContainer}>
               <Table>
@@ -58,7 +43,7 @@ const Directors: NextPage<DirectorsProps> = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {directorsRank.map((director, index) => (
+                  {crewsRank.map((director, index) => (
                     <TableRow key={index}>
                       <TableCell component="th" scope="row">
                         {index + 1}: {director.crews_name}

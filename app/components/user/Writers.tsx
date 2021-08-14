@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
-import { useRecoilValueLoadable, useRecoilValue } from 'recoil'
-import { useAuth0 } from '@auth0/auth0-react'
+import { useRecoilValue } from 'recoil'
 import {
   TableContainer,
   Table,
@@ -12,38 +11,24 @@ import {
   TableBody,
   Paper,
 } from '@material-ui/core'
-import { CrewsRank } from '../../types/movie'
-import { fetchCrewsRankByCategory } from '../../src/utils/api/crew'
 import { authState } from '../../recoil/atoms/auth'
 import Spinner from '../common/Spinner'
 import styles from '../../styles/components/user/writers.module.css'
+import { useFetchCrewsRank } from '../../src/utils/hooks/useFetchCrewsRank'
 
 interface WritersProps {}
 
 const Writers: NextPage<WritersProps> = () => {
-  const [writersRank, setWritersRank] = useState<CrewsRank[]>([])
-
-  const isAuth = useRecoilValueLoadable(authState)
   const { userInfo } = useRecoilValue(authState)
-  const { isAuthenticated } = useAuth0()
 
-  useEffect(() => {
-    ;(async () => {
-      if (isAuth.state === 'hasValue') {
-        const writers = await fetchCrewsRankByCategory(
-          isAuth.contents.accessToken,
-          2
-        )
-        setWritersRank(writers)
-      }
-    })()
-  }, [isAuth])
+  const [crewsRank, isLoading, isAuth] = useFetchCrewsRank(2)
 
   if (isAuth.state === 'hasValue') {
     return (
       <>
-        {writersRank.length === 0 && <Spinner />}
-        {isAuthenticated && (
+        {isLoading ? (
+          <Spinner />
+        ) : (
           <div className={styles.writersPageWrapper}>
             <TableContainer component={Paper} className={styles.tableContainer}>
               <Table>
@@ -58,7 +43,7 @@ const Writers: NextPage<WritersProps> = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {writersRank.map((writers, index) => (
+                  {crewsRank.map((writers, index) => (
                     <TableRow key={index}>
                       <TableCell component="th" scope="row">
                         {index + 1}: {writers.crews_name}

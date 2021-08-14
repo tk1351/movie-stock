@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
-import { useRecoilValueLoadable, useRecoilValue } from 'recoil'
-import { useAuth0 } from '@auth0/auth0-react'
+import { useRecoilValue } from 'recoil'
 import {
   TableBody,
   TableRow,
@@ -12,38 +11,24 @@ import {
   Table,
   TableHead,
 } from '@material-ui/core'
-import { CrewsRank } from '../../types/movie'
 import { authState } from '../../recoil/atoms/auth'
-import { fetchCrewsRankByCategory } from '../../src/utils/api/crew'
 import Spinner from '../common/Spinner'
 import styles from '../../styles/components/user/photographers.module.css'
+import { useFetchCrewsRank } from '../../src/utils/hooks/useFetchCrewsRank'
 
 interface PhotographersProps {}
 
 const Photographers: NextPage<PhotographersProps> = () => {
-  const [photographersRank, setPhotographersRank] = useState<CrewsRank[]>([])
-
-  const isAuth = useRecoilValueLoadable(authState)
   const { userInfo } = useRecoilValue(authState)
-  const { isAuthenticated } = useAuth0()
 
-  useEffect(() => {
-    ;(async () => {
-      if (isAuth.state === 'hasValue') {
-        const photographers = await fetchCrewsRankByCategory(
-          isAuth.contents.accessToken,
-          4
-        )
-        setPhotographersRank(photographers)
-      }
-    })()
-  }, [isAuth])
+  const [crewsRank, isLoading, isAuth] = useFetchCrewsRank(4)
 
   if (isAuth.state === 'hasValue') {
     return (
       <>
-        {photographersRank.length === 0 && <Spinner />}
-        {isAuthenticated && (
+        {isLoading ? (
+          <Spinner />
+        ) : (
           <div className={styles.photographersPageWrapper}>
             <TableContainer component={Paper} className={styles.tableContainer}>
               <Table>
@@ -58,7 +43,7 @@ const Photographers: NextPage<PhotographersProps> = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {photographersRank.map((photographer, index) => (
+                  {crewsRank.map((photographer, index) => (
                     <TableRow key={index}>
                       <TableCell component="th" scope="row">
                         {index + 1}: {photographer.crews_name}
