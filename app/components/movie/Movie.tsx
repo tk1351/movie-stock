@@ -99,15 +99,15 @@ const Movie: NextPage<MoviePageProps> = () => {
 
   const [poster, setPoster] = useState<string | null>(null)
 
-  const fetchMoviePoster = async () => {
-    if (movie.state === 'hasValue') {
-      const title = movie.contents.title
-      const url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ja-JP&query=${title}&page=1&include_adult=true`
+  // const fetchMoviePoster = async () => {
+  //   if (movie.state === 'hasValue') {
+  //     const title = movie.contents.title
+  //     const url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ja-JP&query=${title}&page=1&include_adult=true`
 
-      const fetchData = await axios.get<TMDBSearchResult>(url)
-      console.log('fetch', fetchData.data.result[0])
-    }
-  }
+  //     const fetchData = await axios.get<TMDBSearchResult>(url)
+  //     console.log('fetch', fetchData.data.result[0])
+  //   }
+  // }
 
   return (
     <>
@@ -117,7 +117,7 @@ const Movie: NextPage<MoviePageProps> = () => {
         <Grid container className={styles.movieWrapper}>
           {movie.state === 'hasValue' && (
             <Grid item xs={12}>
-              <Button onClick={() => fetchMoviePoster()}>fetch</Button>
+              {/* <Button onClick={() => fetchMoviePoster()}>fetch</Button> */}
               <Grid container className={styles.header}>
                 <Typography
                   gutterBottom
