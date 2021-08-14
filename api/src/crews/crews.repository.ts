@@ -1,4 +1,9 @@
-import { EntityRepository, Repository, getCustomRepository } from 'typeorm';
+import {
+  EntityRepository,
+  Repository,
+  getCustomRepository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import {
   InternalServerErrorException,
   NotFoundException,
@@ -23,10 +28,13 @@ export class CrewsRepository extends Repository<Crew> {
       .leftJoinAndSelect('crews.movie', 'movie')
       .where(name ? 'crews.name LIKE :name' : 'true', { name: `%${name}%` })
       .andWhere(category ? 'crews.category = :category' : 'true', { category })
+      .distinctOn(['crews.movieId'])
+      .orderBy('crews.movieId')
       .take(limit)
       .skip(offset)
-      .orderBy('movie.release', 'DESC')
       .getMany();
+
+    // select * from (select distinct on ("movieId") * from crews where crews.name = '黒沢清') as hoge left join movies on "movieId" = movies.id order by release desc
 
     try {
       return crews;
@@ -44,16 +52,14 @@ export class CrewsRepository extends Repository<Crew> {
     const foundUser = await usersRepository.findOne({ sub: user.sub });
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
-    const { name, category, offset, limit } = params;
+    const { name, category } = params;
 
     const result = await this.createQueryBuilder('crews')
-      .leftJoinAndSelect('crews.movie', 'movie')
       .where(name ? 'crews.name LIKE :name' : 'true', { name: `%${name}%` })
       .andWhere(category ? 'crews.category = :category' : 'true', { category })
-      .take(limit)
-      .skip(offset)
-      .orderBy('movie.release', 'DESC')
       .getCount();
+
+    // select count(*) from (select distinct on ("movieId") * from crews where crews.name = '黒沢清') as hoge;
 
     try {
       return result;
