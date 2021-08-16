@@ -10,7 +10,9 @@ export class Crew extends DefaultEntity {
   @Column()
   name: string;
 
-  @ManyToOne(() => Movie, (movie) => movie.crews, { eager: false })
+  @ManyToOne(() => Movie, (movie) => movie.crews, {
+    orphanedRowAction: 'delete',
+  })
   @JoinColumn({ name: 'movieId', referencedColumnName: 'id' })
   movie: Movie;
 

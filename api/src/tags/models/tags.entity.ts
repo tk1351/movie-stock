@@ -7,7 +7,9 @@ export class Tag extends DefaultEntity {
   @Column()
   text: string;
 
-  @ManyToOne(() => Movie, (movie) => movie.tags, { eager: false })
+  @ManyToOne(() => Movie, (movie) => movie.tags, {
+    orphanedRowAction: 'delete',
+  })
   @JoinColumn({ name: 'movieId', referencedColumnName: 'id' })
   movie: Movie;
 

@@ -17,22 +17,22 @@ export class Movie extends DefaultEntity {
   @Column()
   time: string;
 
-  @ManyToOne(() => User, (user) => user.movies, { eager: false })
+  @ManyToOne(() => User, (user) => user.movies)
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
 
   @Column()
   userId: number;
 
-  @OneToMany(() => Country, (countries) => countries.movie, { eager: true })
+  @OneToMany(() => Country, (countries) => countries.movie)
   countries: Country[];
 
-  @OneToMany(() => Studio, (studios) => studios.movie, { eager: true })
+  @OneToMany(() => Studio, (studios) => studios.movie)
   studios: Studio[];
 
-  @OneToMany(() => Tag, (tags) => tags.movie, { eager: true })
+  @OneToMany(() => Tag, (tags) => tags.movie)
   tags: Tag[];
 
-  @OneToMany(() => Crew, (crews) => crews.movie, { eager: true })
+  @OneToMany(() => Crew, (crews) => crews.movie)
   crews: Crew[];
 }

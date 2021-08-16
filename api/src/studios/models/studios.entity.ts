@@ -7,7 +7,9 @@ export class Studio extends DefaultEntity {
   @Column()
   studio: string;
 
-  @ManyToOne(() => Movie, (movie) => movie.studios, { eager: false })
+  @ManyToOne(() => Movie, (movie) => movie.studios, {
+    orphanedRowAction: 'delete',
+  })
   @JoinColumn({ name: 'movieId', referencedColumnName: 'id' })
   movie: Movie;
 
