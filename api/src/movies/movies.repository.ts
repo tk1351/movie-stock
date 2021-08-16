@@ -19,7 +19,7 @@ export class MoviesRepository extends Repository<Movie> {
   async getMovies(
     params: GetMoviesQueryParams,
     user: UserInfo,
-  ): Promise<Movie[]> {
+  ): Promise<[Movie[], number]> {
     const usersRepository = getCustomRepository(UsersRepository);
 
     const foundUser = await usersRepository.findOne({ sub: user.sub });
@@ -34,8 +34,6 @@ export class MoviesRepository extends Repository<Movie> {
       .leftJoinAndSelect('movies.crews', 'crews')
       .leftJoinAndSelect('movies.tags', 'tags')
       .where('movies.userId = :userId', { userId: foundUser.id })
-      .take(limit)
-      .skip(offset)
       .andWhere(title ? 'movies.title LIKE :title' : 'true', {
         title: `%${title}%`,
       })
@@ -93,8 +91,10 @@ export class MoviesRepository extends Repository<Movie> {
                 .getQuery()
           : 'true',
       )
+      .take(limit)
+      .skip(offset)
       .orderBy('movies.id', 'DESC')
-      .getMany();
+      .getManyAndCount();
 
     try {
       return movies;
@@ -300,10 +300,6 @@ export class MoviesRepository extends Repository<Movie> {
 
   async deleteMovie(id: number, user: UserInfo): Promise<IMessage> {
     const usersRepository = getCustomRepository(UsersRepository);
-    const countriesRepository = getCustomRepository(CountriesRepository);
-    const studiosRepository = getCustomRepository(StudiosRepository);
-    const crewsRepository = getCustomRepository(CrewsRepository);
-    const tagsRepository = getCustomRepository(TagsRepository);
 
     const movie = await this.getMovieById(id);
     const foundUser = await usersRepository.findOne({ sub: user.sub });
@@ -311,15 +307,12 @@ export class MoviesRepository extends Repository<Movie> {
     if (movie.userId !== foundUser.id)
       throw new UnauthorizedException('権限がありません');
 
-    const countriesIndex = await countriesRepository.getCountriesByMovieId(id);
-    const studiosIndex = await studiosRepository.getStudiosByMovieId(id);
-    const crewsIndex = await crewsRepository.getCrewsByMovieId(id);
-    const tagsIndex = await tagsRepository.getTagsByMovieId(id);
+    movie.countries = [];
+    movie.studios = [];
+    movie.crews = [];
+    movie.tags = [];
 
-    countriesIndex.map((index) => countriesRepository.deleteCountry(index.id));
-    studiosIndex.map((index) => studiosRepository.deleteStudio(index.id));
-    crewsIndex.map((index) => crewsRepository.deleteCrew(index.id));
-    tagsIndex.map((index) => tagsRepository.deleteTag(index.id));
+    await this.save(movie);
 
     const result = await this.delete({ id });
 

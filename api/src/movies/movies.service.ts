@@ -35,7 +35,7 @@ export class MoviesService {
   async getMovies(
     params: GetMoviesQueryParams,
     user: UserInfo,
-  ): Promise<Movie[]> {
+  ): Promise<[Movie[], number]> {
     return await this.moviesRepository.getMovies(params, user);
   }
 
