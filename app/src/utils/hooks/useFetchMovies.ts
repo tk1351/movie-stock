@@ -10,7 +10,7 @@ import API, { offset, limit } from '../api/api'
 import { setAuthToken } from '../api/setAuthToken'
 import { IMovie } from '../../../types/movie'
 
-type UseFetchMovies = {
+interface UseFetchMovies {
   category: 'tag' | 'studio' | 'country'
   query: string
 }
