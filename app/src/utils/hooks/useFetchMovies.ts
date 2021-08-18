@@ -22,52 +22,35 @@ export const useFetchMovies = ({ category, query }: UseFetchMovies) => {
 
   const [isLoading, setIsLoading] = useState(true)
 
-  const fetchMoviesAndLength = async (url: {
-    movieURL: string
-    lengthURL: string
-  }) => {
+  const fetchMoviesAndLength = async (url: string) => {
     setAuthToken(accessToken.contents.accessToken)
-    const movies = await API.get<IMovie[]>(url.movieURL)
-    const length = await API.get<number>(url.lengthURL)
+    const res = await API.get<[IMovie[], number]>(url)
 
-    setMovies(movies.data)
-    setWatched(length.data)
+    const movies = res.data[0]
+    const length = res.data[1]
+
+    setMovies(movies)
+    setWatched(length)
     setIsLoading(false)
   }
 
-  const switchUrl = (
-    category: 'tag' | 'studio' | 'country'
-  ): { movieURL: string; lengthURL: string } => {
+  const switchUrl = (category: 'tag' | 'studio' | 'country') => {
     switch (category) {
       case 'tag':
-        return {
-          movieURL: `${process.env.NEXT_PUBLIC_API_URL}/movies?tag=${encodeURI(
-            query
-          )}&offset=${offset}&limit=${limit}`,
-          lengthURL: `${
-            process.env.NEXT_PUBLIC_API_URL
-          }/movies/length?tag=${encodeURI(query)}`,
-        }
+        return `${process.env.NEXT_PUBLIC_API_URL}/movies?tag=${encodeURI(
+          query
+        )}&offset=${offset}&limit=${limit}`
       case 'studio':
-        return {
-          movieURL: `${
-            process.env.NEXT_PUBLIC_API_URL
-          }/movies?studio=${encodeURI(query)}&offset=${offset}&limit=${limit}`,
-          lengthURL: `${
-            process.env.NEXT_PUBLIC_API_URL
-          }/movies/length?studio=${encodeURI(query)}`,
-        }
+        return `${process.env.NEXT_PUBLIC_API_URL}/movies?studio=${encodeURI(
+          query
+        )}&offset=${offset}&limit=${limit}`
+
       case 'country':
-        return {
-          movieURL: `${
-            process.env.NEXT_PUBLIC_API_URL
-          }/movies?country=${encodeURI(query)}&offset=${offset}&limit=${limit}`,
-          lengthURL: `${
-            process.env.NEXT_PUBLIC_API_URL
-          }/movies/length?country=${encodeURI(query)}`,
-        }
+        return `${process.env.NEXT_PUBLIC_API_URL}/movies?country=${encodeURI(
+          query
+        )}&offset=${offset}&limit=${limit}`
       default:
-        return { movieURL: '', lengthURL: '' }
+        return ''
     }
   }
 

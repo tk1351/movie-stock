@@ -69,7 +69,17 @@ const Studios: NextPage<StudiosProps> = () => {
                   {studiosRank.map((studio, index) => (
                     <TableRow key={index}>
                       <TableCell component="th" scope="row">
-                        {index + 1}: {studio.studios_studio}
+                        {index + 1}:
+                        <Link
+                          href={{
+                            pathname: '/studios',
+                            query: { studio: studio.studios_studio },
+                          }}
+                        >
+                          <a className={styles.cellLink}>
+                            {studio.studios_studio}
+                          </a>
+                        </Link>
                       </TableCell>
                       <TableCell align="right">{studio.cnt}</TableCell>
                     </TableRow>

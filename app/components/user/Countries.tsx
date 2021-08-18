@@ -70,7 +70,18 @@ const Countries: NextPage<CountriesProps> = () => {
                   {countriesRank.map((country, index) => (
                     <TableRow key={index}>
                       <TableCell component="th" scope="row">
-                        {index + 1}: {country.countries_country}
+                        {index + 1}:
+                        <Link
+                          href={{
+                            pathname: '/countries',
+                            query: { country: country.countries_country },
+                          }}
+                        >
+                          <a className={styles.cellLink}>
+                            {' '}
+                            {country.countries_country}
+                          </a>
+                        </Link>
                       </TableCell>
                       <TableCell align="right">{country.cnt}</TableCell>
                     </TableRow>
@@ -79,7 +90,9 @@ const Countries: NextPage<CountriesProps> = () => {
               </Table>
             </TableContainer>
             <div className={styles.link}>
-              <Link href={`/user/${userInfo.id}`}>戻る</Link>
+              <Link href={`/user/${userInfo.id}`}>
+                <a>戻る</a>
+              </Link>
             </div>
           </div>
         )}
