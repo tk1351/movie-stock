@@ -14,3 +14,13 @@ export const fetchMoviesByUser = async (
 
   return { movies, count }
 }
+
+export const fetchMovieById = async (
+  accessToken: string,
+  id: number
+): Promise<IMovie> => {
+  setAuthToken(accessToken)
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/me/${id}`
+  const res = await API.get<IMovie>(url)
+  return res.data
+}
