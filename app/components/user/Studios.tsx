@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
 import { useRecoilValueLoadable, useRecoilValue } from 'recoil'
-import { useAuth0 } from '@auth0/auth0-react'
 import {
   TableBody,
   TableRow,
@@ -14,33 +13,45 @@ import {
 } from '@material-ui/core'
 import { StudiosRank } from '../../types/movie'
 import { authState } from '../../recoil/atoms/auth'
-import { fetchStudiosRank } from '../../src/utils/api/studio'
 import Spinner from '../common/Spinner'
 import styles from '../../styles/components/user/studios.module.css'
+import { setAuthToken } from '../../src/utils/api/setAuthToken'
+import API from '../../src/utils/api/api'
 
 interface StudiosProps {}
 
-const Studios: NextPage<StudiosProps> = () => {
+const useFetchStudiosRank = () => {
   const [studiosRank, setStudiosRank] = useState<StudiosRank[]>([])
-
   const isAuth = useRecoilValueLoadable(authState)
-  const { userInfo } = useRecoilValue(authState)
-  const { isAuthenticated } = useAuth0()
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    ;(async () => {
-      if (isAuth.state === 'hasValue') {
-        const studios = await fetchStudiosRank(isAuth.contents.accessToken)
-        setStudiosRank(studios)
+    if (isAuth.state === 'hasValue') {
+      const fetchStudiosRank = async () => {
+        setAuthToken(isAuth.contents.accessToken)
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/studios/rank`
+        const res = await API.get<StudiosRank[]>(url)
+        setStudiosRank(res.data)
+        setIsLoading(false)
       }
-    })()
+      fetchStudiosRank()
+    }
   }, [isAuth])
+
+  return [studiosRank, isLoading, isAuth] as const
+}
+
+const Studios: NextPage<StudiosProps> = () => {
+  const { userInfo } = useRecoilValue(authState)
+
+  const [studiosRank, isLoading, isAuth] = useFetchStudiosRank()
 
   if (isAuth.state === 'hasValue') {
     return (
       <>
-        {studiosRank.length === 0 && <Spinner />}
-        {isAuthenticated && (
+        {isLoading ? (
+          <Spinner />
+        ) : (
           <div className={styles.studiosPageWrapper}>
             <TableContainer component={Paper} className={styles.tableContainer}>
               <Table>
@@ -58,7 +69,17 @@ const Studios: NextPage<StudiosProps> = () => {
                   {studiosRank.map((studio, index) => (
                     <TableRow key={index}>
                       <TableCell component="th" scope="row">
-                        {index + 1}: {studio.studios_studio}
+                        {index + 1}:
+                        <Link
+                          href={{
+                            pathname: '/studios',
+                            query: { studio: studio.studios_studio },
+                          }}
+                        >
+                          <a className={styles.cellLink}>
+                            {studio.studios_studio}
+                          </a>
+                        </Link>
                       </TableCell>
                       <TableCell align="right">{studio.cnt}</TableCell>
                     </TableRow>

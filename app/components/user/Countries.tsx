@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
 import { useRecoilValueLoadable, useRecoilValue } from 'recoil'
-import { useAuth0 } from '@auth0/auth0-react'
 import {
   TableBody,
   TableRow,
@@ -14,33 +13,46 @@ import {
 } from '@material-ui/core'
 import { CountriesRank } from '../../types/movie'
 import { authState } from '../../recoil/atoms/auth'
-import { fetchCountriesRank } from '../../src/utils/api/country'
 import styles from '../../styles/components/user/countries.module.css'
 import Spinner from '../common/Spinner'
+import { setAuthToken } from '../../src/utils/api/setAuthToken'
+import API from '../../src/utils/api/api'
 
 interface CountriesProps {}
 
-const Countries: NextPage<CountriesProps> = () => {
+const useFetchCountriesRank = () => {
   const [countriesRank, setCountriesRank] = useState<CountriesRank[]>([])
-
   const isAuth = useRecoilValueLoadable(authState)
-  const { userInfo } = useRecoilValue(authState)
-  const { isAuthenticated } = useAuth0()
+
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    ;(async () => {
-      if (isAuth.state === 'hasValue') {
-        const countries = await fetchCountriesRank(isAuth.contents.accessToken)
-        setCountriesRank(countries)
+    if (isAuth.state === 'hasValue') {
+      const fetchCountriesRank = async () => {
+        setAuthToken(isAuth.contents.accessToken)
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/countries/rank`
+        const res = await API.get<CountriesRank[]>(url)
+        setCountriesRank(res.data)
+        setIsLoading(false)
       }
-    })()
+      fetchCountriesRank()
+    }
   }, [isAuth])
+
+  return [countriesRank, isLoading, isAuth] as const
+}
+
+const Countries: NextPage<CountriesProps> = () => {
+  const { userInfo } = useRecoilValue(authState)
+
+  const [countriesRank, isLoading, isAuth] = useFetchCountriesRank()
 
   if (isAuth.state === 'hasValue') {
     return (
       <>
-        {countriesRank.length === 0 && <Spinner />}
-        {isAuthenticated && (
+        {isLoading ? (
+          <Spinner />
+        ) : (
           <div className={styles.countriesPageWrapper}>
             <TableContainer component={Paper} className={styles.tableContainer}>
               <Table>
@@ -58,7 +70,18 @@ const Countries: NextPage<CountriesProps> = () => {
                   {countriesRank.map((country, index) => (
                     <TableRow key={index}>
                       <TableCell component="th" scope="row">
-                        {index + 1}: {country.countries_country}
+                        {index + 1}:
+                        <Link
+                          href={{
+                            pathname: '/countries',
+                            query: { country: country.countries_country },
+                          }}
+                        >
+                          <a className={styles.cellLink}>
+                            {' '}
+                            {country.countries_country}
+                          </a>
+                        </Link>
                       </TableCell>
                       <TableCell align="right">{country.cnt}</TableCell>
                     </TableRow>
@@ -67,7 +90,9 @@ const Countries: NextPage<CountriesProps> = () => {
               </Table>
             </TableContainer>
             <div className={styles.link}>
-              <Link href={`/user/${userInfo.id}`}>戻る</Link>
+              <Link href={`/user/${userInfo.id}`}>
+                <a>戻る</a>
+              </Link>
             </div>
           </div>
         )}

@@ -7,8 +7,8 @@ import Spinner from '../common/Spinner'
 import { authState } from '../../recoil/atoms/auth'
 import styles from '../../styles/components/user/myPage.module.css'
 import { watchedState } from '../../recoil/atoms/movie'
-import { fetchWatchedNumber } from '../../src/utils/api/movie'
 import Activity from './Activity'
+import { fetchMoviesByUser } from '../../src/utils/api/movie'
 
 interface MyPageProps {}
 
@@ -19,12 +19,11 @@ const MyPage: NextPage<MyPageProps> = () => {
   const { isAuthenticated, isLoading } = useAuth0()
 
   useEffect(() => {
+    // userの鑑賞本数を返す
     ;(async () => {
-      if (isAuth.state === 'hasValue' && watched === 0) {
-        const watchedNumber = await fetchWatchedNumber(
-          isAuth.contents.accessToken
-        )
-        setWatched(watchedNumber)
+      if (isAuth.state === 'hasValue' || watched === 0) {
+        const { count } = await fetchMoviesByUser(isAuth.contents.accessToken)
+        setWatched(count)
       }
     })()
   }, [isAuth])

@@ -7,7 +7,9 @@ export class Country extends DefaultEntity {
   @Column()
   country: string;
 
-  @ManyToOne(() => Movie, (movie) => movie.countries, { eager: false })
+  @ManyToOne(() => Movie, (movie) => movie.countries, {
+    orphanedRowAction: 'delete',
+  })
   @JoinColumn({ name: 'movieId', referencedColumnName: 'id' })
   movie: Movie;
 

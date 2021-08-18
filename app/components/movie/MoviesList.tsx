@@ -11,10 +11,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 import { Grid, Typography, Box } from '@material-ui/core'
 import { authState } from '../../recoil/atoms/auth'
 import { moviesState, watchedState } from '../../recoil/atoms/movie'
-import {
-  fetchMoviesByUser,
-  fetchWatchedNumber,
-} from '../../src/utils/api/movie'
+import { fetchMoviesByUser } from '../../src/utils/api/movie'
 import { registerUser } from '../../src/utils/api/user'
 import { RegisterUser } from '../../types/user'
 import MovieItem from './MovieItem'
@@ -23,6 +20,7 @@ import { IMovie } from '../../types/movie'
 import { fetchMovies } from '../../recoil/selectors/movie'
 import Spinner from '../common/Spinner'
 import styles from '../../styles/components/movie/moviesList.module.css'
+import { setAuthToken } from '../../src/utils/api/setAuthToken'
 
 interface MoviesListPageProps {}
 
@@ -40,14 +38,9 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
   useEffect(() => {
     ;(async () => {
       if (accessToken.state === 'hasValue') {
-        const moviesData = await fetchMoviesByUser(
-          accessToken.contents.accessToken
-        )
-        const watchedNumber = await fetchWatchedNumber(
-          accessToken.contents.accessToken
-        )
-        setMovies(moviesData)
-        setWatched(watchedNumber)
+        const res = await fetchMoviesByUser(accessToken.contents.accessToken)
+        setMovies(res.movies)
+        setWatched(res.count)
       }
     })()
   }, [accessToken])
@@ -63,6 +56,8 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
   }
 
   const loadMore = async () => {
+    if (accessToken.state === 'hasValue')
+      setAuthToken(accessToken.contents.accessToken)
     const limit: number = 30
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?offset=${movies.contents.length}&limit=${limit}`

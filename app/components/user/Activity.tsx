@@ -19,6 +19,15 @@ interface ActivityProps {
 const Activity: NextPage<ActivityProps> = ({ watched }) => {
   const rows = [{ index: 1, name: '鑑賞本数', number: watched }]
 
+  const activityRows = [
+    { index: 1, category: '監督', route: 'directors' },
+    { index: 2, category: '脚本', route: 'writers' },
+    { index: 3, category: '製作', route: 'producers' },
+    { index: 4, category: '撮影', route: 'photographers' },
+    { index: 5, category: '製作国', route: 'countries' },
+    { index: 6, category: '制作会社', route: 'studios' },
+  ]
+
   return (
     <>
       <TableContainer component={Paper}>
@@ -35,90 +44,26 @@ const Activity: NextPage<ActivityProps> = ({ watched }) => {
           </TableBody>
         </Table>
       </TableContainer>
-      <TableContainer component={Paper} className={styles.tableContainer}>
-        <Table className={styles.link}>
-          <Link href="/user/directors">
-            <TableHead className={styles.tableHead}>
-              <TableRow>
-                <TableCell component="th" scope="row">
-                  監督
-                </TableCell>
-                <TableCell component="th" align="right"></TableCell>
-              </TableRow>
-            </TableHead>
-          </Link>
-        </Table>
-      </TableContainer>
-      <TableContainer component={Paper} className={styles.tableContainer}>
-        <Table className={styles.link}>
-          <Link href="/user/writers">
-            <TableHead className={styles.tableHead}>
-              <TableRow>
-                <TableCell component="th" scope="row">
-                  脚本
-                </TableCell>
-                <TableCell component="th" align="right"></TableCell>
-              </TableRow>
-            </TableHead>
-          </Link>
-        </Table>
-      </TableContainer>
-      <TableContainer component={Paper} className={styles.tableContainer}>
-        <Table className={styles.link}>
-          <Link href="/user/producers">
-            <TableHead className={styles.tableHead}>
-              <TableRow>
-                <TableCell component="th" scope="row">
-                  製作
-                </TableCell>
-                <TableCell component="th" align="right"></TableCell>
-              </TableRow>
-            </TableHead>
-          </Link>
-        </Table>
-      </TableContainer>
-      <TableContainer component={Paper} className={styles.tableContainer}>
-        <Table className={styles.link}>
-          <Link href="/user/photographers">
-            <TableHead className={styles.tableHead}>
-              <TableRow>
-                <TableCell component="th" scope="row">
-                  撮影
-                </TableCell>
-                <TableCell component="th" align="right"></TableCell>
-              </TableRow>
-            </TableHead>
-          </Link>
-        </Table>
-      </TableContainer>
-      <TableContainer component={Paper} className={styles.tableContainer}>
-        <Table className={styles.link}>
-          <Link href="/user/countries">
-            <TableHead className={styles.tableHead}>
-              <TableRow>
-                <TableCell component="th" scope="row">
-                  製作国
-                </TableCell>
-                <TableCell component="th" align="right"></TableCell>
-              </TableRow>
-            </TableHead>
-          </Link>
-        </Table>
-      </TableContainer>
-      <TableContainer component={Paper} className={styles.tableContainer}>
-        <Table className={styles.link}>
-          <Link href="/user/studios">
-            <TableHead className={styles.tableHead}>
-              <TableRow>
-                <TableCell component="th" scope="row">
-                  制作会社
-                </TableCell>
-                <TableCell component="th" align="right"></TableCell>
-              </TableRow>
-            </TableHead>
-          </Link>
-        </Table>
-      </TableContainer>
+      {activityRows.map((activityRow) => (
+        <TableContainer
+          component={Paper}
+          className={styles.tableContainer}
+          key={activityRow.index}
+        >
+          <Table className={styles.link}>
+            <Link href={`/user/${activityRow.route}`}>
+              <TableHead className={styles.tableHead}>
+                <TableRow>
+                  <TableCell component="th" scope="row">
+                    {activityRow.category}
+                  </TableCell>
+                  <TableCell component="th" align="right"></TableCell>
+                </TableRow>
+              </TableHead>
+            </Link>
+          </Table>
+        </TableContainer>
+      ))}
     </>
   )
 }

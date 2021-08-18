@@ -1,7 +1,7 @@
 import React from 'react'
 import { NextPage } from 'next'
 import Navbar from '../../components/common/Navbar'
-import Photographers from '../../components/user/Photographers'
+import CrewsTable from '../../components/user/CrewsTable'
 
 interface PhotographersPageProps {}
 
@@ -9,7 +9,7 @@ const photographers: NextPage<PhotographersPageProps> = () => {
   return (
     <div>
       <Navbar />
-      <Photographers />
+      <CrewsTable number={4} />
     </div>
   )
 }

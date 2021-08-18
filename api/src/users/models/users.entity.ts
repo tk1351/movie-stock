@@ -20,6 +20,6 @@ export class User extends DefaultEntity {
   @Column()
   role: 'user' | undefined;
 
-  @OneToMany(() => Movie, (movies) => movies.user, { eager: true })
+  @OneToMany(() => Movie, (movies) => movies.user)
   movies: Movie[];
 }

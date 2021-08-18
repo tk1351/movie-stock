@@ -71,7 +71,9 @@ const Navbar: NextPage<NavbarProps> = () => {
       </Menu>
       <Button color="inherit">
         <Link href="/register">
-          <Add />
+          <a>
+            <Add />
+          </a>
         </Link>
       </Button>
     </div>
@@ -91,7 +93,7 @@ const Navbar: NextPage<NavbarProps> = () => {
         <Toolbar className={styles.toolbar}>
           <IconButton edge="start" color="inherit" aria-label="open drawer">
             <Link href="/">
-              <p>CineStock</p>
+              <a>CineStock</a>
             </Link>
           </IconButton>
           {!isLoading && <Links />}

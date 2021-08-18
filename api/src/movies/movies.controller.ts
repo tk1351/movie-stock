@@ -29,7 +29,7 @@ export class MoviesController {
   getMovies(
     @Query(ValidationPipe) params: GetMoviesQueryParams,
     @CurrentUser() user: UserInfo,
-  ): Promise<Movie[]> {
+  ): Promise<[Movie[], number]> {
     return this.moviesService.getMovies(params, user);
   }
 
