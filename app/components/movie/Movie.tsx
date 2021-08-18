@@ -198,7 +198,7 @@ const Movie: NextPage<MoviePageProps> = () => {
           </Dialog>
           <Grid container>
             <Link href="/">
-              <p>戻る</p>
+              <a>戻る</a>
             </Link>
           </Grid>
         </Grid>
