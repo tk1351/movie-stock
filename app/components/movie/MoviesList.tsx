@@ -20,7 +20,6 @@ import { IMovie } from '../../types/movie'
 import { fetchMovies } from '../../recoil/selectors/movie'
 import Spinner from '../common/Spinner'
 import styles from '../../styles/components/movie/moviesList.module.css'
-import { useLoadMore } from '../../src/utils/hooks/useLoadMore'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 
 interface MoviesListPageProps {}
