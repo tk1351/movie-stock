@@ -26,12 +26,10 @@ interface MoviesListPageProps {}
 
 const MoviesList: NextPage<MoviesListPageProps> = () => {
   const accessToken = useRecoilValueLoadable(authState)
-  const [movies, setMovies] = useRecoilStateLoadable(moviesState)
+  const [movies, setMovies] = useRecoilState(moviesState)
   const [watched, setWatched] = useRecoilState(watchedState)
-  const setIsFetched = useSetRecoilState<IMovie[]>(fetchMovies)
 
   const [hasMore, setHasMore] = useState(true)
-  const [isFetching, setIsFetching] = useState(false)
 
   const { user } = useAuth0()
 
@@ -60,18 +58,14 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
       setAuthToken(accessToken.contents.accessToken)
     const limit: number = 30
 
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?offset=${movies.contents.length}&limit=${limit}`
-    const res = await API.get<IMovie[]>(url)
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?offset=${movies.length}&limit=${limit}`
+    const res = await API.get<[IMovie[], number]>(url)
 
-    try {
-      if (watched > movies.contents.length) {
-        setIsFetched([...movies.contents, ...res.data])
-        setIsFetching(true)
-      }
-    } catch (e) {
-      throw new Error(e)
-    } finally {
-      setIsFetching(false)
+    const data = res.data[0]
+
+    setMovies([...movies, ...data])
+
+    if (data.length < 1) {
       setHasMore(false)
     }
   }
@@ -87,19 +81,14 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
           </Typography>
         )}
       </Grid>
-      <InfiniteScroll
-        loadMore={loadMore}
-        hasMore={!isFetching && hasMore}
-        loader={loader}
-      >
+      <InfiniteScroll loadMore={loadMore} hasMore={hasMore} loader={loader}>
         <Grid container spacing={2} className={styles.list}>
           <Grid item xs={2} />
           <Grid item xs={8}>
             <Grid container spacing={10}>
-              {movies.state === 'hasValue' &&
-                movies.contents.map((movie) => (
-                  <MovieItem key={movie.id} movie={movie} />
-                ))}
+              {movies.map((movie) => (
+                <MovieItem key={movie.id} movie={movie} />
+              ))}
             </Grid>
           </Grid>
           <Grid item xs={2} />
