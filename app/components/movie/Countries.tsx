@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useSetRecoilState } from 'recoil'
+import { useSetRecoilState, useRecoilValueLoadable } from 'recoil'
 import InfiniteScroll from 'react-infinite-scroller'
 import { Grid, Typography, Box } from '@material-ui/core'
 import MovieItem from './MovieItem'
@@ -11,16 +11,18 @@ import { IMovie } from '../../types/movie'
 import API from '../../src/utils/api/api'
 import styles from '../../styles/components/movie/countries.module.css'
 import { useFetchMovies } from '../../src/utils/hooks/useFetchMovies'
+import { authState } from '../../recoil/atoms/auth'
+import { setAuthToken } from '../../src/utils/api/setAuthToken'
 
 interface CountriesPageProps {}
 
 const Countries: NextPage<CountriesPageProps> = () => {
   const router = useRouter()
 
+  const accessToken = useRecoilValueLoadable(authState)
   const setIsFetched = useSetRecoilState<IMovie[]>(fetchMovies)
 
   const [hasMore, setHasMore] = useState(true)
-  const [isFetching, setIsFetching] = useState(false)
 
   const country = router.query.country as string
 
@@ -30,22 +32,20 @@ const Countries: NextPage<CountriesPageProps> = () => {
   })
 
   const loadMore = async () => {
+    if (accessToken.state === 'hasValue')
+      setAuthToken(accessToken.contents.accessToken)
     const limit: number = 30
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?country=${encodeURI(
       country
     )}&offset=${movies.contents.length}&limit=${limit}`
-    const res = await API.get<IMovie[]>(url)
+    const res = await API.get<[IMovie[], number]>(url)
 
-    try {
-      if (watched > movies.contents.length) {
-        setIsFetched([...movies.contents, ...res.data])
-        setIsFetching(true)
-      }
-    } catch (e) {
-      throw new Error(e)
-    } finally {
-      setIsFetching(false)
+    const data = res.data[0]
+
+    setIsFetched([...movies.contents, ...data])
+
+    if (data.length < 1) {
       setHasMore(false)
     }
   }
@@ -65,11 +65,7 @@ const Countries: NextPage<CountriesPageProps> = () => {
               </Box>
             </Typography>
           </Grid>
-          <InfiniteScroll
-            loadMore={loadMore}
-            hasMore={!isFetching && hasMore}
-            loader={loader}
-          >
+          <InfiniteScroll loadMore={loadMore} hasMore={hasMore} loader={loader}>
             <Grid container spacing={2} className={styles.list}>
               <Grid item xs={2} />
               <Grid item xs={8}>

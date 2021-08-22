@@ -34,6 +34,8 @@ import { setAuthToken } from '../../src/utils/api/setAuthToken'
 
 interface CrewsPageProps {}
 
+export type CategoryValue = 0 | 1 | 2 | 3 | 4
+
 const useFectchCrews = () => {
   const router = useRouter()
   const accessToken = useRecoilValueLoadable(authState)
@@ -43,6 +45,8 @@ const useFectchCrews = () => {
   const [isLoading, setIsLoading] = useState(true)
 
   const name = router.query.name as string
+
+  console.log('useFetchCrews')
 
   useEffect(() => {
     ;(async () => {
@@ -77,52 +81,75 @@ const Crews: NextPage<CrewsPageProps> = () => {
   const setIsFetched = useSetRecoilState<ICrew[]>(fetchCrewsState)
 
   const [hasMore, setHasMore] = useState(true)
-  const [isFetching, setIsFetching] = useState(false)
+  const [category, setCategory] = useState<CategoryValue>(0)
 
   const name = router.query.name as string
 
   const [crews, watched, isLoading] = useFectchCrews()
 
+  const switchUrl = () => {
+    switch (category) {
+      case 0:
+        return `${process.env.NEXT_PUBLIC_API_URL}/crews?name=${encodeURI(
+          name
+        )}&offset=${crews.length}&limit=${limit}`
+
+      case 1:
+      case 2:
+      case 3:
+      case 4:
+        return `${process.env.NEXT_PUBLIC_API_URL}/crews?name=${encodeURI(
+          name
+        )}&category=${category}&offset=${crews.length}&limit=${limit}`
+
+      default:
+        return ''
+    }
+  }
+
   const loadMore = async () => {
-    const limit: number = 30
+    // category === 0で全体のdataを取得
+    // categoryが1~4の場合は各category毎のAPIを取得
 
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/crews?name=${encodeURI(
-      name
-    )}&offset=${crews.length}&limit=${limit}`
-    const res = await API.get<ICrew[]>(url)
+    if (accessToken.state === 'hasValue')
+      setAuthToken(accessToken.contents.accessToken)
 
-    try {
-      if (watched > crews.length) {
-        setIsFetched([...crews, ...res.data])
-        setIsFetching(true)
-      }
-    } catch (e) {
-      throw new Error(e)
-    } finally {
-      setIsFetching(false)
+    const { data } = await API.get<ICrew[]>(switchUrl())
+
+    setIsFetched([...crews, ...data])
+
+    if (data.length < 1) {
       setHasMore(false)
     }
   }
 
   const loader = <Spinner key={0} />
 
-  const [category, setCategory] = useState('')
-
   const handleChange = async (event: React.ChangeEvent<{ value: unknown }>) => {
-    setCategory(event.target.value as string)
+    const value = event.target.value as CategoryValue
+
+    // MenuItemのvalueをcategoryに渡す
+    setCategory(value)
+
+    // category毎にAPIを叩き、ICrew[]とnumberを取得
     if (accessToken.state === 'hasValue') {
       const data = await fetchCrewsByCategory(
         accessToken.contents.accessToken,
         name,
-        Number(event.target.value)
+        value
       )
       const length = await fetchCrewsLengthByCategory(
         accessToken.contents.accessToken,
         name,
-        Number(event.target.value)
+        value
       )
+
+      // crewStateとwatchStateの中身を書き換える
       setIsFetched([...data])
       setWatched(length)
+
+      // dataが30個以上ある場合にloadMoreが発動するようにする
+      setHasMore(true)
     }
   }
 
@@ -162,11 +189,7 @@ const Crews: NextPage<CrewsPageProps> = () => {
               </Select>
             </FormControl>
           </Grid>
-          <InfiniteScroll
-            loadMore={loadMore}
-            hasMore={!isFetching && hasMore}
-            loader={loader}
-          >
+          <InfiniteScroll loadMore={loadMore} hasMore={hasMore} loader={loader}>
             <Grid container spacing={2} className={styles.list}>
               <Grid item xs={2} />
               <Grid item xs={8}>
