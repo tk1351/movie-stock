@@ -1,6 +1,7 @@
 import { setAuthToken } from './setAuthToken'
 import API, { offset, limit } from '../api/api'
 import { ICrew, CrewsRank } from '../../../types/movie'
+import { CategoryValue } from '../../../components/movie/Crews'
 
 export const fetchCrews = async (
   accessToken: string,
@@ -17,7 +18,7 @@ export const fetchCrews = async (
 export const fetchCrewsByCategory = async (
   accessToken: string,
   name: string,
-  category: number
+  category: CategoryValue
 ): Promise<ICrew[]> => {
   setAuthToken(accessToken)
   const url = `${process.env.NEXT_PUBLIC_API_URL}/crews?name=${encodeURI(
@@ -42,7 +43,7 @@ export const fetchCrewsLength = async (
 export const fetchCrewsLengthByCategory = async (
   accessToken: string,
   name: string,
-  category: number
+  category: CategoryValue
 ): Promise<number> => {
   setAuthToken(accessToken)
   const url = `${process.env.NEXT_PUBLIC_API_URL}/crews/length?name=${encodeURI(
