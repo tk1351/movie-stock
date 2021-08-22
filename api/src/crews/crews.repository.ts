@@ -1,9 +1,4 @@
-import {
-  EntityRepository,
-  Repository,
-  getCustomRepository,
-  SelectQueryBuilder,
-} from 'typeorm';
+import { EntityRepository, Repository, getCustomRepository } from 'typeorm';
 import {
   InternalServerErrorException,
   NotFoundException,
