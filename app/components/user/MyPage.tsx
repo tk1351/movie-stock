@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import { NextPage } from 'next'
+import Head from 'next/head'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useRecoilValueLoadable, useRecoilState } from 'recoil'
 import { Grid, Typography, Box } from '@material-ui/core'
@@ -31,8 +32,12 @@ const MyPage: NextPage<MyPageProps> = () => {
   if (isLoading) return <Spinner />
 
   if (isAuth.state === 'hasValue') {
+    const userName = isAuth.contents.userInfo.name
     return (
       <>
+        <Head>
+          <title>{userName}のページ | CineStock</title>
+        </Head>
         {isAuthenticated && (
           <Grid container className={styles.myPageWrapper}>
             <Grid item xs={12}>

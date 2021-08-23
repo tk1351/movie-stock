@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 import {
   useRecoilStateLoadable,
@@ -114,94 +115,105 @@ const Movie: NextPage<MoviePageProps> = () => {
       {isLoading ? (
         <Spinner />
       ) : (
-        <Grid container className={styles.movieWrapper}>
-          {movie.state === 'hasValue' && (
-            <Grid item xs={12}>
-              {/* <Button onClick={() => fetchMoviePoster()}>fetch</Button> */}
-              <Grid container className={styles.header}>
-                <Typography
-                  gutterBottom
-                  variant="h4"
-                  component="h2"
-                  className={styles.title}
-                >
-                  <Box fontWeight="fontWeightBold">{movie.contents.title}</Box>
+        <>
+          <Head>
+            {movie.state === 'hasValue' && (
+              <title>{movie.contents.title} | CineStock</title>
+            )}
+          </Head>
+          <Grid container className={styles.movieWrapper}>
+            {movie.state === 'hasValue' && (
+              <Grid item xs={12}>
+                {/* <Button onClick={() => fetchMoviePoster()}>fetch</Button> */}
+                <Grid container className={styles.header}>
+                  <Typography
+                    gutterBottom
+                    variant="h4"
+                    component="h2"
+                    className={styles.title}
+                  >
+                    <Box fontWeight="fontWeightBold">
+                      {movie.contents.title}
+                    </Box>
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    color="textPrimary"
+                    component="h4"
+                    className={styles.release}
+                  >
+                    {movie.contents.release}年
+                  </Typography>
+                  {movie.contents.crews.map(
+                    (crew) =>
+                      crew.category === 1 && (
+                        <Typography
+                          variant="h5"
+                          color="textPrimary"
+                          component="h4"
+                          key={crew.id}
+                        >
+                          監督: {crew.name}
+                        </Typography>
+                      )
+                  )}
+                </Grid>
+                <Typography variant="body2" color="textPrimary" component="p">
+                  {movie.contents.time}分
                 </Typography>
-                <Typography
-                  variant="h5"
-                  color="textPrimary"
-                  component="h4"
-                  className={styles.release}
-                >
-                  {movie.contents.release}年
-                </Typography>
-                {movie.contents.crews.map(
-                  (crew) =>
-                    crew.category === 1 && (
-                      <Typography
-                        variant="h5"
-                        color="textPrimary"
-                        component="h4"
-                        key={crew.id}
-                      >
-                        監督: {crew.name}
-                      </Typography>
-                    )
-                )}
+                {movie.contents.tags.map((tag) => (
+                  <div key={tag.id} className={styles.tags}>
+                    <Link
+                      href={{ pathname: '/tags', query: { tag: tag.text } }}
+                    >
+                      <Chip label={tag.text} />
+                    </Link>
+                  </div>
+                ))}
+                <DetailTabs movie={movie.contents} />
               </Grid>
-              <Typography variant="body2" color="textPrimary" component="p">
-                {movie.contents.time}分
-              </Typography>
-              {movie.contents.tags.map((tag) => (
-                <div key={tag.id} className={styles.tags}>
-                  <Link href={{ pathname: '/tags', query: { tag: tag.text } }}>
-                    <Chip label={tag.text} />
-                  </Link>
+            )}
+            <Grid container>
+              <div className={styles.buttonWrapper}>
+                <div className={styles.editButton}>
+                  <Button size="small" color="primary" variant="contained">
+                    <Link href={`/update/${movie.contents.id}`}>
+                      <Edit />
+                    </Link>
+                  </Button>
                 </div>
-              ))}
-              <DetailTabs movie={movie.contents} />
-            </Grid>
-          )}
-          <Grid container>
-            <div className={styles.buttonWrapper}>
-              <div className={styles.editButton}>
-                <Button size="small" color="primary" variant="contained">
-                  <Link href={`/update/${movie.contents.id}`}>
-                    <Edit />
-                  </Link>
+                <Button
+                  size="small"
+                  color="secondary"
+                  variant="contained"
+                  type="button"
+                  onClick={handleClickOpen}
+                >
+                  <Delete />
                 </Button>
               </div>
-              <Button
-                size="small"
-                color="secondary"
-                variant="contained"
-                type="button"
-                onClick={handleClickOpen}
-              >
-                <Delete />
-              </Button>
-            </div>
+            </Grid>
+            <Dialog open={open} onClose={handleClose}>
+              <DialogTitle>{movie.contents.title}を削除しますか？</DialogTitle>
+              <DialogActions>
+                <Button
+                  color="secondary"
+                  onClick={() => deleteMovie(movie.contents.id)}
+                >
+                  削除
+                </Button>
+                <Button color="primary" onClick={handleClose}>
+                  キャンセル
+                </Button>
+              </DialogActions>
+            </Dialog>
+            <Grid container>
+              <Link href="/">
+                <a>戻る</a>
+              </Link>
+            </Grid>
           </Grid>
-          <Dialog open={open} onClose={handleClose}>
-            <DialogTitle>{movie.contents.title}を削除しますか？</DialogTitle>
-            <DialogActions>
-              <Button
-                color="secondary"
-                onClick={() => deleteMovie(movie.contents.id)}
-              >
-                削除
-              </Button>
-              <Button color="primary" onClick={handleClose}>
-                キャンセル
-              </Button>
-            </DialogActions>
-          </Dialog>
-          <Grid container>
-            <Link href="/">
-              <a>戻る</a>
-            </Link>
-          </Grid>
-        </Grid>
+        </>
       )}
     </>
   )

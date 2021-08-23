@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
+import Head from 'next/head'
 import { useRecoilValueLoadable, useRecoilValue } from 'recoil'
 import {
   TableBody,
@@ -48,53 +49,62 @@ const Countries: NextPage<CountriesProps> = () => {
   const [countriesRank, isLoading, isAuth] = useFetchCountriesRank()
 
   if (isAuth.state === 'hasValue') {
+    const userName = isAuth.contents.userInfo.name
     return (
       <>
         {isLoading ? (
           <Spinner />
         ) : (
-          <div className={styles.countriesPageWrapper}>
-            <TableContainer component={Paper} className={styles.tableContainer}>
-              <Table>
-                <TableHead className={styles.tableHead}>
-                  <TableRow>
-                    <TableCell component="th" scope="row">
-                      製作国
-                    </TableCell>
-                    <TableCell component="th" align="right">
-                      本
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {countriesRank.map((country, index) => (
-                    <TableRow key={index}>
+          <>
+            <Head>
+              <title>{userName}の鑑賞ランキング（製作国） | CineStock</title>
+            </Head>
+            <div className={styles.countriesPageWrapper}>
+              <TableContainer
+                component={Paper}
+                className={styles.tableContainer}
+              >
+                <Table>
+                  <TableHead className={styles.tableHead}>
+                    <TableRow>
                       <TableCell component="th" scope="row">
-                        {index + 1}:
-                        <Link
-                          href={{
-                            pathname: '/countries',
-                            query: { country: country.countries_country },
-                          }}
-                        >
-                          <a className={styles.cellLink}>
-                            {' '}
-                            {country.countries_country}
-                          </a>
-                        </Link>
+                        製作国
                       </TableCell>
-                      <TableCell align="right">{country.cnt}</TableCell>
+                      <TableCell component="th" align="right">
+                        本
+                      </TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <div className={styles.link}>
-              <Link href={`/user/${userInfo.id}`}>
-                <a>戻る</a>
-              </Link>
+                  </TableHead>
+                  <TableBody>
+                    {countriesRank.map((country, index) => (
+                      <TableRow key={index}>
+                        <TableCell component="th" scope="row">
+                          {index + 1}:
+                          <Link
+                            href={{
+                              pathname: '/countries',
+                              query: { country: country.countries_country },
+                            }}
+                          >
+                            <a className={styles.cellLink}>
+                              {' '}
+                              {country.countries_country}
+                            </a>
+                          </Link>
+                        </TableCell>
+                        <TableCell align="right">{country.cnt}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <div className={styles.link}>
+                <Link href={`/user/${userInfo.id}`}>
+                  <a>戻る</a>
+                </Link>
+              </div>
             </div>
-          </div>
+          </>
         )}
       </>
     )
