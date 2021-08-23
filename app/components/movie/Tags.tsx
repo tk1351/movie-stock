@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { NextPage } from 'next'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useSetRecoilState, useRecoilValueLoadable } from 'recoil'
 import InfiniteScroll from 'react-infinite-scroller'
@@ -58,6 +59,9 @@ const Tags: NextPage<TagsPageProps> = () => {
         <Spinner />
       ) : (
         <>
+          <Head>
+            <title>{tagText}の検索結果 | CineStock</title>
+          </Head>
           <Grid container justifyContent="center" className={styles.header}>
             <Typography gutterBottom variant="h4" component="h2">
               <Box fontWeight="fontWeightBold">

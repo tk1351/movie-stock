@@ -2,6 +2,7 @@ import React from 'react'
 import { NextPage } from 'next'
 import { useRecoilValue } from 'recoil'
 import Link from 'next/link'
+import Head from 'next/head'
 import {
   TableContainer,
   Paper,
@@ -41,50 +42,59 @@ const CrewsTable: NextPage<CrewsTableProps> = ({ number }) => {
   }
 
   if (isAuth.state === 'hasValue') {
+    const userName = isAuth.contents.userInfo.name
     return (
       <>
         {isLoading ? (
           <Spinner />
         ) : (
-          <div className={styles.crewsTableWrapper}>
-            <TableContainer component={Paper} className={styles.tableContainer}>
-              <Table>
-                <TableHead className={styles.tableHead}>
-                  <TableRow>
-                    <TableCell component="th" scope="row">
-                      {occupation(number)}
-                    </TableCell>
-                    <TableCell component="th" align="right">
-                      本
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {crewsRank.map((crew: CrewsRank, index: number) => (
-                    <TableRow key={index}>
+          <>
+            <Head>
+              <title>{userName}の鑑賞ランキング（スタッフ） | CineStock</title>
+            </Head>
+            <div className={styles.crewsTableWrapper}>
+              <TableContainer
+                component={Paper}
+                className={styles.tableContainer}
+              >
+                <Table>
+                  <TableHead className={styles.tableHead}>
+                    <TableRow>
                       <TableCell component="th" scope="row">
-                        {index + 1}:
-                        <Link
-                          href={{
-                            pathname: '/crews',
-                            query: { name: crew.crews_name },
-                          }}
-                        >
-                          <a className={styles.cellLink}>{crew.crews_name}</a>
-                        </Link>
+                        {occupation(number)}
                       </TableCell>
-                      <TableCell align="right">{crew.cnt}</TableCell>
+                      <TableCell component="th" align="right">
+                        本
+                      </TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <div className={styles.link}>
-              <Link href={`/user/${userInfo.id}`}>
-                <a>戻る</a>
-              </Link>
+                  </TableHead>
+                  <TableBody>
+                    {crewsRank.map((crew: CrewsRank, index: number) => (
+                      <TableRow key={index}>
+                        <TableCell component="th" scope="row">
+                          {index + 1}:
+                          <Link
+                            href={{
+                              pathname: '/crews',
+                              query: { name: crew.crews_name },
+                            }}
+                          >
+                            <a className={styles.cellLink}>{crew.crews_name}</a>
+                          </Link>
+                        </TableCell>
+                        <TableCell align="right">{crew.cnt}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <div className={styles.link}>
+                <Link href={`/user/${userInfo.id}`}>
+                  <a>戻る</a>
+                </Link>
+              </div>
             </div>
-          </div>
+          </>
         )}
       </>
     )

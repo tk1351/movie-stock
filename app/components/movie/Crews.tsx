@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { NextPage } from 'next'
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 import {
   useRecoilValueLoadable,
@@ -163,6 +164,9 @@ const Crews: NextPage<CrewsPageProps> = () => {
         <Spinner />
       ) : (
         <>
+          <Head>
+            <title>{name}の検索結果 | CineStock</title>
+          </Head>
           <Grid container justifyContent="center" className={styles.header}>
             <Typography gutterBottom variant="h4" component="h2">
               <Box fontWeight="fontWeightBold">

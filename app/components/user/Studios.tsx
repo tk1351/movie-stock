@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
+import Head from 'next/head'
 import { useRecoilValueLoadable, useRecoilValue } from 'recoil'
 import {
   TableBody,
@@ -47,50 +48,59 @@ const Studios: NextPage<StudiosProps> = () => {
   const [studiosRank, isLoading, isAuth] = useFetchStudiosRank()
 
   if (isAuth.state === 'hasValue') {
+    const userName = isAuth.contents.userInfo.name
     return (
       <>
         {isLoading ? (
           <Spinner />
         ) : (
-          <div className={styles.studiosPageWrapper}>
-            <TableContainer component={Paper} className={styles.tableContainer}>
-              <Table>
-                <TableHead className={styles.tableHead}>
-                  <TableRow>
-                    <TableCell component="th" scope="row">
-                      制作会社
-                    </TableCell>
-                    <TableCell component="th" align="right">
-                      本
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {studiosRank.map((studio, index) => (
-                    <TableRow key={index}>
+          <>
+            <Head>
+              <title>{userName}の鑑賞ランキング（制作会社） | CineStock</title>
+            </Head>
+            <div className={styles.studiosPageWrapper}>
+              <TableContainer
+                component={Paper}
+                className={styles.tableContainer}
+              >
+                <Table>
+                  <TableHead className={styles.tableHead}>
+                    <TableRow>
                       <TableCell component="th" scope="row">
-                        {index + 1}:
-                        <Link
-                          href={{
-                            pathname: '/studios',
-                            query: { studio: studio.studios_studio },
-                          }}
-                        >
-                          <a className={styles.cellLink}>
-                            {studio.studios_studio}
-                          </a>
-                        </Link>
+                        制作会社
                       </TableCell>
-                      <TableCell align="right">{studio.cnt}</TableCell>
+                      <TableCell component="th" align="right">
+                        本
+                      </TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <div className={styles.link}>
-              <Link href={`/user/${userInfo.id}`}>戻る</Link>
+                  </TableHead>
+                  <TableBody>
+                    {studiosRank.map((studio, index) => (
+                      <TableRow key={index}>
+                        <TableCell component="th" scope="row">
+                          {index + 1}:
+                          <Link
+                            href={{
+                              pathname: '/studios',
+                              query: { studio: studio.studios_studio },
+                            }}
+                          >
+                            <a className={styles.cellLink}>
+                              {studio.studios_studio}
+                            </a>
+                          </Link>
+                        </TableCell>
+                        <TableCell align="right">{studio.cnt}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <div className={styles.link}>
+                <Link href={`/user/${userInfo.id}`}>戻る</Link>
+              </div>
             </div>
-          </div>
+          </>
         )}
       </>
     )
