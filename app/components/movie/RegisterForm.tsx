@@ -21,24 +21,26 @@ import {
   Box,
 } from '@material-ui/core'
 import { Add, Remove } from '@material-ui/icons'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useSetRecoilState, useRecoilValueLoadable } from 'recoil'
 import { useRouter } from 'next/router'
 import { IMovieInputs } from '../../types/movie'
 import { authState } from '../../recoil/atoms/auth'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import API from '../../src/utils/api/api'
-import { IMessage } from '../../types/defaultType'
 import { movieValidationSchema } from '../../src/utils/movieValidation'
 import { IAlert } from '../../recoil/atoms/alert'
 import { setAlertState } from '../../recoil/selectors/alert'
 import styles from '../../styles/components/movie/registerForm.module.css'
+import AutoCompleteForm from '../common/AutoCompleteForm'
+import { IMessage } from '../../types/defaultType'
+import { useAutoCompleteHandleChange } from '../../src/utils/hooks/useAutoCompleteHandleChange'
 
 interface RegisterFormPageProps {}
 
 const RegisterForm: NextPage<RegisterFormPageProps> = () => {
   const router = useRouter()
 
-  const { accessToken } = useRecoilValue(authState)
+  const accessToken = useRecoilValueLoadable(authState)
   const setIsAlert = useSetRecoilState<IAlert>(setAlertState)
 
   const defaultValues: IMovieInputs = {
@@ -92,7 +94,8 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
   const onSubmit: SubmitHandler<IMovieInputs> = async (data) => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/register`
     try {
-      setAuthToken(accessToken)
+      if (accessToken.state === 'hasValue')
+        setAuthToken(accessToken.contents.accessToken)
       const res = await API.post<IMessage>(url, data)
       setIsAlert({
         msg: res.data.message,
@@ -104,6 +107,13 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
       throw new Error(e)
     }
   }
+
+  const {
+    filterCrews,
+    filterStudios,
+    crewsHandleChange,
+    studiosHandleChange,
+  } = useAutoCompleteHandleChange()
 
   return (
     <Container component="main" maxWidth={false} className={styles.container}>
@@ -231,24 +241,32 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                   name={`studios.${index}.studio`}
                   control={control}
                   defaultValue={field.studio ? field.studio : ''}
-                  render={({
-                    field: { onChange, ref },
-                    formState: { errors },
-                  }) => (
-                    <TextField
-                      label={'制作会社'}
-                      id={`studios.${index}.studio`}
-                      type="text"
-                      name={`studios.${index}.studio`}
-                      variant="outlined"
-                      onChange={onChange}
-                      inputRef={ref}
-                      defaultValue={field.studio}
-                      className={styles.textField}
-                      helperText={
-                        errors.studios && errors.studios[index]?.studio?.message
-                      }
-                      error={Boolean(errors.studios && errors.studios[index])}
+                  render={({ field: { onChange }, formState: { errors } }) => (
+                    <AutoCompleteForm
+                      autocomplete={{
+                        onChange: (_: any, data: any) => onChange(data),
+                        id: `studios.${index}.studio`,
+                        options: filterStudios.map(
+                          (option) => option.studios_studio
+                        ),
+                      }}
+                      textField={{
+                        label: '制作会社',
+                        id: `studios.${index}.studio`,
+                        type: 'text',
+                        name: `studios.${index}.studio`,
+                        defaultValue: field.studio,
+                        variant: 'outlined',
+                        className: styles.textField,
+                        helperText:
+                          errors.studios &&
+                          errors.studios[index]?.studio?.message,
+                        error: Boolean(errors.studios && errors.studios[index]),
+                        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                          onChange(e.target.value)
+                          studiosHandleChange('studios', e.target.value)
+                        },
+                      }}
                     />
                   )}
                 />
@@ -277,7 +295,6 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
         >
           <Add />
         </Button>
-
         <ul>
           {crewFields.map((field, index) => (
             <li key={field.id}>
@@ -316,24 +333,29 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                   name={`crews.${index}.name`}
                   control={control}
                   defaultValue={field.name ? field.name : ''}
-                  render={({
-                    field: { onChange, ref },
-                    formState: { errors },
-                  }) => (
-                    <TextField
-                      label={'名前'}
-                      id={`crews[${index}].name`}
-                      type="text"
-                      name={`crews[${index}].name`}
-                      variant="outlined"
-                      onChange={onChange}
-                      inputRef={ref}
-                      defaultValue={field.name}
-                      className={styles.crewTextField}
-                      helperText={
-                        errors.crews && errors.crews[index]?.name?.message
-                      }
-                      error={Boolean(errors.crews && errors.crews[index])}
+                  render={({ field: { onChange }, formState: { errors } }) => (
+                    <AutoCompleteForm
+                      autocomplete={{
+                        onChange: (_: any, data: any) => onChange(data),
+                        id: `crews.${index}.name`,
+                        options: filterCrews.map((option) => option.crews_name),
+                      }}
+                      textField={{
+                        label: '名前',
+                        id: `crews[${index}].name`,
+                        type: 'text',
+                        name: `crews[${index}].name`,
+                        defaultValue: field.name,
+                        className: styles.crewTextField,
+                        variant: 'outlined',
+                        helperText:
+                          errors.crews && errors.crews[index]?.name?.message,
+                        error: Boolean(errors.crews && errors.crews[index]),
+                        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                          onChange(e.target.value)
+                          crewsHandleChange('crews', e.target.value)
+                        },
+                      }}
                     />
                   )}
                 />
