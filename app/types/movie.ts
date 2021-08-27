@@ -79,6 +79,11 @@ export interface IUpdateMovieInputs {
   }[]
 }
 
+export interface CrewsFilter {
+  cnt: string
+  crews_name: string
+}
+
 export interface CrewsRank {
   cnt: string
   crews_name: string

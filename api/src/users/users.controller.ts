@@ -3,8 +3,6 @@ import { User } from './models/users.entity';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { IMessage } from '../types/type';
-import { AuthCredentialsDto } from './dto/auth-credentials.dto';
-import { Token } from './types/types';
 
 @Controller('users')
 export class UsersController {
@@ -20,12 +18,5 @@ export class UsersController {
     @Body(ValidationPipe) createUserDto: CreateUserDto,
   ): Promise<IMessage> {
     return this.usersService.createUser(createUserDto);
-  }
-
-  @Post('/login')
-  login(
-    @Body(ValidationPipe) authCredentialsDto: AuthCredentialsDto,
-  ): Promise<Token> {
-    return this.usersService.login(authCredentialsDto);
   }
 }

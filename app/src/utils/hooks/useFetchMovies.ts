@@ -40,6 +40,7 @@ export const useFetchMovies = ({ category, query }: UseFetchMovies) => {
         return `${process.env.NEXT_PUBLIC_API_URL}/movies?tag=${encodeURI(
           query
         )}&offset=${offset}&limit=${limit}`
+
       case 'studio':
         return `${process.env.NEXT_PUBLIC_API_URL}/movies?studio=${encodeURI(
           query
