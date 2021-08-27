@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { Crew } from './models/crews.entity';
 import { CreateCrewsDto } from './dto/create-crews.dto';
-import { IMessage, UserInfo, CrewRank } from '../types/type';
+import { IMessage, UserInfo, CrewRank, CrewFilter } from '../types/type';
 import { GetCrewsQueryParams } from './dto/get-crews-query-params.dto';
 import { UsersRepository } from '../users/users.repository';
 
@@ -59,6 +59,32 @@ export class CrewsRepository extends Repository<Crew> {
     try {
       return result;
     } catch (error) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async getFilteredCrews(
+    params: GetCrewsQueryParams,
+    user: UserInfo,
+  ): Promise<CrewFilter[]> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const { name, limit } = params;
+
+    const crews = await this.createQueryBuilder('crews')
+      .select(['crews.name', 'COUNT(*) AS cnt'])
+      .where(name ? 'crews.name LIKE :name' : 'true', { name: `%${name}%` })
+      .take(limit)
+      .groupBy('crews.name')
+      .orderBy('cnt', 'DESC')
+      .getRawMany<CrewFilter>();
+
+    try {
+      return crews;
+    } catch (e) {
       throw new InternalServerErrorException();
     }
   }

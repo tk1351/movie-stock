@@ -4,6 +4,7 @@ import { StudiosRepository } from './studios.repository';
 import { IMessage, UserInfo, StudioRank } from '../types/type';
 import { CreateStudioDtos } from './dto/create-studio.dtos';
 import { Studio } from './models/studios.entity';
+import { GetStudiosQueryParams } from './dto/get-studios-query-params.dto';
 
 @Injectable()
 export class StudiosService {
@@ -18,6 +19,13 @@ export class StudiosService {
 
   async getStudiosRank(user: UserInfo): Promise<StudioRank[]> {
     return await this.studiosRepository.getStudiosRank(user);
+  }
+
+  async getFilteredStudios(
+    params: GetStudiosQueryParams,
+    user: UserInfo,
+  ): Promise<StudioRank[]> {
+    return await this.studiosRepository.getFilteredStudios(params, user);
   }
 
   async createStudios(createStudioDtos: CreateStudioDtos[]): Promise<Studio[]> {

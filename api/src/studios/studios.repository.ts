@@ -7,6 +7,7 @@ import { Studio } from './models/studios.entity';
 import { IMessage, UserInfo, StudioRank } from '../types/type';
 import { CreateStudiosDto } from './dto/create-studios.dto';
 import { UsersRepository } from '../users/users.repository';
+import { GetStudiosQueryParams } from './dto/get-studios-query-params.dto';
 
 @EntityRepository(Studio)
 export class StudiosRepository extends Repository<Studio> {
@@ -42,6 +43,34 @@ export class StudiosRepository extends Repository<Studio> {
 
     try {
       return result;
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async getFilteredStudios(
+    params: GetStudiosQueryParams,
+    user: UserInfo,
+  ): Promise<StudioRank[]> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const { studio, limit } = params;
+
+    const studios = await this.createQueryBuilder('studios')
+      .select(['studios.studio', 'COUNT(*) AS cnt'])
+      .where(studio ? 'studios.studio LIKE :studio' : 'true', {
+        studio: `%${studio}%`,
+      })
+      .take(limit)
+      .groupBy('studios.studio')
+      .orderBy('cnt', 'DESC')
+      .getRawMany<StudioRank>();
+
+    try {
+      return studios;
     } catch (e) {
       throw new InternalServerErrorException();
     }

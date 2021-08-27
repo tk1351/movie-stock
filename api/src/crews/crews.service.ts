@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Crew } from './models/crews.entity';
 import { CrewsRepository } from './crews.repository';
 import { GetCrewsQueryParams } from './dto/get-crews-query-params.dto';
-import { UserInfo, IMessage, CrewRank } from '../types/type';
+import { UserInfo, IMessage, CrewRank, CrewFilter } from '../types/type';
 import { CreateCrewDtos } from './dto/create-crew.dtos';
 
 @Injectable()
@@ -22,6 +22,13 @@ export class CrewsService {
     user: UserInfo,
   ): Promise<number> {
     return await this.crewsRepository.getCrewsLength(params, user);
+  }
+
+  async getFilteredCrews(
+    params: GetCrewsQueryParams,
+    user: UserInfo,
+  ): Promise<CrewFilter[]> {
+    return await this.crewsRepository.getFilteredCrews(params, user);
   }
 
   async getCrewsByMovieId(movieId: number): Promise<Crew[]> {

@@ -10,7 +10,7 @@ import { CrewsService } from './crews.service';
 import { Crew } from './models/crews.entity';
 import { GetCrewsQueryParams } from './dto/get-crews-query-params.dto';
 import { CurrentUser } from '../auth/get-user.decorator';
-import { UserInfo, CrewRank } from '../types/type';
+import { UserInfo, CrewRank, CrewFilter } from '../types/type';
 import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('crews')
@@ -33,6 +33,15 @@ export class CrewsController {
     @CurrentUser() user: UserInfo,
   ): Promise<number> {
     return this.crewsService.getCrewsLength(params, user);
+  }
+
+  @Get('/filter')
+  @UseGuards(AuthGuard)
+  getFilteredCrews(
+    @Query() params: GetCrewsQueryParams,
+    @CurrentUser() user: UserInfo,
+  ): Promise<CrewFilter[]> {
+    return this.crewsService.getFilteredCrews(params, user);
   }
 
   @Get('/movie/:movieId')
