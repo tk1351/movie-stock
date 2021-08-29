@@ -60,25 +60,6 @@ export interface IMovieInputs {
   }[]
 }
 
-export interface IUpdateMovieInputs {
-  title: string
-  release: string
-  time: string
-  countries: {
-    country: string
-  }[]
-  studios: {
-    studio: string
-  }[]
-  crews: {
-    category: number
-    name: string
-  }[]
-  tags: {
-    text: string
-  }[]
-}
-
 export interface CrewsFilter {
   cnt: string
   crews_name: string
