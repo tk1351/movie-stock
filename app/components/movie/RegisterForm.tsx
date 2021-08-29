@@ -34,6 +34,7 @@ import styles from '../../styles/components/movie/registerForm.module.css'
 import AutoCompleteForm from '../common/AutoCompleteForm'
 import { IMessage } from '../../types/defaultType'
 import { useAutoCompleteHandleChange } from '../../src/utils/hooks/useAutoCompleteHandleChange'
+import { removeFrontRearSpace } from '../../src/utils/movie'
 
 interface RegisterFormPageProps {}
 
@@ -93,10 +94,13 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
 
   const onSubmit: SubmitHandler<IMovieInputs> = async (data) => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/register`
+
+    const newData: IMovieInputs = removeFrontRearSpace(data)
+
     try {
       if (accessToken.state === 'hasValue')
         setAuthToken(accessToken.contents.accessToken)
-      const res = await API.post<IMessage>(url, data)
+      const res = await API.post<IMessage>(url, newData)
       setIsAlert({
         msg: res.data.message,
         alertType: 'succeeded',

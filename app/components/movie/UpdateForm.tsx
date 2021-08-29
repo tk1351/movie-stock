@@ -26,7 +26,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { movieState } from '../../recoil/atoms/movie'
 import { Auth, authState } from '../../recoil/atoms/auth'
 import { fetchMovieById } from '../../src/utils/api/movie'
-import { IMovie, IUpdateMovieInputs } from '../../types/movie'
+import { IMovie, IMovieInputs } from '../../types/movie'
 import API from '../../src/utils/api/api'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import { IMessage } from '../../types/defaultType'
@@ -34,6 +34,7 @@ import { IAlert } from '../../recoil/atoms/alert'
 import { setAlertState } from '../../recoil/selectors/alert'
 import { movieValidationSchema } from '../../src/utils/movieValidation'
 import styles from '../../styles/components/movie/updateForm.module.css'
+import { removeFrontRearSpace } from '../../src/utils/movie'
 
 interface UpdateFormPageProps {}
 
@@ -58,7 +59,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
     })()
   }, [accessToken])
 
-  const defaultValues: IUpdateMovieInputs = {
+  const defaultValues: IMovieInputs = {
     title: movie.contents.title,
     release: movie.contents.release,
     time: movie.contents.time,
@@ -68,7 +69,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
     tags: movie.contents.tags,
   }
 
-  const { control, handleSubmit } = useForm<IUpdateMovieInputs>({
+  const { control, handleSubmit } = useForm<IMovieInputs>({
     defaultValues,
     resolver: yupResolver(movieValidationSchema),
   })
@@ -77,7 +78,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
     fields: countryFields,
     append: countryAppend,
     remove: countryRemove,
-  } = useFieldArray<IUpdateMovieInputs, any, any>({
+  } = useFieldArray<IMovieInputs, any, any>({
     control,
     name: 'countries',
   })
@@ -86,35 +87,38 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
     fields: studioFields,
     append: studioAppend,
     remove: studioRemove,
-  } = useFieldArray<IUpdateMovieInputs, any, any>({ control, name: 'studios' })
+  } = useFieldArray<IMovieInputs, any, any>({ control, name: 'studios' })
 
   const {
     fields: crewFields,
     append: crewAppend,
     remove: crewRemove,
-  } = useFieldArray<IUpdateMovieInputs, any, any>({ control, name: 'crews' })
+  } = useFieldArray<IMovieInputs, any, any>({ control, name: 'crews' })
 
   const {
     fields: tagFields,
     append: tagAppend,
     remove: tagRemove,
-  } = useFieldArray<IUpdateMovieInputs, any, any>({ control, name: 'tags' })
+  } = useFieldArray<IMovieInputs, any, any>({ control, name: 'tags' })
 
-  const onSubmit: SubmitHandler<IUpdateMovieInputs> = async (data) => {
-    if (accessToken.state === 'hasValue') {
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/update/${movie.contents.id}`
-      try {
+  const onSubmit: SubmitHandler<IMovieInputs> = async (data) => {
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/update/${movie.contents.id}`
+
+    const newData: IMovieInputs = removeFrontRearSpace(data)
+
+    try {
+      if (accessToken.state === 'hasValue') {
         setAuthToken(accessToken.contents.accessToken)
-        const res = await API.patch<IMessage>(url, data)
+        const res = await API.patch<IMessage>(url, newData)
         setIsAlert({
           msg: res.data.message,
           alertType: 'succeeded',
           open: true,
         })
         await router.push(`/movie/${movie.contents.id}`)
-      } catch (e) {
-        throw new Error(e)
       }
+    } catch (e) {
+      throw new Error(e)
     }
   }
 
