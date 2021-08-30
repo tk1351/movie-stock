@@ -16,6 +16,7 @@ import { useRecoilValue } from 'recoil'
 import { useRouter } from 'next/router'
 import { authState } from '../../recoil/atoms/auth'
 import styles from '../../styles/components/common/navbar.module.css'
+import MovieSearchInput from './MovieSearchInput'
 
 interface NavbarProps {}
 
@@ -88,18 +89,21 @@ const Navbar: NextPage<NavbarProps> = () => {
   }
 
   return (
-    <div>
-      <AppBar position="static">
-        <Toolbar className={styles.toolbar}>
-          <IconButton edge="start" color="inherit" aria-label="open drawer">
-            <Link href="/">
-              <a>CineStock</a>
-            </Link>
-          </IconButton>
-          {!isLoading && <Links />}
-        </Toolbar>
-      </AppBar>
-    </div>
+    <>
+      <div>
+        <AppBar position="static">
+          <Toolbar className={styles.toolbar}>
+            <IconButton edge="start" color="inherit" aria-label="open drawer">
+              <Link href="/">
+                <a>CineStock</a>
+              </Link>
+            </IconButton>
+            {!isLoading && <Links />}
+          </Toolbar>
+        </AppBar>
+      </div>
+      <MovieSearchInput />
+    </>
   )
 }
 

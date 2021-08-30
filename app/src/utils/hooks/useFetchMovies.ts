@@ -10,8 +10,10 @@ import API, { offset, limit } from '../api/api'
 import { setAuthToken } from '../api/setAuthToken'
 import { IMovie } from '../../../types/movie'
 
+type UseFetchMoviesCategory = 'tag' | 'studio' | 'country' | 'title'
+
 interface UseFetchMovies {
-  category: 'tag' | 'studio' | 'country'
+  category: UseFetchMoviesCategory
   query: string
 }
 
@@ -34,8 +36,13 @@ export const useFetchMovies = ({ category, query }: UseFetchMovies) => {
     setIsLoading(false)
   }
 
-  const switchUrl = (category: 'tag' | 'studio' | 'country') => {
+  const switchUrl = (category: UseFetchMoviesCategory) => {
     switch (category) {
+      case 'title':
+        return `${process.env.NEXT_PUBLIC_API_URL}/movies?title=${encodeURI(
+          String(query)
+        )}&offset=${offset}&limit=${limit}`
+
       case 'tag':
         return `${process.env.NEXT_PUBLIC_API_URL}/movies?tag=${encodeURI(
           query
