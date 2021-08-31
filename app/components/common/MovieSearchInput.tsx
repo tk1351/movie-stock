@@ -1,10 +1,12 @@
 import React from 'react'
 import { NextPage } from 'next'
-import { Paper, InputBase, IconButton } from '@material-ui/core'
+import { Paper, IconButton } from '@material-ui/core'
 import { Search } from '@material-ui/icons'
 import { useRouter } from 'next/router'
 import { useForm, SubmitHandler, Controller } from 'react-hook-form'
 import styles from '../../styles/components/common/movieSearchInput.module.css'
+import AutoCompleteForm from './AutoCompleteForm'
+import { useAutoCompleteHandleChange } from '../../src/utils/hooks/useAutoCompleteHandleChange'
 
 interface MovieSearchInputProps {}
 
@@ -33,6 +35,8 @@ const MovieSearchInput: NextPage<MovieSearchInputProps> = () => {
     })
   }
 
+  const { filterMovies, titleHandleChange } = useAutoCompleteHandleChange()
+
   return (
     <Paper
       component="form"
@@ -42,14 +46,26 @@ const MovieSearchInput: NextPage<MovieSearchInputProps> = () => {
       <Controller
         name="title"
         control={control}
-        render={({ field: { onChange, ref } }) => (
-          <>
-            <InputBase
-              placeholder="Search Title..."
-              onChange={onChange}
-              inputRef={ref}
-            />
-          </>
+        render={({ field: { onChange } }) => (
+          <AutoCompleteForm
+            autocomplete={{
+              onChange: (_: any, data: any) => onChange(data),
+              id: 'search-title',
+              options: filterMovies.map((option) => option.title),
+            }}
+            textField={{
+              label: '映画を検索する',
+              className: styles.textField,
+              id: 'search-title',
+              type: 'text',
+              name: 'title',
+              variant: 'filled',
+              onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                onChange(e.target.value)
+                titleHandleChange('title', e.target.value)
+              },
+            }}
+          />
         )}
       />
       <IconButton type="submit">

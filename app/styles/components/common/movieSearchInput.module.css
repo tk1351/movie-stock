@@ -1,3 +1,7 @@
 .root {
   display: flex;
 }
+
+.textField {
+  width: 20vw;
+}

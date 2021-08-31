@@ -1,9 +1,8 @@
 import { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
-import MoviesList from '../components/movie/MoviesList'
 import Navbar from '../components/common/Navbar'
-import MovieSearchInput from '../components/common/MovieSearchInput'
+import Home from '../components/common/Home'
 
 interface HomePageProps {}
 
@@ -16,8 +15,7 @@ const index: NextPage<HomePageProps> = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar />
-      <MovieSearchInput />
-      <MoviesList />
+      <Home />
 
       <footer>
         <a

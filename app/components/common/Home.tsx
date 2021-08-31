@@ -1,13 +1,12 @@
 import React from 'react'
 import { NextPage } from 'next'
 import { useAuth0 } from '@auth0/auth0-react'
+import MoviesList from '../movie/MoviesList'
 
 interface HomePageProps {}
 
 const Home: NextPage<HomePageProps> = () => {
-  const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0()
-
-  if (isLoading) return <div>Loading ...</div>
+  const { loginWithRedirect, isAuthenticated } = useAuth0()
 
   return (
     <div>
@@ -16,9 +15,7 @@ const Home: NextPage<HomePageProps> = () => {
       )}
       {isAuthenticated && (
         <>
-          <button onClick={() => logout({ returnTo: window.location.origin })}>
-            Log Out
-          </button>
+          <MoviesList />
         </>
       )}
     </div>

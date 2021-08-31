@@ -2,9 +2,6 @@ import React from 'react'
 import { NextPage } from 'next'
 import { Autocomplete } from '@material-ui/lab'
 import { TextField } from '@material-ui/core'
-import { useAutoCompleteHandleChange } from '../../src/utils/hooks/useAutoCompleteHandleChange'
-
-// APIのURL: category(1: crews, 2: studios, 3: search)
 
 interface AutoCompleteFormProps {
   autocomplete: {
@@ -17,11 +14,11 @@ interface AutoCompleteFormProps {
     id: string
     type: string
     name: string
-    defaultValue: string
+    defaultValue?: string
     className: string
     variant: 'filled' | 'outlined' | 'standard'
-    helperText: string | undefined
-    error: boolean
+    helperText?: string | undefined
+    error?: boolean
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   }
 }

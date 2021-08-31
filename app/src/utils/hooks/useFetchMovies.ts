@@ -3,6 +3,7 @@ import {
   useRecoilStateLoadable,
   useRecoilState,
   useRecoilValueLoadable,
+  Loadable,
 } from 'recoil'
 import { moviesState, watchedState } from '../../../recoil/atoms/movie'
 import { authState } from '../../../recoil/atoms/auth'
@@ -10,12 +11,19 @@ import API, { offset, limit } from '../api/api'
 import { setAuthToken } from '../api/setAuthToken'
 import { IMovie } from '../../../types/movie'
 
+type UseFetchMoviesCategory = 'tag' | 'studio' | 'country' | 'title'
+
 interface UseFetchMovies {
-  category: 'tag' | 'studio' | 'country'
+  category: UseFetchMoviesCategory
   query: string
 }
 
-export const useFetchMovies = ({ category, query }: UseFetchMovies) => {
+export type UseFetchMoviesReturnType = [Loadable<IMovie[]>, number, boolean]
+
+export const useFetchMovies = ({
+  category,
+  query,
+}: UseFetchMovies): UseFetchMoviesReturnType => {
   const accessToken = useRecoilValueLoadable(authState)
   const [movies, setMovies] = useRecoilStateLoadable(moviesState)
   const [watched, setWatched] = useRecoilState(watchedState)
@@ -34,8 +42,13 @@ export const useFetchMovies = ({ category, query }: UseFetchMovies) => {
     setIsLoading(false)
   }
 
-  const switchUrl = (category: 'tag' | 'studio' | 'country') => {
+  const switchUrl = (category: UseFetchMoviesCategory) => {
     switch (category) {
+      case 'title':
+        return `${process.env.NEXT_PUBLIC_API_URL}/movies?title=${encodeURI(
+          String(query)
+        )}&offset=${offset}&limit=${limit}`
+
       case 'tag':
         return `${process.env.NEXT_PUBLIC_API_URL}/movies?tag=${encodeURI(
           query
@@ -62,5 +75,5 @@ export const useFetchMovies = ({ category, query }: UseFetchMovies) => {
     }
   }, [accessToken])
 
-  return [movies, watched, isLoading] as const
+  return [movies, watched, isLoading]
 }
