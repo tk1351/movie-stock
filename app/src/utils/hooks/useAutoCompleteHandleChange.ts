@@ -5,9 +5,18 @@ import { setAuthToken } from '../api/setAuthToken'
 import API, { limit, offset } from '../api/api'
 import { CrewsFilter, StudiosRank, IMovie } from '../../../types/movie'
 
+type useAutoCompleteHandleChangeReturnType = {
+  filterCrews: CrewsFilter[]
+  filterStudios: StudiosRank[]
+  filterMovies: IMovie[]
+  crewsHandleChange: (category: 'crews', query: string) => Promise<void>
+  studiosHandleChange: (category: 'studios', query: string) => Promise<void>
+  titleHandleChange: (category: 'title', query: string) => Promise<void>
+}
+
 type AutoCompleteCategory = 'crews' | 'studios' | 'title'
 
-export const useAutoCompleteHandleChange = () => {
+export const useAutoCompleteHandleChange = (): useAutoCompleteHandleChangeReturnType => {
   const [filterCrews, setFilterCrews] = useState<CrewsFilter[]>([]),
     [filterStudios, setFilterStudios] = useState<StudiosRank[]>([]),
     [filterMovies, setFilterMovies] = useState<IMovie[]>([])

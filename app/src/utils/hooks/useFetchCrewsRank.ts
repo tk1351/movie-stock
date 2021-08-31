@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react'
-import { useRecoilValueLoadable } from 'recoil'
+import { useRecoilValueLoadable, Loadable } from 'recoil'
 import API from '../api/api'
 import { setAuthToken } from '../api/setAuthToken'
-import { authState } from '../../../recoil/atoms/auth'
+import { authState, Auth } from '../../../recoil/atoms/auth'
 import { CrewsRank } from '../../../types/movie'
 
-export const useFetchCrewsRank = (category: number) => {
+export type useFetchCrewsRankReturnType = [CrewsRank[], boolean, Loadable<Auth>]
+
+export const useFetchCrewsRank = (
+  category: number
+): useFetchCrewsRankReturnType => {
   const [crewsRank, setCrewsRank] = useState<CrewsRank[]>([])
   const isAuth = useRecoilValueLoadable(authState)
 
@@ -24,5 +28,5 @@ export const useFetchCrewsRank = (category: number) => {
     }
   }, [isAuth])
 
-  return [crewsRank, isLoading, isAuth] as const
+  return [crewsRank, isLoading, isAuth]
 }

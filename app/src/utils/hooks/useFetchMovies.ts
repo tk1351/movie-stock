@@ -3,6 +3,7 @@ import {
   useRecoilStateLoadable,
   useRecoilState,
   useRecoilValueLoadable,
+  Loadable,
 } from 'recoil'
 import { moviesState, watchedState } from '../../../recoil/atoms/movie'
 import { authState } from '../../../recoil/atoms/auth'
@@ -17,7 +18,12 @@ interface UseFetchMovies {
   query: string
 }
 
-export const useFetchMovies = ({ category, query }: UseFetchMovies) => {
+export type UseFetchMoviesReturnType = [Loadable<IMovie[]>, number, boolean]
+
+export const useFetchMovies = ({
+  category,
+  query,
+}: UseFetchMovies): UseFetchMoviesReturnType => {
   const accessToken = useRecoilValueLoadable(authState)
   const [movies, setMovies] = useRecoilStateLoadable(moviesState)
   const [watched, setWatched] = useRecoilState(watchedState)
@@ -69,5 +75,5 @@ export const useFetchMovies = ({ category, query }: UseFetchMovies) => {
     }
   }, [accessToken])
 
-  return [movies, watched, isLoading] as const
+  return [movies, watched, isLoading]
 }
