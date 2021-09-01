@@ -10,12 +10,10 @@ export class CreateMovieDto {
   title: string;
 
   @IsNotEmpty({ message: 'releaseを入力してください' })
-  @IsString({ message: 'releaseは文字で入力してください' })
-  release: string;
+  release: number;
 
   @IsNotEmpty({ message: 'timeを入力してください' })
-  @IsString({ message: 'timeは文字で入力してください' })
-  time: string;
+  time: number;
 
   @IsNotEmpty({ message: 'countriesを入力してください' })
   countries: CreateCountriesDto[];

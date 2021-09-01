@@ -2,8 +2,8 @@ import { DefaultType } from './defaultType'
 
 export interface IMovie extends DefaultType {
   title: string
-  release: string
-  time: string
+  release: number
+  time: number
   userId: number
   countries: Country[]
   studios: Studio[]
@@ -106,4 +106,10 @@ export interface TMDBSearchResult {
 export interface TMDBWatchProvider {
   id: number
   result: any[]
+}
+
+export interface TimeListReturnType {
+  title: string
+  begin: number
+  end: number
 }

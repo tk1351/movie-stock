@@ -12,10 +12,10 @@ export class Movie extends DefaultEntity {
   title: string;
 
   @Column()
-  release: string;
+  release: number;
 
   @Column()
-  time: string;
+  time: number;
 
   @ManyToOne(() => User, (user) => user.movies)
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })

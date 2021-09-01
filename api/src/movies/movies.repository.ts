@@ -13,6 +13,8 @@ import { TagsRepository } from '../tags/tags.repository';
 import { GetMoviesQueryParams } from './dto/get-movies-query-params.dto';
 import { CountriesRepository } from '../countries/countries.repository';
 import { StudiosRepository } from '../studios/studios.repository';
+import { GetMoviesByDecadeQueryParams } from './dto/get-movies-by-decade-query-params.dto';
+import { GetMoviesMoreThanLessThanTimeQueryParams } from './dto/get-movies-more-than-less-than-time-query-params.dto';
 
 @EntityRepository(Movie)
 export class MoviesRepository extends Repository<Movie> {
@@ -235,6 +237,60 @@ export class MoviesRepository extends Repository<Movie> {
     } catch (e) {
       throw new InternalServerErrorException();
     }
+  }
+
+  async getMoviesByDecade(
+    release: number,
+    getMoviesByDecadeQueryParams: GetMoviesByDecadeQueryParams,
+    user: UserInfo,
+  ): Promise<[Movie[], number]> {
+    const { offset, limit } = getMoviesByDecadeQueryParams;
+
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const result = release + 9;
+
+    const movies = await this.createQueryBuilder('movies')
+      .where('movies.userId = :userId', { userId: foundUser.id })
+      .andWhere('movies.release BETWEEN :release AND :result', {
+        release,
+        result,
+      })
+      .take(limit)
+      .skip(offset)
+      .orderBy('movies.id', 'DESC')
+      .getManyAndCount();
+
+    return movies;
+  }
+
+  async getMoviesMoreThanLessThanTime(
+    getMoviesMoreThanLessThanTimeQueryParams: GetMoviesMoreThanLessThanTimeQueryParams,
+    user: UserInfo,
+  ): Promise<[Movie[], number]> {
+    const { begin, end, offset, limit } =
+      getMoviesMoreThanLessThanTimeQueryParams;
+
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const movies = await this.createQueryBuilder('movies')
+      .where('movies.userId = :userId', { userId: foundUser.id })
+      .andWhere('movies.time BETWEEN :begin AND :end', {
+        begin,
+        end,
+      })
+      .take(limit)
+      .skip(offset)
+      .orderBy('movies.id', 'DESC')
+      .getManyAndCount();
+
+    return movies;
   }
 
   async registerMovie(

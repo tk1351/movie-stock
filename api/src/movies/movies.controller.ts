@@ -19,6 +19,8 @@ import { IMessage, UserInfo } from '../types/type';
 import { AuthGuard } from '../auth/auth.guard';
 import { GetMoviesQueryParams } from './dto/get-movies-query-params.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
+import { GetMoviesByDecadeQueryParams } from './dto/get-movies-by-decade-query-params.dto';
+import { GetMoviesMoreThanLessThanTimeQueryParams } from './dto/get-movies-more-than-less-than-time-query-params.dto';
 
 @Controller('movies')
 export class MoviesController {
@@ -42,6 +44,19 @@ export class MoviesController {
     return this.moviesService.getMoviesLength(params, user);
   }
 
+  @Get('/time')
+  @UseGuards(AuthGuard)
+  getMoviesMoreThanLessThanTime(
+    @Query(ValidationPipe)
+    getMoviesMoreThanLessThanTimeQueryParams: GetMoviesMoreThanLessThanTimeQueryParams,
+    @CurrentUser() user: UserInfo,
+  ): Promise<[Movie[], number]> {
+    return this.moviesService.getMoviesMoreThanLessThanTime(
+      getMoviesMoreThanLessThanTimeQueryParams,
+      user,
+    );
+  }
+
   @Get('/:id')
   getMovieById(@Param('id', ParseIntPipe) id: number): Promise<Movie> {
     return this.moviesService.getMovieById(id);
@@ -54,6 +69,21 @@ export class MoviesController {
     @CurrentUser() user: UserInfo,
   ): Promise<Movie> {
     return this.moviesService.getMovieByUser(id, user);
+  }
+
+  @Get('/release/decade/:release')
+  @UseGuards(AuthGuard)
+  getMoviesByDecade(
+    @Param('release', ParseIntPipe) release: number,
+    @Query(ValidationPipe)
+    getMoviesByDecadeQueryParams: GetMoviesByDecadeQueryParams,
+    @CurrentUser() user: UserInfo,
+  ): Promise<[Movie[], number]> {
+    return this.moviesService.getMoviesByDecade(
+      release,
+      getMoviesByDecadeQueryParams,
+      user,
+    );
   }
 
   @Post('/register')

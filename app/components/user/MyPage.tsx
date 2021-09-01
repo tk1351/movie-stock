@@ -3,13 +3,14 @@ import { NextPage } from 'next'
 import Head from 'next/head'
 import { useAuth0 } from '@auth0/auth0-react'
 import { useRecoilValueLoadable, useRecoilState } from 'recoil'
-import { Grid, Typography, Box } from '@material-ui/core'
+import { Grid } from '@material-ui/core'
 import Spinner from '../common/Spinner'
 import { authState } from '../../recoil/atoms/auth'
 import styles from '../../styles/components/user/myPage.module.css'
 import { watchedState } from '../../recoil/atoms/movie'
 import Activity from './Activity'
 import { fetchMoviesByUser } from '../../src/utils/api/movie'
+import MyPageHeader from '../common/MyPageHeader'
 
 interface MyPageProps {}
 
@@ -40,17 +41,7 @@ const MyPage: NextPage<MyPageProps> = () => {
         </Head>
         {isAuthenticated && (
           <Grid container className={styles.myPageWrapper}>
-            <Grid item xs={12}>
-              <Grid container justifyContent="center" className={styles.header}>
-                {isAuth.contents.userInfo && (
-                  <Typography gutterBottom variant="h4" component="h2">
-                    <Box fontWeight="fontWeightBold">
-                      {isAuth.contents.userInfo.name}
-                    </Box>
-                  </Typography>
-                )}
-              </Grid>
-            </Grid>
+            <MyPageHeader isAuth={isAuth} />
             <Activity watched={watched} />
           </Grid>
         )}

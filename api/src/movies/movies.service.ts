@@ -19,6 +19,8 @@ import { CreateCrewDtos } from '../crews/dto/create-crew.dtos';
 import { CreateCountryDtos } from '../countries/dto/create-country.dtos';
 import { CreateStudioDtos } from '../studios/dto/create-studio.dtos';
 import { CreateTagDtos } from '../tags/dto/create-tag.dtos';
+import { GetMoviesByDecadeQueryParams } from './dto/get-movies-by-decade-query-params.dto';
+import { GetMoviesMoreThanLessThanTimeQueryParams } from './dto/get-movies-more-than-less-than-time-query-params.dto';
 
 @Injectable()
 export class MoviesService {
@@ -52,6 +54,28 @@ export class MoviesService {
 
   async getMovieByUser(id: number, user: UserInfo): Promise<Movie> {
     return await this.moviesRepository.getMovieByUser(id, user);
+  }
+
+  async getMoviesByDecade(
+    release: number,
+    getMoviesByDecadeQueryParams: GetMoviesByDecadeQueryParams,
+    user: UserInfo,
+  ): Promise<[Movie[], number]> {
+    return await this.moviesRepository.getMoviesByDecade(
+      release,
+      getMoviesByDecadeQueryParams,
+      user,
+    );
+  }
+
+  async getMoviesMoreThanLessThanTime(
+    getMoviesMoreThanLessThanTimeQueryParams: GetMoviesMoreThanLessThanTimeQueryParams,
+    user: UserInfo,
+  ): Promise<[Movie[], number]> {
+    return await this.moviesRepository.getMoviesMoreThanLessThanTime(
+      getMoviesMoreThanLessThanTimeQueryParams,
+      user,
+    );
   }
 
   async registerMovie(
