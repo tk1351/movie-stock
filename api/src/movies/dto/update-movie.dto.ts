@@ -12,13 +12,11 @@ export class UpdateMovieDto {
 
   @IsOptional()
   @IsNotEmpty({ message: 'releaseを入力してください' })
-  @IsString({ message: 'releaseは文字で入力してください' })
-  release: string;
+  release: number;
 
   @IsOptional()
   @IsNotEmpty({ message: 'timeを入力してください' })
-  @IsString({ message: 'timeは文字で入力してください' })
-  time: string;
+  time: number;
 
   @IsOptional()
   @IsNotEmpty({ message: 'countriesを入力してください' })

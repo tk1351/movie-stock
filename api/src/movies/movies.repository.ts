@@ -14,6 +14,7 @@ import { GetMoviesQueryParams } from './dto/get-movies-query-params.dto';
 import { CountriesRepository } from '../countries/countries.repository';
 import { StudiosRepository } from '../studios/studios.repository';
 import { GetMoviesByDecadeQueryParams } from './dto/get-movies-by-decade-query-params.dto';
+import { GetMoviesMoreThanLessThanTimeQueryParams } from './dto/get-movies-more-than-less-than-time-query-params.dto';
 
 @EntityRepository(Movie)
 export class MoviesRepository extends Repository<Movie> {
@@ -239,7 +240,7 @@ export class MoviesRepository extends Repository<Movie> {
   }
 
   async getMoviesByDecade(
-    release: string,
+    release: number,
     getMoviesByDecadeQueryParams: GetMoviesByDecadeQueryParams,
     user: UserInfo,
   ): Promise<[Movie[], number]> {
@@ -250,14 +251,39 @@ export class MoviesRepository extends Repository<Movie> {
     const foundUser = await usersRepository.findOne({ sub: user.sub });
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
-    const convertStringToNumber = Number(release);
-    const result = convertStringToNumber + 9;
+    const result = release + 9;
 
     const movies = await this.createQueryBuilder('movies')
       .where('movies.userId = :userId', { userId: foundUser.id })
       .andWhere('movies.release BETWEEN :release AND :result', {
         release,
         result,
+      })
+      .take(limit)
+      .skip(offset)
+      .orderBy('movies.id', 'DESC')
+      .getManyAndCount();
+
+    return movies;
+  }
+
+  async getMoviesMoreThanLessThanTime(
+    getMoviesMoreThanLessThanTimeQueryParams: GetMoviesMoreThanLessThanTimeQueryParams,
+    user: UserInfo,
+  ): Promise<[Movie[], number]> {
+    const { more, less, offset, limit } =
+      getMoviesMoreThanLessThanTimeQueryParams;
+
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (!foundUser) throw new NotFoundException('userが存在しません');
+
+    const movies = await this.createQueryBuilder('movies')
+      .where('movies.userId = :userId', { userId: foundUser.id })
+      .andWhere('movies.time BETWEEN :more AND :less', {
+        more,
+        less,
       })
       .take(limit)
       .skip(offset)

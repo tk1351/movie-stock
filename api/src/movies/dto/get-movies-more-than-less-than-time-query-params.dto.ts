@@ -1,13 +1,11 @@
 import { IsOptional, IsNotEmpty } from 'class-validator';
 
-export class GetMoviesQueryParams {
-  title?: string;
-  release?: number;
-  time?: number;
-  country?: string;
-  studio?: string;
-  name?: string;
-  tag?: string;
+export class GetMoviesMoreThanLessThanTimeQueryParams {
+  @IsOptional()
+  more: number;
+
+  @IsOptional()
+  less: number;
 
   @IsOptional()
   @IsNotEmpty({ message: '取得開始する数字を入力してください' })
