@@ -11,8 +11,8 @@ export const movieState = atom<IMovie>({
   default: {
     id: 0,
     title: '',
-    release: '',
-    time: '',
+    release: 0,
+    time: 0,
     userId: 0,
     countries: [],
     studios: [],
