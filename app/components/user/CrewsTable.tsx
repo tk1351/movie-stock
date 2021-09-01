@@ -17,6 +17,7 @@ import { useFetchCrewsRank } from '../../src/utils/hooks/useFetchCrewsRank'
 import Spinner from '../common/Spinner'
 import { authState } from '../../recoil/atoms/auth'
 import { CrewsRank } from '../../types/movie'
+import BackButton from '../common/BackButton'
 
 interface CrewsTableProps {
   number: 1 | 2 | 3 | 4
@@ -88,11 +89,7 @@ const CrewsTable: NextPage<CrewsTableProps> = ({ number }) => {
                   </TableBody>
                 </Table>
               </TableContainer>
-              <div className={styles.link}>
-                <Link href={`/user/${userInfo.id}`}>
-                  <a>戻る</a>
-                </Link>
-              </div>
+              <BackButton href={`/user/${userInfo.id}`} text={'戻る'} />
             </div>
           </>
         )}

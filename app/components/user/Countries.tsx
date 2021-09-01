@@ -18,6 +18,7 @@ import styles from '../../styles/components/user/countries.module.css'
 import Spinner from '../common/Spinner'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import API from '../../src/utils/api/api'
+import BackButton from '../common/BackButton'
 
 interface CountriesProps {}
 
@@ -98,11 +99,7 @@ const Countries: NextPage<CountriesProps> = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-              <div className={styles.link}>
-                <Link href={`/user/${userInfo.id}`}>
-                  <a>戻る</a>
-                </Link>
-              </div>
+              <BackButton href={`/user/${userInfo.id}`} text={'戻る'} />
             </div>
           </>
         )}

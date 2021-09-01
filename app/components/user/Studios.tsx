@@ -18,6 +18,7 @@ import Spinner from '../common/Spinner'
 import styles from '../../styles/components/user/studios.module.css'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import API from '../../src/utils/api/api'
+import BackButton from '../common/BackButton'
 
 interface StudiosProps {}
 
@@ -96,9 +97,7 @@ const Studios: NextPage<StudiosProps> = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-              <div className={styles.link}>
-                <Link href={`/user/${userInfo.id}`}>戻る</Link>
-              </div>
+              <BackButton href={`/user/${userInfo.id}`} text={'戻る'} />
             </div>
           </>
         )}

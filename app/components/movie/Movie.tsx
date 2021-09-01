@@ -31,6 +31,7 @@ import { setAlertState } from '../../recoil/selectors/alert'
 import styles from '../../styles/components/movie/movie.module.css'
 import DetailTabs from './DetailTabs'
 import Spinner from '../common/Spinner'
+import BackHistoryButton from '../common/BackHistoryButton'
 
 interface MoviePageProps {}
 
@@ -207,11 +208,7 @@ const Movie: NextPage<MoviePageProps> = () => {
                 </Button>
               </DialogActions>
             </Dialog>
-            <Grid container>
-              <Link href="/">
-                <a>戻る</a>
-              </Link>
-            </Grid>
+            <BackHistoryButton />
           </Grid>
         </>
       )}
