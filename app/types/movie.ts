@@ -107,3 +107,9 @@ export interface TMDBWatchProvider {
   id: number
   result: any[]
 }
+
+export interface TimeListReturnType {
+  title: string
+  begin: number
+  end: number
+}

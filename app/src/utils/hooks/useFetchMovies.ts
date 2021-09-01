@@ -11,11 +11,18 @@ import API, { offset, limit } from '../api/api'
 import { setAuthToken } from '../api/setAuthToken'
 import { IMovie } from '../../../types/movie'
 
-type UseFetchMoviesCategory = 'tag' | 'studio' | 'country' | 'title'
+type UseFetchMoviesCategory =
+  | 'tag'
+  | 'studio'
+  | 'country'
+  | 'title'
+  | 'release'
+  | 'time'
 
 interface UseFetchMovies {
   category: UseFetchMoviesCategory
-  query: string
+  query?: string
+  number?: { begin: number; end: number }
 }
 
 export type UseFetchMoviesReturnType = [Loadable<IMovie[]>, number, boolean]
@@ -23,6 +30,7 @@ export type UseFetchMoviesReturnType = [Loadable<IMovie[]>, number, boolean]
 export const useFetchMovies = ({
   category,
   query,
+  number,
 }: UseFetchMovies): UseFetchMoviesReturnType => {
   const accessToken = useRecoilValueLoadable(authState)
   const [movies, setMovies] = useRecoilStateLoadable(moviesState)
@@ -51,18 +59,29 @@ export const useFetchMovies = ({
 
       case 'tag':
         return `${process.env.NEXT_PUBLIC_API_URL}/movies?tag=${encodeURI(
-          query
+          String(query)
         )}&offset=${offset}&limit=${limit}`
 
       case 'studio':
         return `${process.env.NEXT_PUBLIC_API_URL}/movies?studio=${encodeURI(
-          query
+          String(query)
         )}&offset=${offset}&limit=${limit}`
 
       case 'country':
         return `${process.env.NEXT_PUBLIC_API_URL}/movies?country=${encodeURI(
-          query
+          String(query)
         )}&offset=${offset}&limit=${limit}`
+
+      case 'release':
+        return `${
+          process.env.NEXT_PUBLIC_API_URL
+        }/movies/release/decade/${String(
+          query
+        )}?offset=${offset}&limit=${limit}`
+
+      case 'time':
+        return `${process.env.NEXT_PUBLIC_API_URL}/movies/time?begin=${number?.begin}&end=${number?.end}&offset=${offset}&limit=${limit}`
+
       default:
         return ''
     }
