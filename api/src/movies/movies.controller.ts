@@ -19,6 +19,7 @@ import { IMessage, UserInfo } from '../types/type';
 import { AuthGuard } from '../auth/auth.guard';
 import { GetMoviesQueryParams } from './dto/get-movies-query-params.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
+import { GetMoviesByDecadeQueryParams } from './dto/get-movies-by-decade-query-params.dto';
 
 @Controller('movies')
 export class MoviesController {
@@ -54,6 +55,21 @@ export class MoviesController {
     @CurrentUser() user: UserInfo,
   ): Promise<Movie> {
     return this.moviesService.getMovieByUser(id, user);
+  }
+
+  @Get('/release/decade/:release')
+  @UseGuards(AuthGuard)
+  getMoviesByDecade(
+    @Param('release') release: string,
+    @Query(ValidationPipe)
+    getMoviesByDecadeQueryParams: GetMoviesByDecadeQueryParams,
+    @CurrentUser() user: UserInfo,
+  ): Promise<[Movie[], number]> {
+    return this.moviesService.getMoviesByDecade(
+      release,
+      getMoviesByDecadeQueryParams,
+      user,
+    );
   }
 
   @Post('/register')
