@@ -2,10 +2,10 @@ import { IsOptional, IsNotEmpty } from 'class-validator';
 
 export class GetMoviesMoreThanLessThanTimeQueryParams {
   @IsOptional()
-  more: number;
+  begin: number;
 
   @IsOptional()
-  less: number;
+  end: number;
 
   @IsOptional()
   @IsNotEmpty({ message: '取得開始する数字を入力してください' })

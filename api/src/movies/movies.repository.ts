@@ -271,7 +271,7 @@ export class MoviesRepository extends Repository<Movie> {
     getMoviesMoreThanLessThanTimeQueryParams: GetMoviesMoreThanLessThanTimeQueryParams,
     user: UserInfo,
   ): Promise<[Movie[], number]> {
-    const { more, less, offset, limit } =
+    const { begin, end, offset, limit } =
       getMoviesMoreThanLessThanTimeQueryParams;
 
     const usersRepository = getCustomRepository(UsersRepository);
@@ -281,9 +281,9 @@ export class MoviesRepository extends Repository<Movie> {
 
     const movies = await this.createQueryBuilder('movies')
       .where('movies.userId = :userId', { userId: foundUser.id })
-      .andWhere('movies.time BETWEEN :more AND :less', {
-        more,
-        less,
+      .andWhere('movies.time BETWEEN :begin AND :end', {
+        begin,
+        end,
       })
       .take(limit)
       .skip(offset)
