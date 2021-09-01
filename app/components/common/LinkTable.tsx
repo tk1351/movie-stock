@@ -26,7 +26,7 @@ const LinkTable: NextPage<LinkTableProps> = ({ contents }) => {
           key={content.index}
         >
           <Table className={styles.link}>
-            <Link href={`/user/${content.route}`}>
+            <Link href={content.route}>
               <TableHead className={styles.tableHead}>
                 <TableRow>
                   <TableCell component="th" scope="row">
