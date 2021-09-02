@@ -26,7 +26,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { movieState } from '../../recoil/atoms/movie'
 import { Auth, authState } from '../../recoil/atoms/auth'
 import { fetchMovieById } from '../../src/utils/api/movie'
-import { IMovie, IMovieInputs } from '../../types/movie'
+import { IMovie, IMovieInputs, PostMovieData } from '../../types/movie'
 import API from '../../src/utils/api/api'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import { IMessage } from '../../types/defaultType'
@@ -35,6 +35,7 @@ import { setAlertState } from '../../recoil/selectors/alert'
 import { movieValidationSchema } from '../../src/utils/movieValidation'
 import styles from '../../styles/components/movie/updateForm.module.css'
 import { removeFrontRearSpace } from '../../src/utils/movie'
+import BackHistoryButton from '../common/BackHistoryButton'
 
 interface UpdateFormPageProps {}
 
@@ -104,7 +105,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
   const onSubmit: SubmitHandler<IMovieInputs> = async (data) => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/update/${movie.contents.id}`
 
-    const newData: IMovieInputs = removeFrontRearSpace(data)
+    const newData: PostMovieData = removeFrontRearSpace(data)
 
     try {
       if (accessToken.state === 'hasValue') {
@@ -455,6 +456,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
           </Grid>
         </form>
       )}
+      <BackHistoryButton />
     </Container>
   )
 }
