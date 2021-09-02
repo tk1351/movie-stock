@@ -17,7 +17,7 @@ export class Movie extends DefaultEntity {
   @Column()
   time: number;
 
-  @Column({ nullable: true })
+  @Column()
   rate: number;
 
   @ManyToOne(() => User, (user) => user.movies)
