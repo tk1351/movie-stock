@@ -15,6 +15,9 @@ export class CreateMovieDto {
   @IsNotEmpty({ message: 'timeを入力してください' })
   time: number;
 
+  @IsNotEmpty({ message: 'rateを入力してください' })
+  rate: number;
+
   @IsNotEmpty({ message: 'countriesを入力してください' })
   countries: CreateCountriesDto[];
 
