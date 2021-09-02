@@ -60,6 +60,25 @@ export interface IMovieInputs {
   }[]
 }
 
+export interface PostMovieData {
+  title: string
+  release: number
+  time: number
+  countries: {
+    country: string
+  }[]
+  studios: {
+    studio: string
+  }[]
+  crews: {
+    category: number
+    name: string
+  }[]
+  tags: {
+    text: string
+  }[]
+}
+
 export interface CrewsFilter {
   cnt: string
   crews_name: string
