@@ -23,7 +23,7 @@ import {
 import { Add, Remove } from '@material-ui/icons'
 import { useSetRecoilState, useRecoilValueLoadable } from 'recoil'
 import { useRouter } from 'next/router'
-import { IMovieInputs } from '../../types/movie'
+import { IMovieInputs, PostMovieData } from '../../types/movie'
 import { authState } from '../../recoil/atoms/auth'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import API from '../../src/utils/api/api'
@@ -35,6 +35,7 @@ import AutoCompleteForm from '../common/AutoCompleteForm'
 import { IMessage } from '../../types/defaultType'
 import { useAutoCompleteHandleChange } from '../../src/utils/hooks/useAutoCompleteHandleChange'
 import { removeFrontRearSpace } from '../../src/utils/movie'
+import BackHistoryButton from '../common/BackHistoryButton'
 
 interface RegisterFormPageProps {}
 
@@ -95,7 +96,7 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
   const onSubmit: SubmitHandler<IMovieInputs> = async (data) => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/register`
 
-    const newData: IMovieInputs = removeFrontRearSpace(data)
+    const newData: PostMovieData = removeFrontRearSpace(data)
 
     try {
       if (accessToken.state === 'hasValue')
@@ -454,6 +455,7 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
           </Button>
         </Grid>
       </form>
+      <BackHistoryButton />
     </Container>
   )
 }

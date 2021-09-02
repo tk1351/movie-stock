@@ -6,6 +6,7 @@ import { Loadable } from 'recoil'
 import { IMovie } from '../../types/movie'
 import Cards from './Cards'
 import styles from '../../styles/components/movie/movieResults.module.css'
+import BackHistoryButton from '../common/BackHistoryButton'
 
 interface MovieResultsProps {
   title: string
@@ -29,19 +30,22 @@ const MovieResults: NextPage<MovieResultsProps> = ({
       <Head>
         <title>{title}の検索結果 | CineStock</title>
       </Head>
-      <Grid container justifyContent="center" className={styles.header}>
-        <Typography gutterBottom variant="h4" component="h2">
-          <Box fontWeight="fontWeightBold">
-            {title}の検索結果 {watched}件
-          </Box>
-        </Typography>
+      <Grid container>
+        <Grid container justifyContent="center" className={styles.header}>
+          <Typography gutterBottom variant="h4" component="h2">
+            <Box fontWeight="fontWeightBold">
+              {title}の検索結果 {watched}件
+            </Box>
+          </Typography>
+        </Grid>
+        <Cards
+          loadMore={loadMore}
+          hasMore={hasMore}
+          loader={loader}
+          movies={movies}
+        />
+        <BackHistoryButton />
       </Grid>
-      <Cards
-        loadMore={loadMore}
-        hasMore={hasMore}
-        loader={loader}
-        movies={movies}
-      />
     </>
   )
 }

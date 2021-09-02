@@ -11,10 +11,6 @@
   margin: 0 auto;
 }
 
-.link {
-  margin-top: 1rem;
-}
-
 .cellLink:hover {
   cursor: pointer;
   opacity: 0.5;

@@ -11,6 +11,7 @@ import { watchedState } from '../../recoil/atoms/movie'
 import Activity from './Activity'
 import { fetchMoviesByUser } from '../../src/utils/api/movie'
 import MyPageHeader from '../common/MyPageHeader'
+import BackButton from '../common/BackButton'
 
 interface MyPageProps {}
 
@@ -43,6 +44,7 @@ const MyPage: NextPage<MyPageProps> = () => {
           <Grid container className={styles.myPageWrapper}>
             <MyPageHeader isAuth={isAuth} />
             <Activity watched={watched} />
+            <BackButton href={'/'} text={'戻る'} />
           </Grid>
         )}
       </>

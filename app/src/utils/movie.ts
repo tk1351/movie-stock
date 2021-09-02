@@ -1,6 +1,6 @@
-import { IMovieInputs } from '../../types/movie'
+import { IMovieInputs, PostMovieData } from '../../types/movie'
 
-export const removeFrontRearSpace = (data: IMovieInputs): IMovieInputs => {
+export const removeFrontRearSpace = (data: IMovieInputs): PostMovieData => {
   const { title, release, time, countries, studios, crews, tags } = data
 
   const targetTitle = title.replace(/(^\s+)|(\s+$)/g, '')
@@ -23,10 +23,10 @@ export const removeFrontRearSpace = (data: IMovieInputs): IMovieInputs => {
     return { text: target }
   })
 
-  const newData: IMovieInputs = {
+  const newData: PostMovieData = {
     title: targetTitle,
-    release: targetRelease,
-    time: targetTime,
+    release: Number(targetRelease),
+    time: Number(targetTime),
     countries: targetCountries,
     studios: targetStudios,
     crews: targetCrews,
