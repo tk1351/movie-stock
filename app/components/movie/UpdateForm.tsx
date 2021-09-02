@@ -36,6 +36,7 @@ import { movieValidationSchema } from '../../src/utils/movieValidation'
 import styles from '../../styles/components/movie/updateForm.module.css'
 import { removeFrontRearSpace } from '../../src/utils/movie'
 import BackHistoryButton from '../common/BackHistoryButton'
+import { Rating } from '@material-ui/lab'
 
 interface UpdateFormPageProps {}
 
@@ -64,6 +65,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
     title: movie.contents.title,
     release: movie.contents.release,
     time: movie.contents.time,
+    rate: movie.contents.rate,
     countries: movie.contents.countries,
     studios: movie.contents.studios,
     crews: movie.contents.crews,
@@ -188,6 +190,21 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
               )}
             />
           </div>
+          <Grid container justifyContent="center" className={styles.rate}>
+            <Controller
+              name="rate"
+              control={control}
+              render={({ field: { onChange } }) => (
+                <Rating
+                  name="movie-rating"
+                  defaultValue={movie.contents.rate}
+                  onChange={onChange}
+                  precision={0.5}
+                  size="large"
+                />
+              )}
+            />
+          </Grid>
           <ul>
             {countryFields.map((field, index) => (
               <li key={field.id}>

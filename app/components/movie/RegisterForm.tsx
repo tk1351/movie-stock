@@ -36,6 +36,7 @@ import { IMessage } from '../../types/defaultType'
 import { useAutoCompleteHandleChange } from '../../src/utils/hooks/useAutoCompleteHandleChange'
 import { removeFrontRearSpace } from '../../src/utils/movie'
 import BackHistoryButton from '../common/BackHistoryButton'
+import { Rating } from '@material-ui/lab'
 
 interface RegisterFormPageProps {}
 
@@ -49,6 +50,7 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
     title: '',
     release: '',
     time: '',
+    rate: '0',
     countries: [{ country: '' }],
     studios: [{ studio: '' }],
     crews: [
@@ -181,6 +183,20 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
             )}
           />
         </div>
+        <Grid container justifyContent="center" className={styles.rate}>
+          <Controller
+            name="rate"
+            control={control}
+            render={({ field: { onChange } }) => (
+              <Rating
+                name="movie-rating"
+                onChange={onChange}
+                precision={0.5}
+                size="large"
+              />
+            )}
+          />
+        </Grid>
         <ul>
           {countryFields.map((field, index) => (
             <li key={field.id}>

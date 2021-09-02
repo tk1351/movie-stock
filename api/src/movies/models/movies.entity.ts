@@ -17,6 +17,9 @@ export class Movie extends DefaultEntity {
   @Column()
   time: number;
 
+  @Column({ nullable: true })
+  rate: number;
+
   @ManyToOne(() => User, (user) => user.movies)
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;

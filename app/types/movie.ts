@@ -4,6 +4,7 @@ export interface IMovie extends DefaultType {
   title: string
   release: number
   time: number
+  rate: number
   userId: number
   countries: Country[]
   studios: Studio[]
@@ -34,6 +35,7 @@ interface Movie extends DefaultType {
   title: string
   release: string
   time: string
+  rate: number
   userId: number
 }
 
@@ -45,6 +47,7 @@ export interface IMovieInputs {
   title: string
   release: string
   time: string
+  rate: string
   countries: {
     country: string
   }[]
@@ -64,6 +67,7 @@ export interface PostMovieData {
   title: string
   release: number
   time: number
+  rate: number
   countries: {
     country: string
   }[]

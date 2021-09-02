@@ -99,11 +99,12 @@ export class MoviesService {
     if (movie.userId !== foundUser.id)
       throw new UnauthorizedException('権限がありません');
 
-    const { title, release, time, countries, studios, crews, tags } =
+    const { title, release, time, rate, countries, studios, crews, tags } =
       updateMovieDto;
 
     (movie.title = title), (movie.release = release);
     movie.time = time;
+    movie.rate = rate;
 
     await this.countriesService.deleteCountryByMovieId(id);
 

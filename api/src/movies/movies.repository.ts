@@ -307,13 +307,14 @@ export class MoviesRepository extends Repository<Movie> {
     if (foundUser.role === undefined)
       throw new UnauthorizedException('権限がありません');
 
-    const { title, release, time, countries, studios, crews, tags } =
+    const { title, release, time, rate, countries, studios, crews, tags } =
       createMovieDto;
 
     const movie = this.create();
     movie.title = title;
     movie.release = release;
     movie.time = time;
+    movie.rate = rate;
     movie.user = foundUser;
 
     const newMovie = await movie.save();

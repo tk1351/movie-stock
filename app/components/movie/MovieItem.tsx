@@ -1,6 +1,7 @@
 import React from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
+import { Rating } from '@material-ui/lab'
 import { Card, CardContent, Typography } from '@material-ui/core'
 import { format } from 'date-fns'
 import { utcToZonedTime } from 'date-fns-tz'
@@ -27,6 +28,13 @@ const MovieItem: NextPage<MovieItemPageProps> = ({ movie }) => {
             {movie.title}
           </Typography>
         </Link>
+        <Rating
+          name={'movie-rating'}
+          value={movie.rate}
+          precision={0.5}
+          size="small"
+          readOnly
+        />
         <div className={styles.details}>
           <Typography variant="body2" color="textPrimary" component="p">
             {movie.release}年

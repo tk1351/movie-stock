@@ -18,6 +18,7 @@ import {
   Box,
   Chip,
 } from '@material-ui/core'
+import { Rating } from '@material-ui/lab'
 import { Delete, Edit } from '@material-ui/icons'
 import axios from 'axios'
 import { authState, Auth } from '../../recoil/atoms/auth'
@@ -159,6 +160,12 @@ const Movie: NextPage<MoviePageProps> = () => {
                       )
                   )}
                 </Grid>
+                <Rating
+                  name={'movie-rating'}
+                  value={movie.contents.rate}
+                  precision={0.5}
+                  readOnly
+                />
                 <Typography variant="body2" color="textPrimary" component="p">
                   {movie.contents.time}分
                 </Typography>

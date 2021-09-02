@@ -19,6 +19,10 @@ export class UpdateMovieDto {
   time: number;
 
   @IsOptional()
+  @IsNotEmpty({ message: 'rateを入力してください' })
+  rate: number;
+
+  @IsOptional()
   @IsNotEmpty({ message: 'countriesを入力してください' })
   countries: UpdateCountriesDto[];
 
