@@ -9,6 +9,9 @@ export class GetMoviesMoreThanLessThanTimeQueryParams {
   release: SortType;
 
   @IsOptional()
+  movieId: SortType;
+
+  @IsOptional()
   begin: number;
 
   @IsOptional()

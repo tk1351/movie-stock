@@ -47,8 +47,18 @@ export class MoviesRepository extends Repository<Movie> {
     const foundUser = await usersRepository.findOne({ sub: user.sub });
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
-    const { title, country, studio, name, tag, offset, limit, rate, release } =
-      params;
+    const {
+      title,
+      country,
+      studio,
+      name,
+      tag,
+      offset,
+      limit,
+      rate,
+      release,
+      movieId,
+    } = params;
 
     const movies = this.createQueryBuilder('movies')
       .leftJoinAndSelect('movies.countries', 'countries')
@@ -130,7 +140,11 @@ export class MoviesRepository extends Repository<Movie> {
     if (rate === 'DESC')
       return getMoviesOrderBy(orderByParams, 'movies.rate', 'DESC');
 
-    return getMoviesOrderBy(orderByParams, 'movies.id', 'DESC');
+    if (movieId === 'ASC')
+      return getMoviesOrderBy(orderByParams, 'movies.id', 'ASC');
+
+    if (movieId === 'DESC')
+      return getMoviesOrderBy(orderByParams, 'movies.id', 'DESC');
   }
 
   async getMovieById(id: number): Promise<Movie> {
@@ -188,7 +202,8 @@ export class MoviesRepository extends Repository<Movie> {
     getMoviesByDecadeQueryParams: GetMoviesByDecadeQueryParams,
     user: UserInfo,
   ): Promise<[Movie[], number]> {
-    const { offset, limit, rate, release } = getMoviesByDecadeQueryParams;
+    const { offset, limit, rate, release, movieId } =
+      getMoviesByDecadeQueryParams;
 
     const usersRepository = getCustomRepository(UsersRepository);
 
@@ -222,14 +237,18 @@ export class MoviesRepository extends Repository<Movie> {
     if (rate === 'DESC')
       return getMoviesOrderBy(orderByParams, 'movies.rate', 'DESC');
 
-    return getMoviesOrderBy(orderByParams, 'movies.id', 'DESC');
+    if (movieId === 'ASC')
+      return getMoviesOrderBy(orderByParams, 'movies.id', 'ASC');
+
+    if (movieId === 'DESC')
+      return getMoviesOrderBy(orderByParams, 'movies.id', 'DESC');
   }
 
   async getMoviesMoreThanLessThanTime(
     getMoviesMoreThanLessThanTimeQueryParams: GetMoviesMoreThanLessThanTimeQueryParams,
     user: UserInfo,
   ): Promise<[Movie[], number]> {
-    const { begin, end, offset, limit, rate, release } =
+    const { begin, end, offset, limit, rate, release, movieId } =
       getMoviesMoreThanLessThanTimeQueryParams;
 
     const usersRepository = getCustomRepository(UsersRepository);
@@ -262,7 +281,11 @@ export class MoviesRepository extends Repository<Movie> {
     if (rate === 'DESC')
       return getMoviesOrderBy(orderByParams, 'movies.rate', 'DESC');
 
-    return getMoviesOrderBy(orderByParams, 'movies.id', 'DESC');
+    if (movieId === 'ASC')
+      return getMoviesOrderBy(orderByParams, 'movies.id', 'ASC');
+
+    if (movieId === 'DESC')
+      return getMoviesOrderBy(orderByParams, 'movies.id', 'DESC');
   }
 
   async registerMovie(

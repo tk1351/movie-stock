@@ -9,6 +9,9 @@ export class GetMoviesByDecadeQueryParams {
   release: SortType;
 
   @IsOptional()
+  movieId: SortType;
+
+  @IsOptional()
   @IsNotEmpty({ message: '取得開始する数字を入力してください' })
   offset: number;
 
