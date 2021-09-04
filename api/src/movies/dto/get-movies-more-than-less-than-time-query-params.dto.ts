@@ -1,6 +1,13 @@
 import { IsOptional, IsNotEmpty } from 'class-validator';
+import { SortType } from '../../types/type';
 
 export class GetMoviesMoreThanLessThanTimeQueryParams {
+  @IsOptional()
+  rate: SortType;
+
+  @IsOptional()
+  release: SortType;
+
   @IsOptional()
   begin: number;
 

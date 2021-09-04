@@ -1,4 +1,9 @@
-import { EntityRepository, Repository, getCustomRepository } from 'typeorm';
+import {
+  EntityRepository,
+  Repository,
+  getCustomRepository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import {
   UnauthorizedException,
   InternalServerErrorException,
@@ -6,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { Movie } from './models/movies.entity';
 import { CreateMovieDto } from './dto/create-movie.dto';
-import { IMessage, UserInfo } from '../types/type';
+import { IMessage, UserInfo, SortType } from '../types/type';
 import { UsersRepository } from '../users/users.repository';
 import { CrewsRepository } from '../crews/crews.repository';
 import { TagsRepository } from '../tags/tags.repository';
@@ -15,6 +20,21 @@ import { CountriesRepository } from '../countries/countries.repository';
 import { StudiosRepository } from '../studios/studios.repository';
 import { GetMoviesByDecadeQueryParams } from './dto/get-movies-by-decade-query-params.dto';
 import { GetMoviesMoreThanLessThanTimeQueryParams } from './dto/get-movies-more-than-less-than-time-query-params.dto';
+
+interface GetMoviesOrderByParams {
+  entity: SelectQueryBuilder<Movie>;
+  limit: number;
+  offset: number;
+}
+
+const getMoviesOrderBy = (
+  orderByParams: GetMoviesOrderByParams,
+  sort: string,
+  order: SortType,
+): Promise<[Movie[], number]> => {
+  const { entity, limit, offset } = orderByParams;
+  return entity.take(limit).skip(offset).orderBy(sort, order).getManyAndCount();
+};
 
 @EntityRepository(Movie)
 export class MoviesRepository extends Repository<Movie> {
@@ -27,10 +47,10 @@ export class MoviesRepository extends Repository<Movie> {
     const foundUser = await usersRepository.findOne({ sub: user.sub });
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
-    const { title, release, time, country, studio, name, tag, offset, limit } =
+    const { title, country, studio, name, tag, offset, limit, rate, release } =
       params;
 
-    const movies = await this.createQueryBuilder('movies')
+    const movies = this.createQueryBuilder('movies')
       .leftJoinAndSelect('movies.countries', 'countries')
       .leftJoinAndSelect('movies.studios', 'studios')
       .leftJoinAndSelect('movies.crews', 'crews')
@@ -39,8 +59,6 @@ export class MoviesRepository extends Repository<Movie> {
       .andWhere(title ? 'movies.title LIKE :title' : 'true', {
         title: `%${title}%`,
       })
-      .andWhere(release ? 'movies.release = :release' : 'true', { release })
-      .andWhere(time ? 'movies.time = :time' : 'true', { time })
       .andWhere(
         country
           ? (qb) =>
@@ -92,101 +110,27 @@ export class MoviesRepository extends Repository<Movie> {
                 .where('tags.text = :tag', { tag })
                 .getQuery()
           : 'true',
-      )
-      .take(limit)
-      .skip(offset)
-      .orderBy('movies.id', 'DESC')
-      .getManyAndCount();
+      );
 
-    try {
-      return movies;
-    } catch (e) {
-      throw new InternalServerErrorException();
-    }
-  }
+    const orderByParams: GetMoviesOrderByParams = {
+      entity: movies,
+      limit,
+      offset,
+    };
 
-  async getMoviesLength(
-    params: GetMoviesQueryParams,
-    user: UserInfo,
-  ): Promise<number> {
-    const usersRepository = getCustomRepository(UsersRepository);
+    if (release === 'ASC')
+      return getMoviesOrderBy(orderByParams, 'movies.release', 'ASC');
 
-    const foundUser = await usersRepository.findOne({ sub: user.sub });
-    if (!foundUser) throw new NotFoundException('userが存在しません');
+    if (release === 'DESC')
+      return getMoviesOrderBy(orderByParams, 'movies.release', 'DESC');
 
-    const { title, release, time, country, studio, name, tag } = params;
+    if (rate === 'ASC')
+      return getMoviesOrderBy(orderByParams, 'movies.rate', 'ASC');
 
-    const result = await this.createQueryBuilder('movies')
-      .leftJoinAndSelect('movies.countries', 'countries')
-      .leftJoinAndSelect('movies.studios', 'studios')
-      .leftJoinAndSelect('movies.crews', 'crews')
-      .leftJoinAndSelect('movies.tags', 'tags')
-      .where('movies.userId = :userId', { userId: foundUser.id })
-      .andWhere(title ? 'movies.title LIKE :title' : 'true', {
-        title: `%${title}%`,
-      })
-      .andWhere(release ? 'movies.release = :release' : 'true', { release })
-      .andWhere(time ? 'movies.time = :time' : 'true', { time })
-      .andWhere(
-        country
-          ? (qb) =>
-              'movies.id IN' +
-              qb
-                .subQuery()
-                .select('countries.movieId')
-                .from('countries', 'countries')
-                .where('countries.country = :country', { country })
-                .getQuery()
-          : 'true',
-      )
-      .andWhere(
-        studio
-          ? (qb) =>
-              'movies.id IN' +
-              qb
-                .subQuery()
-                .select('studios.movieId')
-                .from('studios', 'studios')
-                .where('studios.studio = :studio', { studio })
-                .getQuery()
-          : 'true',
-      )
-      // moviesに紐づくcrewsを全取得
-      .andWhere(
-        name
-          ? (qb) =>
-              'movies.id IN' +
-              qb
-                .subQuery()
-                .select('crews.movieId')
-                .from('crews', 'crews')
-                .where('crews.name LIKE :name', {
-                  name: `%${name}%`,
-                })
-                .getQuery()
-          : 'true',
-      )
-      // moviesに紐づくtagsを全取得
-      .andWhere(
-        tag
-          ? (qb) =>
-              'movies.id IN' +
-              qb
-                .subQuery()
-                .select('tags.movieId')
-                .from('tags', 'tags')
-                .where('tags.text = :tag', { tag })
-                .getQuery()
-          : 'true',
-      )
-      .orderBy('movies.createdAt', 'DESC')
-      .getCount();
+    if (rate === 'DESC')
+      return getMoviesOrderBy(orderByParams, 'movies.rate', 'DESC');
 
-    try {
-      return result;
-    } catch (e) {
-      throw new InternalServerErrorException();
-    }
+    return getMoviesOrderBy(orderByParams, 'movies.id', 'DESC');
   }
 
   async getMovieById(id: number): Promise<Movie> {
@@ -240,38 +184,52 @@ export class MoviesRepository extends Repository<Movie> {
   }
 
   async getMoviesByDecade(
-    release: number,
+    year: number,
     getMoviesByDecadeQueryParams: GetMoviesByDecadeQueryParams,
     user: UserInfo,
   ): Promise<[Movie[], number]> {
-    const { offset, limit } = getMoviesByDecadeQueryParams;
+    const { offset, limit, rate, release } = getMoviesByDecadeQueryParams;
 
     const usersRepository = getCustomRepository(UsersRepository);
 
     const foundUser = await usersRepository.findOne({ sub: user.sub });
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
-    const result = release + 9;
+    const decade = year + 9;
 
-    const movies = await this.createQueryBuilder('movies')
+    const movies = this.createQueryBuilder('movies')
       .where('movies.userId = :userId', { userId: foundUser.id })
-      .andWhere('movies.release BETWEEN :release AND :result', {
-        release,
-        result,
-      })
-      .take(limit)
-      .skip(offset)
-      .orderBy('movies.id', 'DESC')
-      .getManyAndCount();
+      .andWhere('movies.release BETWEEN :year AND :decade', {
+        year,
+        decade,
+      });
 
-    return movies;
+    const orderByParams: GetMoviesOrderByParams = {
+      entity: movies,
+      limit,
+      offset,
+    };
+
+    if (release === 'ASC')
+      return getMoviesOrderBy(orderByParams, 'movies.release', 'ASC');
+
+    if (release === 'DESC')
+      return getMoviesOrderBy(orderByParams, 'movies.release', 'DESC');
+
+    if (rate === 'ASC')
+      return getMoviesOrderBy(orderByParams, 'movies.rate', 'ASC');
+
+    if (rate === 'DESC')
+      return getMoviesOrderBy(orderByParams, 'movies.rate', 'DESC');
+
+    return getMoviesOrderBy(orderByParams, 'movies.id', 'DESC');
   }
 
   async getMoviesMoreThanLessThanTime(
     getMoviesMoreThanLessThanTimeQueryParams: GetMoviesMoreThanLessThanTimeQueryParams,
     user: UserInfo,
   ): Promise<[Movie[], number]> {
-    const { begin, end, offset, limit } =
+    const { begin, end, offset, limit, rate, release } =
       getMoviesMoreThanLessThanTimeQueryParams;
 
     const usersRepository = getCustomRepository(UsersRepository);
@@ -284,13 +242,27 @@ export class MoviesRepository extends Repository<Movie> {
       .andWhere('movies.time BETWEEN :begin AND :end', {
         begin,
         end,
-      })
-      .take(limit)
-      .skip(offset)
-      .orderBy('movies.id', 'DESC')
-      .getManyAndCount();
+      });
 
-    return movies;
+    const orderByParams: GetMoviesOrderByParams = {
+      entity: movies,
+      limit,
+      offset,
+    };
+
+    if (release === 'ASC')
+      return getMoviesOrderBy(orderByParams, 'movies.release', 'ASC');
+
+    if (release === 'DESC')
+      return getMoviesOrderBy(orderByParams, 'movies.release', 'DESC');
+
+    if (rate === 'ASC')
+      return getMoviesOrderBy(orderByParams, 'movies.rate', 'ASC');
+
+    if (rate === 'DESC')
+      return getMoviesOrderBy(orderByParams, 'movies.rate', 'DESC');
+
+    return getMoviesOrderBy(orderByParams, 'movies.id', 'DESC');
   }
 
   async registerMovie(
