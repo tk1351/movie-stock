@@ -2,6 +2,7 @@ import React from 'react'
 import { NextPage } from 'next'
 import Link from 'next/link'
 import { Card, CardContent, Typography } from '@material-ui/core'
+import { Rating } from '@material-ui/lab'
 import { format } from 'date-fns'
 import { utcToZonedTime } from 'date-fns-tz'
 import { ICrew } from '../../types/movie'
@@ -27,6 +28,13 @@ const CrewItem: NextPage<CrewItemPage> = ({ crew }) => {
             {crew.movie.title}
           </Typography>
         </Link>
+        <Rating
+          name={'movie-rating'}
+          value={crew.movie.rate}
+          precision={0.5}
+          size="small"
+          readOnly
+        />
         <div className={styles.details}>
           <Typography variant="body2" color="textPrimary" component="p">
             {crew.movie.release}年

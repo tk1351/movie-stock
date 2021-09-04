@@ -32,6 +32,7 @@ import CrewItem from './CrewItem'
 import { fetchCrewsState } from '../../recoil/selectors/crew'
 import styles from '../../styles/components/movie/crews.module.css'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
+import BackHistoryButton from '../common/BackHistoryButton'
 
 interface CrewsPageProps {}
 
@@ -206,6 +207,7 @@ const Crews: NextPage<CrewsPageProps> = () => {
               <Grid item xs={2} />
             </Grid>
           </InfiniteScroll>
+          <BackHistoryButton />
         </>
       )}
     </>
