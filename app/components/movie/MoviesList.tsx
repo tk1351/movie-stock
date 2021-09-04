@@ -3,18 +3,20 @@ import {
   useRecoilState,
   useRecoilValueLoadable,
   useRecoilStateLoadable,
+  useRecoilValue,
 } from 'recoil'
 import { NextPage } from 'next'
-import { Grid, Typography, Box } from '@material-ui/core'
 import { authState } from '../../recoil/atoms/auth'
 import { moviesState, watchedState } from '../../recoil/atoms/movie'
 import { fetchMoviesByUser } from '../../src/utils/api/movie'
 import API, { limit } from '../../src/utils/api/api'
 import { IMovie } from '../../types/movie'
 import Spinner from '../common/Spinner'
-import styles from '../../styles/components/movie/moviesList.module.css'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import Cards from './Cards'
+import Sort from '../common/Sort'
+import { sortState } from '../../recoil/atoms/sort'
+import { scrollState } from '../../recoil/atoms/scroll'
 
 interface MoviesListPageProps {}
 
@@ -22,8 +24,9 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
   const accessToken = useRecoilValueLoadable(authState)
   const [movies, setMovies] = useRecoilStateLoadable(moviesState)
   const [watched, setWatched] = useRecoilState(watchedState)
+  const sort = useRecoilValue(sortState)
 
-  const [hasMore, setHasMore] = useState(true)
+  const [hasMore, setHasMore] = useRecoilState(scrollState)
 
   useEffect(() => {
     ;(async () => {
@@ -31,7 +34,7 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
         const res: {
           movies: IMovie[]
           count: number
-        } = await fetchMoviesByUser(accessToken.contents.accessToken)
+        } = await fetchMoviesByUser(accessToken.contents.accessToken, sort)
         setMovies(res.movies)
         setWatched(res.count)
       }
@@ -42,7 +45,7 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
     if (accessToken.state === 'hasValue')
       setAuthToken(accessToken.contents.accessToken)
 
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?offset=${movies.contents.length}&limit=${limit}`
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?offset=${movies.contents.length}&limit=${limit}&${sort.query}=${sort.order}`
     const res = await API.get<[IMovie[], number]>(url)
 
     const data = res.data[0]
@@ -58,13 +61,7 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
 
   return (
     <>
-      <Grid container justifyContent="center" className={styles.h2}>
-        {watched && (
-          <Typography gutterBottom variant="h4" component="h2">
-            <Box fontWeight="fontWeightBold">鑑賞本数: {watched}</Box>
-          </Typography>
-        )}
-      </Grid>
+      <Sort watched={watched} />
       <Cards
         loadMore={loadMore}
         hasMore={hasMore}
