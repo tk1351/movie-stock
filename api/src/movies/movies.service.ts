@@ -41,13 +41,6 @@ export class MoviesService {
     return await this.moviesRepository.getMovies(params, user);
   }
 
-  async getMoviesLength(
-    params: GetMoviesQueryParams,
-    user: UserInfo,
-  ): Promise<number> {
-    return await this.moviesRepository.getMoviesLength(params, user);
-  }
-
   async getMovieById(id: number): Promise<Movie> {
     return await this.moviesRepository.getMovieById(id);
   }
@@ -57,12 +50,12 @@ export class MoviesService {
   }
 
   async getMoviesByDecade(
-    release: number,
+    year: number,
     getMoviesByDecadeQueryParams: GetMoviesByDecadeQueryParams,
     user: UserInfo,
   ): Promise<[Movie[], number]> {
     return await this.moviesRepository.getMoviesByDecade(
-      release,
+      year,
       getMoviesByDecadeQueryParams,
       user,
     );
