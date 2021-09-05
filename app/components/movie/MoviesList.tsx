@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, createContext } from 'react'
 import {
   useRecoilState,
   useRecoilValueLoadable,
@@ -17,8 +17,13 @@ import Cards from './Cards'
 import Sort from '../common/Sort'
 import { sortState } from '../../recoil/atoms/sort'
 import { scrollState } from '../../recoil/atoms/scroll'
+import { SortCategoryComponentType } from '../common/SortButton'
 
 interface MoviesListPageProps {}
+
+export const SortCategoryComponentContext = createContext<
+  SortCategoryComponentType
+>('MoviesList')
 
 const MoviesList: NextPage<MoviesListPageProps> = () => {
   const accessToken = useRecoilValueLoadable(authState)
@@ -45,7 +50,7 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
     if (accessToken.state === 'hasValue')
       setAuthToken(accessToken.contents.accessToken)
 
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?offset=${movies.contents.length}&limit=${limit}&${sort.query}=${sort.order}`
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?offset=${movies.contents.length}&limit=${limit}&${sort.sort}=${sort.order}`
     const res = await API.get<[IMovie[], number]>(url)
 
     const data = res.data[0]
@@ -61,7 +66,9 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
 
   return (
     <>
-      <Sort watched={watched} />
+      <SortCategoryComponentContext.Provider value={'MoviesList'}>
+        <Sort watched={watched} />
+      </SortCategoryComponentContext.Provider>
       <Cards
         loadMore={loadMore}
         hasMore={hasMore}
