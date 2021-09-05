@@ -1,14 +1,16 @@
 import { atom } from 'recoil'
 
 export interface SortType {
-  query: 'rate' | 'release' | 'movieId'
+  sort: 'rate' | 'release' | 'movieId'
   order: 'ASC' | 'DESC'
+  query?: string
 }
 
 export const sortState = atom<SortType>({
   key: 'sortState',
   default: {
-    query: 'movieId',
+    sort: 'movieId',
     order: 'DESC',
+    query: undefined,
   },
 })

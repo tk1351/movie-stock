@@ -8,7 +8,7 @@ export const fetchMoviesByUser = async (
   sort: SortType
 ): Promise<{ movies: IMovie[]; count: number }> => {
   setAuthToken(accessToken)
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?offset=${offset}&limit=${limit}&${sort.query}=${sort.order}`
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?offset=${offset}&limit=${limit}&${sort.sort}=${sort.order}`
   const res = await API.get<[IMovie[], number]>(url)
 
   const movies = res.data[0]
