@@ -19,11 +19,33 @@ export class CrewsRepository extends Repository<Crew> {
 
     const { name, category, offset, limit } = params;
 
-    const crews = await this.createQueryBuilder('crews')
+    const crews = this.createQueryBuilder('crews')
       .leftJoinAndSelect('crews.movie', 'movie')
       .where(name ? 'crews.name LIKE :name' : 'true', { name: `%${name}%` })
       .andWhere(category ? 'crews.category = :category' : 'true', { category })
-      .distinctOn(['crews.movieId'])
+      .distinctOn(['crews.movieId']);
+
+    // const crews = createQueryBuilder()
+    //   .select('*')
+    //   .from<Crew>((qb) => {
+    //     const subQuery = qb
+    //       .subQuery()
+    //       .select('*')
+    //       .distinctOn([`"movieId"`])
+    //       .from(Crew, 'crews')
+    //       .leftJoin('crews.movie', 'movie')
+    //       .where(name ? 'crews.name LIKE :name' : 'true', {
+    //         name: `%${name}%`,
+    //       })
+    //       .andWhere(category ? 'crews.category = :category' : 'true', {
+    //         category,
+    //       });
+    //     return subQuery;
+    //   }, 'crews');
+
+    // const result = await crews.orderBy(`"movieId"`, 'DESC').getRawMany();
+
+    const result = await crews
       .orderBy('crews.movieId')
       .take(limit)
       .skip(offset)
@@ -32,7 +54,7 @@ export class CrewsRepository extends Repository<Crew> {
     // select * from (select distinct on ("movieId") * from crews where crews.name = '黒沢清') as hoge left join movies on "movieId" = movies.id order by release desc
 
     try {
-      return crews;
+      return result;
     } catch (e) {
       throw new InternalServerErrorException();
     }

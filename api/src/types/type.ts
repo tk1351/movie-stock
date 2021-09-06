@@ -32,3 +32,5 @@ export interface StudioRank extends DefaultRank {
 export interface CountryRank extends DefaultRank {
   countries_name: string;
 }
+
+export type SortType = 'ASC' | 'DESC';

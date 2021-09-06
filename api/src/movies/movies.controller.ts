@@ -35,15 +35,6 @@ export class MoviesController {
     return this.moviesService.getMovies(params, user);
   }
 
-  @Get('/length')
-  @UseGuards(AuthGuard)
-  getMoviesLength(
-    @Query(ValidationPipe) params: GetMoviesQueryParams,
-    @CurrentUser() user: UserInfo,
-  ): Promise<number> {
-    return this.moviesService.getMoviesLength(params, user);
-  }
-
   @Get('/time')
   @UseGuards(AuthGuard)
   getMoviesMoreThanLessThanTime(
@@ -74,13 +65,13 @@ export class MoviesController {
   @Get('/release/decade/:release')
   @UseGuards(AuthGuard)
   getMoviesByDecade(
-    @Param('release', ParseIntPipe) release: number,
+    @Param('release', ParseIntPipe) year: number,
     @Query(ValidationPipe)
     getMoviesByDecadeQueryParams: GetMoviesByDecadeQueryParams,
     @CurrentUser() user: UserInfo,
   ): Promise<[Movie[], number]> {
     return this.moviesService.getMoviesByDecade(
-      release,
+      year,
       getMoviesByDecadeQueryParams,
       user,
     );

@@ -1,12 +1,14 @@
 import { setAuthToken } from './setAuthToken'
 import API, { offset, limit } from '../api/api'
 import { IMovie } from '../../../types/movie'
+import { SortType } from '../../../recoil/atoms/sort'
 
 export const fetchMoviesByUser = async (
-  accessToken: string
+  accessToken: string,
+  sort: SortType
 ): Promise<{ movies: IMovie[]; count: number }> => {
   setAuthToken(accessToken)
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?offset=${offset}&limit=${limit}`
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?offset=${offset}&limit=${limit}&${sort.sort}=${sort.order}`
   const res = await API.get<[IMovie[], number]>(url)
 
   const movies = res.data[0]

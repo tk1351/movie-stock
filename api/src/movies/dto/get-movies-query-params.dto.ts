@@ -1,13 +1,30 @@
 import { IsOptional, IsNotEmpty } from 'class-validator';
+import { SortType } from '../../types/type';
 
 export class GetMoviesQueryParams {
-  title?: string;
-  release?: number;
-  time?: number;
-  country?: string;
-  studio?: string;
-  name?: string;
-  tag?: string;
+  @IsOptional()
+  title: string;
+
+  @IsOptional()
+  country: string;
+
+  @IsOptional()
+  studio: string;
+
+  @IsOptional()
+  name: string;
+
+  @IsOptional()
+  tag: string;
+
+  @IsOptional()
+  rate: SortType;
+
+  @IsOptional()
+  release: SortType;
+
+  @IsOptional()
+  movieId: SortType;
 
   @IsOptional()
   @IsNotEmpty({ message: '取得開始する数字を入力してください' })

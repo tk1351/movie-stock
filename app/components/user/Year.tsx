@@ -1,7 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
+import {
+  useRecoilValueLoadable,
+  useSetRecoilState,
+  useRecoilValue,
+  useRecoilState,
+} from 'recoil'
 import { authState } from '../../recoil/atoms/auth'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import API, { limit } from '../../src/utils/api/api'
@@ -10,6 +15,9 @@ import { fetchMovies } from '../../recoil/selectors/movie'
 import { useFetchMovies } from '../../src/utils/hooks/useFetchMovies'
 import Spinner from '../common/Spinner'
 import MovieResults from '../movie/MovieResults'
+import { sortState } from '../../recoil/atoms/sort'
+import { scrollState } from '../../recoil/atoms/scroll'
+import Sort from '../common/Sort'
 
 interface YearProps {}
 
@@ -18,8 +26,8 @@ const Year: NextPage<YearProps> = () => {
 
   const accessToken = useRecoilValueLoadable(authState)
   const setIsFetched = useSetRecoilState<IMovie[]>(fetchMovies)
-
-  const [hasMore, setHasMore] = useState(true)
+  const sort = useRecoilValue(sortState)
+  const [hasMore, setHasMore] = useRecoilState(scrollState)
 
   const year = String(router.query.years).slice(0, -1)
 
@@ -31,7 +39,7 @@ const Year: NextPage<YearProps> = () => {
   const loadMore = async () => {
     if (accessToken.state === 'hasValue')
       setAuthToken(accessToken.contents.accessToken)
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/release/decade/${year}?offset=${movies.contents.length}&limit=${limit}`
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/release/decade/${year}?offset=${movies.contents.length}&limit=${limit}&${sort.sort}=${sort.order}`
 
     const res = await API.get<[IMovie[], number]>(url)
     const data = res.data[0]
@@ -50,14 +58,17 @@ const Year: NextPage<YearProps> = () => {
       {isLoading ? (
         <Spinner />
       ) : (
-        <MovieResults
-          title={`${year}年代の映画`}
-          watched={watched}
-          loadMore={loadMore}
-          hasMore={hasMore}
-          loader={loader}
-          movies={movies}
-        />
+        <>
+          <Sort category={'year'} query={year} />
+          <MovieResults
+            title={`${year}年代の映画`}
+            watched={watched}
+            loadMore={loadMore}
+            hasMore={hasMore}
+            loader={loader}
+            movies={movies}
+          />
+        </>
       )}
     </>
   )
