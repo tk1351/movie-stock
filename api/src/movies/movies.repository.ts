@@ -145,6 +145,9 @@ export class MoviesRepository extends Repository<Movie> {
 
     if (movieId === 'DESC')
       return getMoviesOrderBy(orderByParams, 'movies.id', 'DESC');
+
+    const result = await movies.take(limit).skip(offset).getManyAndCount();
+    return result;
   }
 
   async getMovieById(id: number): Promise<Movie> {
@@ -242,6 +245,9 @@ export class MoviesRepository extends Repository<Movie> {
 
     if (movieId === 'DESC')
       return getMoviesOrderBy(orderByParams, 'movies.id', 'DESC');
+
+    const result = await movies.take(limit).skip(offset).getManyAndCount();
+    return result;
   }
 
   async getMoviesMoreThanLessThanTime(
@@ -286,6 +292,9 @@ export class MoviesRepository extends Repository<Movie> {
 
     if (movieId === 'DESC')
       return getMoviesOrderBy(orderByParams, 'movies.id', 'DESC');
+
+    const result = await movies.take(limit).skip(offset).getManyAndCount();
+    return result;
   }
 
   async registerMovie(
