@@ -2,7 +2,12 @@ import React, { useState } from 'react'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useFetchMovies } from '../../src/utils/hooks/useFetchMovies'
-import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
+import {
+  useRecoilValueLoadable,
+  useSetRecoilState,
+  useRecoilValue,
+  useRecoilState,
+} from 'recoil'
 import { IMovie, TimeListReturnType } from '../../types/movie'
 import { authState } from '../../recoil/atoms/auth'
 import { fetchMovies } from '../../recoil/selectors/movie'
@@ -10,6 +15,9 @@ import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import API, { limit } from '../../src/utils/api/api'
 import Spinner from '../common/Spinner'
 import MovieResults from '../movie/MovieResults'
+import { sortState } from '../../recoil/atoms/sort'
+import { scrollState } from '../../recoil/atoms/scroll'
+import Sort from '../common/Sort'
 
 interface TimeProps {}
 
@@ -19,8 +27,8 @@ const Time: NextPage<TimeProps> = () => {
 
   const accessToken = useRecoilValueLoadable(authState)
   const setIsFetched = useSetRecoilState<IMovie[]>(fetchMovies)
-
-  const [hasMore, setHasMore] = useState(true)
+  const sort = useRecoilValue(sortState)
+  const [hasMore, setHasMore] = useRecoilState(scrollState)
 
   const switchUrl = (time: string): TimeListReturnType => {
     switch (time) {
@@ -48,7 +56,7 @@ const Time: NextPage<TimeProps> = () => {
   const loadMore = async () => {
     if (accessToken.state === 'hasValue')
       setAuthToken(accessToken.contents.accessToken)
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/time?begin=${begin}&end=${end}&offset=${movies.contents.length}&limit=${limit}`
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/time?begin=${begin}&end=${end}&offset=${movies.contents.length}&limit=${limit}&${sort.sort}=${sort.order}`
 
     const res = await API.get<[IMovie[], number]>(url)
     const data = res.data[0]
@@ -67,14 +75,23 @@ const Time: NextPage<TimeProps> = () => {
       {isLoading ? (
         <Spinner />
       ) : (
-        <MovieResults
-          title={`${title}の映画`}
-          watched={watched}
-          loadMore={loadMore}
-          hasMore={hasMore}
-          loader={loader}
-          movies={movies}
-        />
+        <>
+          <Sort
+            watched={watched}
+            category={'time'}
+            query={title}
+            begin={begin}
+            end={end}
+          />
+          <MovieResults
+            title={`${title}の映画`}
+            watched={watched}
+            loadMore={loadMore}
+            hasMore={hasMore}
+            loader={loader}
+            movies={movies}
+          />
+        </>
       )}
     </>
   )

@@ -1,7 +1,12 @@
 import React, { useState } from 'react'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useSetRecoilState, useRecoilValueLoadable } from 'recoil'
+import {
+  useSetRecoilState,
+  useRecoilValueLoadable,
+  useRecoilState,
+  useRecoilValue,
+} from 'recoil'
 import Spinner from '../common/Spinner'
 import { fetchMovies } from '../../recoil/selectors/movie'
 import { IMovie } from '../../types/movie'
@@ -10,6 +15,9 @@ import { useFetchMovies } from '../../src/utils/hooks/useFetchMovies'
 import { authState } from '../../recoil/atoms/auth'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import MovieResults from './MovieResults'
+import { scrollState } from '../../recoil/atoms/scroll'
+import { sortState } from '../../recoil/atoms/sort'
+import Sort from '../common/Sort'
 
 interface CountriesPageProps {}
 
@@ -18,8 +26,8 @@ const Countries: NextPage<CountriesPageProps> = () => {
 
   const accessToken = useRecoilValueLoadable(authState)
   const setIsFetched = useSetRecoilState<IMovie[]>(fetchMovies)
-
-  const [hasMore, setHasMore] = useState(true)
+  const sort = useRecoilValue(sortState)
+  const [hasMore, setHasMore] = useRecoilState(scrollState)
 
   const country = router.query.country as string
 
@@ -34,7 +42,9 @@ const Countries: NextPage<CountriesPageProps> = () => {
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/movies?country=${encodeURI(
       country
-    )}&offset=${movies.contents.length}&limit=${limit}`
+    )}&offset=${movies.contents.length}&limit=${limit}&${sort.sort}=${
+      sort.order
+    }`
     const res = await API.get<[IMovie[], number]>(url)
 
     const data = res.data[0]
@@ -53,14 +63,17 @@ const Countries: NextPage<CountriesPageProps> = () => {
       {isLoading ? (
         <Spinner />
       ) : (
-        <MovieResults
-          title={country}
-          watched={watched}
-          loadMore={loadMore}
-          hasMore={hasMore}
-          loader={loader}
-          movies={movies}
-        />
+        <>
+          <Sort watched={watched} category={'countries'} query={country} />
+          <MovieResults
+            title={country}
+            watched={watched}
+            loadMore={loadMore}
+            hasMore={hasMore}
+            loader={loader}
+            movies={movies}
+          />
+        </>
       )}
     </>
   )

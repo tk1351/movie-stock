@@ -1,4 +1,4 @@
-import React, { useEffect, createContext } from 'react'
+import React, { useEffect } from 'react'
 import {
   useRecoilState,
   useRecoilValueLoadable,
@@ -17,13 +17,8 @@ import Cards from './Cards'
 import Sort from '../common/Sort'
 import { sortState } from '../../recoil/atoms/sort'
 import { scrollState } from '../../recoil/atoms/scroll'
-import { SortCategoryComponentType } from '../common/SortButton'
 
 interface MoviesListPageProps {}
-
-export const SortCategoryComponentContext = createContext<
-  SortCategoryComponentType
->('MoviesList')
 
 const MoviesList: NextPage<MoviesListPageProps> = () => {
   const accessToken = useRecoilValueLoadable(authState)
@@ -66,9 +61,7 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
 
   return (
     <>
-      <SortCategoryComponentContext.Provider value={'MoviesList'}>
-        <Sort watched={watched} />
-      </SortCategoryComponentContext.Provider>
+      <Sort watched={watched} category={'moviesList'} />
       <Cards
         loadMore={loadMore}
         hasMore={hasMore}
