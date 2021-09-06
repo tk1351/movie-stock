@@ -58,32 +58,32 @@ export const useFetchMovies = ({
       case 'title':
         return `${process.env.NEXT_PUBLIC_API_URL}/movies?title=${encodeURI(
           String(query)
-        )}&offset=${offset}&limit=${limit}&${sort.query}=${sort.order}`
+        )}&offset=${offset}&limit=${limit}&${sort.sort}=${sort.order}`
 
       case 'tag':
         return `${process.env.NEXT_PUBLIC_API_URL}/movies?tag=${encodeURI(
           String(query)
-        )}&offset=${offset}&limit=${limit}&${sort.query}=${sort.order}`
+        )}&offset=${offset}&limit=${limit}&${sort.sort}=${sort.order}`
 
       case 'studio':
         return `${process.env.NEXT_PUBLIC_API_URL}/movies?studio=${encodeURI(
           String(query)
-        )}&offset=${offset}&limit=${limit}&${sort.query}=${sort.order}`
+        )}&offset=${offset}&limit=${limit}&${sort.sort}=${sort.order}`
 
       case 'country':
         return `${process.env.NEXT_PUBLIC_API_URL}/movies?country=${encodeURI(
           String(query)
-        )}&offset=${offset}&limit=${limit}&${sort.query}=${sort.order}`
+        )}&offset=${offset}&limit=${limit}&${sort.sort}=${sort.order}`
 
       case 'release':
         return `${
           process.env.NEXT_PUBLIC_API_URL
         }/movies/release/decade/${String(
           query
-        )}?offset=${offset}&limit=${limit}&${sort.query}=${sort.order}`
+        )}?offset=${offset}&limit=${limit}&${sort.sort}=${sort.order}`
 
       case 'time':
-        return `${process.env.NEXT_PUBLIC_API_URL}/movies/time?begin=${number?.begin}&end=${number?.end}&offset=${offset}&limit=${limit}&${sort.query}=${sort.order}`
+        return `${process.env.NEXT_PUBLIC_API_URL}/movies/time?begin=${number?.begin}&end=${number?.end}&offset=${offset}&limit=${limit}&${sort.sort}=${sort.order}`
 
       default:
         return ''
