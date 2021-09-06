@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { NextPage } from 'next'
 import Head from 'next/head'
 import { useAuth0 } from '@auth0/auth0-react'
-import { useRecoilValueLoadable, useRecoilState } from 'recoil'
+import { useRecoilValueLoadable, useRecoilState, useRecoilValue } from 'recoil'
 import { Grid } from '@material-ui/core'
 import Spinner from '../common/Spinner'
 import { authState } from '../../recoil/atoms/auth'
@@ -12,12 +12,14 @@ import Activity from './Activity'
 import { fetchMoviesByUser } from '../../src/utils/api/movie'
 import MyPageHeader from '../common/MyPageHeader'
 import BackButton from '../common/BackButton'
+import { sortState } from '../../recoil/atoms/sort'
 
 interface MyPageProps {}
 
 const MyPage: NextPage<MyPageProps> = () => {
   const isAuth = useRecoilValueLoadable(authState)
   const [watched, setWatched] = useRecoilState(watchedState)
+  const sort = useRecoilValue(sortState)
 
   const { isAuthenticated, isLoading } = useAuth0()
 
@@ -25,7 +27,10 @@ const MyPage: NextPage<MyPageProps> = () => {
     // userの鑑賞本数を返す
     ;(async () => {
       if (isAuth.state === 'hasValue' || watched === 0) {
-        const { count } = await fetchMoviesByUser(isAuth.contents.accessToken)
+        const { count } = await fetchMoviesByUser(
+          isAuth.contents.accessToken,
+          sort
+        )
         setWatched(count)
       }
     })()
