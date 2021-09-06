@@ -20,7 +20,7 @@ const Cards: NextPage<CardsProps> = ({ loadMore, hasMore, loader, movies }) => {
       <Grid container spacing={2} className={styles.list}>
         <Grid item xs={2} />
         <Grid item xs={8}>
-          <Grid container spacing={10}>
+          <Grid container spacing={5}>
             {movies.state === 'hasValue' &&
               movies.contents.map((movie) => (
                 <MovieItem key={movie.id} movie={movie} />

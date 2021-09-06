@@ -34,7 +34,7 @@ const MovieResults: NextPage<MovieResultsProps> = ({
         <Grid container justifyContent="center" className={styles.header}>
           <Typography gutterBottom variant="h4" component="h2">
             <Box fontWeight="fontWeightBold">
-              {title}の検索結果 {watched}件
+              {title} {watched}件
             </Box>
           </Typography>
         </Grid>
