@@ -10,13 +10,17 @@ import {
   Box,
 } from '@material-ui/core'
 import styles from '../../styles/components/common/sort.module.css'
-import SortButton from './SortButton'
+import SortButton, { SortCategoryComponentType } from './SortButton'
 
 interface SortProps {
   watched: number
+  category: SortCategoryComponentType
+  query?: string
+  begin?: number
+  end?: number
 }
 
-const Sort: FC<SortProps> = ({ watched }) => {
+const Sort: FC<SortProps> = ({ watched, category, query, begin, end }) => {
   return (
     <TableContainer component={Paper} className={styles.wrapper}>
       <Table>
@@ -30,7 +34,12 @@ const Sort: FC<SortProps> = ({ watched }) => {
               )}
             </TableCell>
             <TableCell align="right">
-              <SortButton />
+              <SortButton
+                category={category}
+                query={query}
+                begin={begin}
+                end={end}
+              />
             </TableCell>
           </TableRow>
         </TableBody>

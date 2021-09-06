@@ -1,4 +1,4 @@
-import React, { FC, useState, useContext } from 'react'
+import React, { FC, useState } from 'react'
 import { IconButton, Menu, MenuItem } from '@material-ui/core'
 import { FilterList } from '@material-ui/icons'
 import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
@@ -9,19 +9,23 @@ import API, { offset, limit } from '../../src/utils/api/api'
 import { IMovie } from '../../types/movie'
 import { SortType, sortState } from '../../recoil/atoms/sort'
 import { scrollState } from '../../recoil/atoms/scroll'
-import { SortCategoryComponentContext } from '../movie/MoviesList'
 
-interface SortButtonProps {}
+interface SortButtonProps {
+  category: SortCategoryComponentType
+  query?: string
+  begin?: number
+  end?: number
+}
 
 export type SortCategoryComponentType =
-  | 'MoviesList'
-  | 'Search'
-  | 'Countries'
-  | 'Tags'
+  | 'moviesList'
+  | 'search'
+  | 'countries'
+  | 'tags'
+  | 'year'
+  | 'time'
 
-const SortButton: FC<SortButtonProps> = () => {
-  const category = useContext(SortCategoryComponentContext)
-
+const SortButton: FC<SortButtonProps> = ({ category, query, begin, end }) => {
   const accessToken = useRecoilValueLoadable(authState)
   const setMovies = useSetRecoilState(moviesState)
   const setSort = useSetRecoilState(sortState)
@@ -37,20 +41,36 @@ const SortButton: FC<SortButtonProps> = () => {
     setAnchorEl(null)
   }
 
-  const switchUrl = (category: SortCategoryComponentType, params: SortType) => {
-    const { sort, order, query } = params
+  const switchUrl = (
+    category: SortCategoryComponentType,
+    query: string,
+    params: SortType
+  ) => {
+    const { sort, order } = params
     switch (category) {
-      case 'MoviesList':
+      case 'moviesList':
         return `${process.env.NEXT_PUBLIC_API_URL}/movies?offset=${offset}&limit=${limit}&${sort}=${order}`
 
-      case 'Search':
-        return ''
+      case 'search':
+        return `${process.env.NEXT_PUBLIC_API_URL}/movies?title=${encodeURI(
+          query
+        )}&offset=${offset}&limit=${limit}&${sort}=${order}`
 
-      case 'Countries':
-        return ''
+      case 'countries':
+        return `${process.env.NEXT_PUBLIC_API_URL}/movies?country=${encodeURI(
+          query
+        )}&offset=${offset}&limit=${limit}&${sort}=${order}`
 
-      case 'Tags':
-        return ''
+      case 'tags':
+        return `${process.env.NEXT_PUBLIC_API_URL}/movies?tag=${encodeURI(
+          query
+        )}&offset=${offset}&limit=${limit}&${sort}=${order}`
+
+      case 'year':
+        return `${process.env.NEXT_PUBLIC_API_URL}/movies/release/decade/${query}?offset=${offset}&limit=${limit}&${sort}=${order}`
+
+      case 'time':
+        return `${process.env.NEXT_PUBLIC_API_URL}/movies/time?begin=${begin}&end=${end}&offset=${offset}&limit=${limit}&${sort}=${order}`
 
       default:
         return ''
@@ -58,18 +78,20 @@ const SortButton: FC<SortButtonProps> = () => {
   }
 
   const onClick = async (params: SortType) => {
+    setHasMore(true)
     const { sort, order } = params
     if (accessToken.state === 'hasValue')
       setAuthToken(accessToken.contents.accessToken)
 
     const setMoviesAndSort = async () => {
-      const res = await API.get<[IMovie[], number]>(switchUrl(category, params))
+      const res = await API.get<[IMovie[], number]>(
+        switchUrl(category, String(query), params)
+      )
       setMovies(res.data[0])
-      setSort({ sort, order })
+      setSort({ ...params, sort, order })
     }
 
     setMoviesAndSort()
-    setHasMore(true)
   }
 
   return (
