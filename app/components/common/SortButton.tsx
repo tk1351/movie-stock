@@ -21,6 +21,7 @@ export type SortCategoryComponentType =
   | 'moviesList'
   | 'search'
   | 'countries'
+  | 'studios'
   | 'tags'
   | 'year'
   | 'time'
@@ -58,6 +59,11 @@ const SortButton: FC<SortButtonProps> = ({ category, query, begin, end }) => {
 
       case 'countries':
         return `${process.env.NEXT_PUBLIC_API_URL}/movies?country=${encodeURI(
+          query
+        )}&offset=${offset}&limit=${limit}&${sort}=${order}`
+
+      case 'studios':
+        return `${process.env.NEXT_PUBLIC_API_URL}/movies?studio=${encodeURI(
           query
         )}&offset=${offset}&limit=${limit}&${sort}=${order}`
 
