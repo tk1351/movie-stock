@@ -6,6 +6,7 @@ import {
   useRecoilValue,
 } from 'recoil'
 import { NextPage } from 'next'
+import { Grid, Typography, Box } from '@material-ui/core'
 import { authState } from '../../recoil/atoms/auth'
 import { moviesState, watchedState } from '../../recoil/atoms/movie'
 import { fetchMoviesByUser } from '../../src/utils/api/movie'
@@ -17,6 +18,7 @@ import Cards from './Cards'
 import Sort from '../common/Sort'
 import { sortState } from '../../recoil/atoms/sort'
 import { scrollState } from '../../recoil/atoms/scroll'
+import styles from '../../styles/components/movie/moviesList.module.css'
 
 interface MoviesListPageProps {}
 
@@ -61,13 +63,20 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
 
   return (
     <>
-      <Sort watched={watched} category={'moviesList'} />
-      <Cards
-        loadMore={loadMore}
-        hasMore={hasMore}
-        loader={loader}
-        movies={movies}
-      />
+      <Sort category={'moviesList'} />
+      <Grid container>
+        <Grid container justifyContent="center" className={styles.header}>
+          <Typography gutterBottom variant="h4" component="h2">
+            <Box fontWeight="fontWeightBold">鑑賞本数: {watched}件</Box>
+          </Typography>
+        </Grid>
+        <Cards
+          loadMore={loadMore}
+          hasMore={hasMore}
+          loader={loader}
+          movies={movies}
+        />
+      </Grid>
     </>
   )
 }

@@ -59,7 +59,7 @@ const Year: NextPage<YearProps> = () => {
         <Spinner />
       ) : (
         <>
-          <Sort watched={watched} category={'year'} query={year} />
+          <Sort category={'year'} query={year} />
           <MovieResults
             title={`${year}年代の映画`}
             watched={watched}

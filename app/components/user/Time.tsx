@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useFetchMovies } from '../../src/utils/hooks/useFetchMovies'
@@ -76,13 +76,7 @@ const Time: NextPage<TimeProps> = () => {
         <Spinner />
       ) : (
         <>
-          <Sort
-            watched={watched}
-            category={'time'}
-            query={title}
-            begin={begin}
-            end={end}
-          />
+          <Sort category={'time'} query={title} begin={begin} end={end} />
           <MovieResults
             title={`${title}の映画`}
             watched={watched}

@@ -64,9 +64,9 @@ const Tags: NextPage<TagsPageProps> = () => {
         <Spinner />
       ) : (
         <>
-          <Sort watched={watched} category={'tags'} query={tagText} />
+          <Sort category={'tags'} query={tagText} />
           <MovieResults
-            title={tagText}
+            title={`#${tagText}`}
             watched={watched}
             loadMore={loadMore}
             hasMore={hasMore}

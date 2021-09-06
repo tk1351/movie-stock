@@ -63,9 +63,9 @@ const Search: NextPage<SearchPageProps> = () => {
         <Spinner />
       ) : (
         <>
-          <Sort watched={watched} category={'search'} query={title} />
+          <Sort category={'search'} query={title} />
           <MovieResults
-            title={title}
+            title={`${title}の検索結果`}
             watched={watched}
             loadMore={loadMore}
             hasMore={hasMore}

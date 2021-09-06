@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import {
@@ -64,9 +64,9 @@ const Countries: NextPage<CountriesPageProps> = () => {
         <Spinner />
       ) : (
         <>
-          <Sort watched={watched} category={'countries'} query={country} />
+          <Sort category={'countries'} query={country} />
           <MovieResults
-            title={country}
+            title={`製作国: ${country}`}
             watched={watched}
             loadMore={loadMore}
             hasMore={hasMore}
