@@ -198,7 +198,7 @@ const Crews: NextPage<CrewsPageProps> = () => {
             <Grid container spacing={2} className={styles.list}>
               <Grid item xs={2} />
               <Grid item xs={8}>
-                <Grid container spacing={10}>
+                <Grid container spacing={5}>
                   {orderedCrews.map((crew) => (
                     <CrewItem key={crew.id} crew={crew} />
                   ))}
