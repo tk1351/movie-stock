@@ -19,7 +19,9 @@ export class WatchList extends DefaultEntity {
   @Column()
   url: string;
 
-  @ManyToOne(() => User, (user) => user.watchList)
+  @ManyToOne(() => User, (user) => user.watchList, {
+    orphanedRowAction: 'delete',
+  })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
 
