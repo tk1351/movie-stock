@@ -9,6 +9,7 @@ import {
   Delete,
   Param,
   ParseIntPipe,
+  Patch,
 } from '@nestjs/common';
 import { WatchListService } from './watch-list.service';
 import { WatchList } from './models/watch-list.entity';
@@ -17,6 +18,7 @@ import { CreateWatchListDto } from './dto/create-watch-list.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { CurrentUser } from 'src/auth/get-user.decorator';
 import { GetWatchListQueryParamsDto } from './dto/get-watch-list-query-params.dto';
+import { UpdateWatchListDto } from './dto/update-watch-list.dto';
 
 @Controller('watch-list')
 export class WatchListController {
@@ -38,6 +40,16 @@ export class WatchListController {
     @CurrentUser() user: UserInfo,
   ): Promise<IMessage> {
     return this.watchListService.registerMovie(createWatchListDto, user);
+  }
+
+  @Patch('/update/:id')
+  @UseGuards(AuthGuard)
+  updateWatchList(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(ValidationPipe) params: UpdateWatchListDto,
+    @CurrentUser() user: UserInfo,
+  ): Promise<IMessage> {
+    return this.watchListService.updateWatchList(id, params, user);
   }
 
   @Delete('/delete/:id')
