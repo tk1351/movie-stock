@@ -72,6 +72,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
         alertType: 'succeeded',
         open: true,
       })
+      reset()
     } catch (e) {
       throw new Error(e)
     }
@@ -86,7 +87,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
         name="title"
         control={control}
         defaultValue=""
-        render={({ field: { onChange } }) => (
+        render={({ field: { onChange, value } }) => (
           <TextField
             label={'タイトル'}
             id="title"
@@ -94,6 +95,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
             name="title"
             variant="outlined"
             onChange={onChange}
+            value={value}
           />
         )}
       />
@@ -101,7 +103,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
         name="director"
         control={control}
         defaultValue=""
-        render={({ field: { onChange } }) => (
+        render={({ field: { onChange, value } }) => (
           <TextField
             label={'監督'}
             id="director"
@@ -109,6 +111,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
             name="director"
             variant="outlined"
             onChange={onChange}
+            value={value}
           />
         )}
       />
@@ -116,7 +119,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
         name="release"
         control={control}
         defaultValue=""
-        render={({ field: { onChange } }) => (
+        render={({ field: { onChange, value } }) => (
           <TextField
             label={'製作年'}
             id="release"
@@ -124,6 +127,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
             name="release"
             variant="outlined"
             onChange={onChange}
+            value={value}
           />
         )}
       />
@@ -131,7 +135,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
         name="time"
         control={control}
         defaultValue=""
-        render={({ field: { onChange } }) => (
+        render={({ field: { onChange, value } }) => (
           <TextField
             label={'時間'}
             id="time"
@@ -139,6 +143,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
             name="time"
             variant="outlined"
             onChange={onChange}
+            value={value}
           />
         )}
       />
@@ -146,7 +151,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
         name="url"
         control={control}
         defaultValue=""
-        render={({ field: { onChange } }) => (
+        render={({ field: { onChange, value } }) => (
           <TextField
             label={'URL'}
             id="url"
@@ -154,6 +159,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
             name="url"
             variant="outlined"
             onChange={onChange}
+            value={value}
           />
         )}
       />
