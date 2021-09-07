@@ -9,6 +9,7 @@ import { CrewsModule } from './crews/crews.module';
 import { TagsModule } from './tags/tags.module';
 import { CountriesModule } from './countries/countries.module';
 import { StudiosModule } from './studios/studios.module';
+import { WatchListModule } from './watch-list/watch-list.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { StudiosModule } from './studios/studios.module';
     TagsModule,
     CountriesModule,
     StudiosModule,
+    WatchListModule,
   ],
 })
 export class AppModule {}
