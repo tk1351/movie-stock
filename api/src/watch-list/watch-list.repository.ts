@@ -2,6 +2,7 @@ import { EntityRepository, Repository, getCustomRepository } from 'typeorm';
 import {
   InternalServerErrorException,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { WatchList } from './models/watch-list.entity';
 import { IMessage, UserInfo } from '../types/type';
@@ -67,6 +68,27 @@ export class WatchListRepository extends Repository<WatchList> {
 
     try {
       return { message: '観たい映画を登録しました' };
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async deleteWatchList(id: number, user: UserInfo): Promise<IMessage> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (foundUser.role === undefined)
+      throw new UnauthorizedException('権限がありません');
+
+    await this.findOne({ id });
+
+    const result = await this.delete({ id });
+
+    if (result.affected === 0)
+      throw new NotFoundException(`id: ${id}のwatchListは存在しません`);
+
+    try {
+      return { message: '観たい映画を削除しました' };
     } catch (e) {
       throw new InternalServerErrorException();
     }

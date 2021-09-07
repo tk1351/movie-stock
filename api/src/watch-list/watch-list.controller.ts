@@ -6,6 +6,9 @@ import {
   ValidationPipe,
   UseGuards,
   Query,
+  Delete,
+  Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { WatchListService } from './watch-list.service';
 import { WatchList } from './models/watch-list.entity';
@@ -28,12 +31,21 @@ export class WatchListController {
     return this.watchListService.getWatchList(params, user);
   }
 
-  @Post()
+  @Post('/register')
   @UseGuards(AuthGuard)
   registerMovie(
     @Body(ValidationPipe) createWatchListDto: CreateWatchListDto,
     @CurrentUser() user: UserInfo,
   ): Promise<IMessage> {
     return this.watchListService.registerMovie(createWatchListDto, user);
+  }
+
+  @Delete('/delete/:id')
+  @UseGuards(AuthGuard)
+  deleteWatchList(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: UserInfo,
+  ): Promise<IMessage> {
+    return this.watchListService.deleteWatchList(id, user);
   }
 }

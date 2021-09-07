@@ -26,4 +26,8 @@ export class WatchListService {
   ): Promise<IMessage> {
     return this.watchListRepository.registerMovie(createWatchListDto, user);
   }
+
+  async deleteWatchList(id: number, user: UserInfo): Promise<IMessage> {
+    return this.watchListRepository.deleteWatchList(id, user);
+  }
 }
