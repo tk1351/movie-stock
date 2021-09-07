@@ -116,10 +116,10 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
   }
 
   const {
-    filterCrews,
-    filterStudios,
-    crewsHandleChange,
-    studiosHandleChange,
+    crewsSuggestions,
+    studiosSuggestions,
+    debouncedCrewsSuggestions,
+    debouncedStudiosSuggestions,
   } = useAutoCompleteHandleChange()
 
   return (
@@ -267,7 +267,7 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                       autocomplete={{
                         onChange: (_: any, data: any) => onChange(data),
                         id: `studios.${index}.studio`,
-                        options: filterStudios.map(
+                        options: studiosSuggestions.map(
                           (option) => option.studios_studio
                         ),
                       }}
@@ -285,7 +285,7 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                         error: Boolean(errors.studios && errors.studios[index]),
                         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                           onChange(e.target.value)
-                          studiosHandleChange('studios', e.target.value)
+                          debouncedStudiosSuggestions('studios', e.target.value)
                         },
                       }}
                     />
@@ -359,7 +359,9 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                       autocomplete={{
                         onChange: (_: any, data: any) => onChange(data),
                         id: `crews.${index}.name`,
-                        options: filterCrews.map((option) => option.crews_name),
+                        options: crewsSuggestions.map(
+                          (option) => option.crews_name
+                        ),
                       }}
                       textField={{
                         label: '名前',
@@ -374,7 +376,7 @@ const RegisterForm: NextPage<RegisterFormPageProps> = () => {
                         error: Boolean(errors.crews && errors.crews[index]),
                         onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                           onChange(e.target.value)
-                          crewsHandleChange('crews', e.target.value)
+                          debouncedCrewsSuggestions('crews', e.target.value)
                         },
                       }}
                     />

@@ -1,25 +1,38 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
+import debounce from 'lodash.debounce'
 import { authState } from '../../../recoil/atoms/auth'
 import { setAuthToken } from '../api/setAuthToken'
 import API, { limit, offset } from '../api/api'
 import { CrewsFilter, StudiosRank, IMovie } from '../../../types/movie'
 
+interface DebouncedFunc<T extends (...args: any[]) => any> {
+  (...args: Parameters<T>): ReturnType<T> | undefined
+  cancel(): void
+  flush(): ReturnType<T> | undefined
+}
+
 type useAutoCompleteHandleChangeReturnType = {
-  filterCrews: CrewsFilter[]
-  filterStudios: StudiosRank[]
-  filterMovies: IMovie[]
-  crewsHandleChange: (category: 'crews', query: string) => Promise<void>
-  studiosHandleChange: (category: 'studios', query: string) => Promise<void>
-  titleHandleChange: (category: 'title', query: string) => Promise<void>
+  crewsSuggestions: CrewsFilter[]
+  studiosSuggestions: StudiosRank[]
+  moviesSuggestions: IMovie[]
+  debouncedTitleSuggestions: DebouncedFunc<
+    (category: 'title', query: string) => Promise<void>
+  >
+  debouncedCrewsSuggestions: DebouncedFunc<
+    (category: 'crews', query: string) => Promise<void>
+  >
+  debouncedStudiosSuggestions: DebouncedFunc<
+    (category: 'studios', query: string) => Promise<void>
+  >
 }
 
 type AutoCompleteCategory = 'crews' | 'studios' | 'title'
 
 export const useAutoCompleteHandleChange = (): useAutoCompleteHandleChangeReturnType => {
-  const [filterCrews, setFilterCrews] = useState<CrewsFilter[]>([]),
-    [filterStudios, setFilterStudios] = useState<StudiosRank[]>([]),
-    [filterMovies, setFilterMovies] = useState<IMovie[]>([])
+  const [crewsSuggestions, setCrewsSuggestions] = useState<CrewsFilter[]>([]),
+    [studiosSuggestions, setStudiosSuggestions] = useState<StudiosRank[]>([]),
+    [moviesSuggestions, setMoviesSuggestions] = useState<IMovie[]>([])
 
   const isAuth = useRecoilValueLoadable(authState)
 
@@ -39,38 +52,68 @@ export const useAutoCompleteHandleChange = (): useAutoCompleteHandleChangeReturn
     }
   }
 
-  const titleHandleChange = async (category: 'title', query: string) => {
+  const getTitleSuggestions = async (category: 'title', query: string) => {
     if (isAuth.state === 'hasValue') {
       setAuthToken(isAuth.contents.accessToken)
       const res = await API.get<[IMovie[], number]>(switchUrl(category, query))
 
       const movies = res.data[0]
-      setFilterMovies(movies)
+      setMoviesSuggestions(movies)
     }
   }
 
-  const crewsHandleChange = async (category: 'crews', query: string) => {
+  const getCrewsSuggestions = async (category: 'crews', query: string) => {
     if (isAuth.state === 'hasValue') {
       setAuthToken(isAuth.contents.accessToken)
       const res = await API.get<CrewsFilter[]>(switchUrl(category, query))
-      setFilterCrews(res.data)
+      setCrewsSuggestions(res.data)
     }
   }
 
-  const studiosHandleChange = async (category: 'studios', query: string) => {
+  const getStudiosSuggestions = async (category: 'studios', query: string) => {
     if (isAuth.state === 'hasValue') {
       setAuthToken(isAuth.contents.accessToken)
       const res = await API.get<StudiosRank[]>(switchUrl(category, query))
-      setFilterStudios(res.data)
+      setStudiosSuggestions(res.data)
     }
   }
 
+  const debouncedTitleSuggestions = useMemo(
+    () =>
+      debounce(
+        (category: 'title', query: string) =>
+          getTitleSuggestions(category, query),
+        1000
+      ),
+    []
+  )
+
+  const debouncedCrewsSuggestions = useMemo(
+    () =>
+      debounce(
+        (category: 'crews', query: string) =>
+          getCrewsSuggestions(category, query),
+        1000
+      ),
+    []
+  )
+
+  const debouncedStudiosSuggestions = useMemo(
+    () =>
+      debounce(
+        (category: 'studios', query: string) =>
+          getStudiosSuggestions(category, query),
+        1000
+      ),
+    []
+  )
+
   return {
-    filterCrews,
-    filterStudios,
-    filterMovies,
-    crewsHandleChange,
-    studiosHandleChange,
-    titleHandleChange,
+    crewsSuggestions,
+    studiosSuggestions,
+    moviesSuggestions,
+    debouncedCrewsSuggestions,
+    debouncedStudiosSuggestions,
+    debouncedTitleSuggestions,
   }
 }
