@@ -35,7 +35,10 @@ const MovieSearchInput: NextPage<MovieSearchInputProps> = () => {
     })
   }
 
-  const { filterMovies, titleHandleChange } = useAutoCompleteHandleChange()
+  const {
+    moviesSuggestions,
+    debouncedTitleSuggestions,
+  } = useAutoCompleteHandleChange()
 
   return (
     <Paper
@@ -51,7 +54,7 @@ const MovieSearchInput: NextPage<MovieSearchInputProps> = () => {
             autocomplete={{
               onChange: (_: any, data: any) => onChange(data),
               id: 'search-title',
-              options: filterMovies.map((option) => option.title),
+              options: moviesSuggestions.map((option) => option.title),
             }}
             textField={{
               label: '映画を検索する',
@@ -62,7 +65,7 @@ const MovieSearchInput: NextPage<MovieSearchInputProps> = () => {
               variant: 'filled',
               onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
                 onChange(e.target.value)
-                titleHandleChange('title', e.target.value)
+                debouncedTitleSuggestions('title', e.target.value)
               },
             }}
           />
