@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { useForm, SubmitHandler, Controller } from 'react-hook-form'
-import { TextField, Button } from '@material-ui/core'
+import { TextField, Button, Container } from '@material-ui/core'
 import {
   useSetRecoilState,
   useRecoilValueLoadable,
@@ -16,6 +16,7 @@ import { authState } from '../../recoil/atoms/auth'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import { watchListState } from '../../recoil/atoms/watchList'
 import { watchListSelector } from '../../recoil/selectors/watchList'
+import styles from '../../styles/components/watch-list/registerForm.module.css'
 
 interface RegisterFormProps {}
 
@@ -82,99 +83,110 @@ const RegisterForm: FC<RegisterFormProps> = () => {
     setOpen((prev) => !prev)
   }
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Controller
-        name="title"
-        control={control}
-        defaultValue=""
-        render={({ field: { onChange, value } }) => (
-          <TextField
-            label={'タイトル'}
-            id="title"
-            type="text"
-            name="title"
-            variant="outlined"
-            onChange={onChange}
-            value={value}
-          />
-        )}
-      />
-      <Controller
-        name="director"
-        control={control}
-        defaultValue=""
-        render={({ field: { onChange, value } }) => (
-          <TextField
-            label={'監督'}
-            id="director"
-            type="text"
-            name="director"
-            variant="outlined"
-            onChange={onChange}
-            value={value}
-          />
-        )}
-      />
-      <Controller
-        name="release"
-        control={control}
-        defaultValue=""
-        render={({ field: { onChange, value } }) => (
-          <TextField
-            label={'製作年'}
-            id="release"
-            type="text"
+    <Container
+      component="main"
+      maxWidth={false}
+      className={styles.registerFormWrapper}
+    >
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Controller
+          name="title"
+          control={control}
+          defaultValue=""
+          render={({ field: { onChange, value } }) => (
+            <TextField
+              label={'タイトル'}
+              id="title"
+              type="text"
+              name="title"
+              variant="outlined"
+              onChange={onChange}
+              value={value}
+            />
+          )}
+        />
+        <Controller
+          name="director"
+          control={control}
+          defaultValue=""
+          render={({ field: { onChange, value } }) => (
+            <TextField
+              label={'監督'}
+              id="director"
+              type="text"
+              name="director"
+              variant="outlined"
+              onChange={onChange}
+              value={value}
+            />
+          )}
+        />
+        <div>
+          <Controller
             name="release"
-            variant="outlined"
-            onChange={onChange}
-            value={value}
+            control={control}
+            defaultValue=""
+            render={({ field: { onChange, value } }) => (
+              <TextField
+                label={'製作年'}
+                id="release"
+                type="text"
+                name="release"
+                variant="outlined"
+                onChange={onChange}
+                value={value}
+              />
+            )}
           />
-        )}
-      />
-      <Controller
-        name="time"
-        control={control}
-        defaultValue=""
-        render={({ field: { onChange, value } }) => (
-          <TextField
-            label={'時間'}
-            id="time"
-            type="text"
+          <Controller
             name="time"
-            variant="outlined"
-            onChange={onChange}
-            value={value}
+            control={control}
+            defaultValue=""
+            render={({ field: { onChange, value } }) => (
+              <TextField
+                label={'時間'}
+                id="time"
+                type="text"
+                name="time"
+                variant="outlined"
+                onChange={onChange}
+                value={value}
+              />
+            )}
           />
-        )}
-      />
-      <Controller
-        name="url"
-        control={control}
-        defaultValue=""
-        render={({ field: { onChange, value } }) => (
-          <TextField
-            label={'URL'}
-            id="url"
-            type="text"
+          <Controller
             name="url"
-            variant="outlined"
-            onChange={onChange}
-            value={value}
+            control={control}
+            defaultValue=""
+            render={({ field: { onChange, value } }) => (
+              <TextField
+                label={'URL'}
+                id="url"
+                type="text"
+                name="url"
+                variant="outlined"
+                onChange={onChange}
+                value={value}
+              />
+            )}
           />
-        )}
-      />
-      <Button type="submit" color="primary" variant="contained">
-        登録
-      </Button>
-      <Button
-        type="button"
-        color="secondary"
-        variant="contained"
-        onClick={() => onClick()}
-      >
-        キャンセル
-      </Button>
-    </form>
+        </div>
+        <div className={styles.buttonWrapper}>
+          <Button type="submit" color="primary" variant="contained">
+            登録
+          </Button>
+          <Button
+            type="button"
+            color="secondary"
+            variant="contained"
+            onClick={() => onClick()}
+            className={styles.cancelButton}
+          >
+            キャンセル
+          </Button>
+        </div>
+      </form>
+    </Container>
   )
 }
 
