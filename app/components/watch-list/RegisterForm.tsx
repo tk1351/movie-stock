@@ -56,7 +56,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
     const arrayMax = (a: number, b: number) => {
       return Math.max(a, b)
     }
-    const maxId = idArray.reduce(arrayMax)
+    const maxId = idArray.reduce(arrayMax, 0)
 
     const newData: IWatchList = {
       id: maxId + 1,
