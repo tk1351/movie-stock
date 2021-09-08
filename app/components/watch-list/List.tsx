@@ -7,7 +7,7 @@ import Spinner from '../common/Spinner'
 interface ListProps {}
 
 const List: FC<ListProps> = () => {
-  const [data, isLoading] = useFetchWatchList()
+  const [data, watched, isLoading] = useFetchWatchList()
   return (
     <>
       {isLoading ? (
@@ -17,13 +17,11 @@ const List: FC<ListProps> = () => {
           <Grid container>
             <Grid container justifyContent="center">
               <Typography gutterBottom variant="h4" component="h2">
-                <Box fontWeight="fontWeightBold">
-                  観たい映画: {data.contents.length}本
-                </Box>
+                <Box fontWeight="fontWeightBold">観たい映画: {watched}本</Box>
               </Typography>
             </Grid>
           </Grid>
-          <ListTable />
+          <ListTable watchList={data} />
         </>
       )}
     </>

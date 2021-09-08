@@ -8,23 +8,25 @@ import {
   TableCell,
   TableBody,
 } from '@material-ui/core'
-import InfiniteScroll from 'react-infinite-scroller'
-import styles from '../../styles/components/watch-list/listTable.module.css'
-import { IWatchList } from '../../types/watchList'
 import {
   useRecoilState,
   useRecoilValueLoadable,
   useSetRecoilState,
+  Loadable,
 } from 'recoil'
+import InfiniteScroll from 'react-infinite-scroller'
+import styles from '../../styles/components/watch-list/listTable.module.css'
+import { IWatchList } from '../../types/watchList'
 import { scrollState } from '../../recoil/atoms/scroll'
-import { authState } from '../../recoil/atoms/auth'
+import { authState, Auth } from '../../recoil/atoms/auth'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import API, { limit } from '../../src/utils/api/api'
 import Spinner from '../common/Spinner'
-import { watchListState } from '../../recoil/atoms/watchList'
 import { watchListSelector } from '../../recoil/selectors/watchList'
 
-interface ListTableProps {}
+interface ListTableProps {
+  watchList: Loadable<IWatchList[]>
+}
 
 interface Column {
   id: number
@@ -40,11 +42,10 @@ const columns: Column[] = [
   { id: 5, label: 'URL', align: 'right' },
 ]
 
-const ListTable: FC<ListTableProps> = () => {
-  const accessToken = useRecoilValueLoadable(authState)
-  const [hasMore, setHasMore] = useRecoilState(scrollState)
-  const data = useRecoilValueLoadable<IWatchList[]>(watchListState)
-  const setIsFetched = useSetRecoilState(watchListSelector)
+const ListTable: FC<ListTableProps> = ({ watchList }) => {
+  const accessToken = useRecoilValueLoadable<Auth>(authState)
+  const [hasMore, setHasMore] = useRecoilState<boolean>(scrollState)
+  const setIsFetched = useSetRecoilState<IWatchList[]>(watchListSelector)
   const URL_MAX_LENGTH = 30
 
   useEffect(() => {
@@ -55,12 +56,12 @@ const ListTable: FC<ListTableProps> = () => {
     if (accessToken.state === 'hasValue')
       setAuthToken(accessToken.contents.accessToken)
 
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/watch-list?offset=${data.contents.length}&limit=${limit}`
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/watch-list?offset=${watchList.contents.length}&limit=${limit}`
     const res = await API.get<[IWatchList[], number]>(url)
 
     const listData = res.data[0]
 
-    setIsFetched([...data.contents, ...listData])
+    setIsFetched([...watchList.contents, ...listData])
 
     if (listData.length < 1) {
       setHasMore(false)
@@ -83,8 +84,8 @@ const ListTable: FC<ListTableProps> = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.state === 'hasValue' &&
-              data.contents.map((column) => (
+            {watchList.state === 'hasValue' &&
+              watchList.contents.map((column) => (
                 <TableRow hover role="checkbox" tabIndex={-1} key={column.id}>
                   <TableCell>{column.title}</TableCell>
                   <TableCell align={'right'}>{column.director}</TableCell>
