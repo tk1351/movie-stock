@@ -5,11 +5,19 @@ import {
 import { EntityRepository, Repository } from 'typeorm';
 import { User } from './models/users.entity';
 import { CreateUserDto } from './dto/create-user.dto';
-import { IMessage } from '../types/type';
+import { IMessage, GetUsersSubReturnType } from '../types/type';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
+  async getUsersSub(): Promise<GetUsersSubReturnType[]> {
+    const result = await this.createQueryBuilder('users')
+      .select(['users.sub'])
+      .getMany();
+
+    return result;
+  }
+
   async createUser(createUserDto: CreateUserDto): Promise<IMessage> {
     const { name, email, sub, picture } = createUserDto;
 
