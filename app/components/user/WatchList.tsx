@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect } from 'react'
 import { useRecoilState } from 'recoil'
 import { Button, Grid } from '@material-ui/core'
 import { Add } from '@material-ui/icons'
@@ -6,14 +6,15 @@ import List from '../watch-list/List'
 import RegisterForm from '../watch-list/RegisterForm'
 import { watchListRegisterFormState } from '../../recoil/atoms/watchListRegisterForm'
 import styles from '../../styles/components/user/watchList.module.css'
-import { useFetchWatchList } from '../../src/utils/hooks/useFetchWatchList'
-import Spinner from '../common/Spinner'
 
 interface WatchListProps {}
 
 const WatchList: FC<WatchListProps> = () => {
-  const [data, isLoading] = useFetchWatchList()
   const [open, setOpen] = useRecoilState(watchListRegisterFormState)
+
+  useEffect(() => {
+    setOpen(false)
+  }, [])
 
   const onClick = () => {
     setOpen((prev) => !prev)
@@ -32,11 +33,7 @@ const WatchList: FC<WatchListProps> = () => {
         </Grid>
       )}
       {open && <RegisterForm />}
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        data.state === 'hasValue' && <List watchList={data.contents} />
-      )}
+      <List />
     </div>
   )
 }
