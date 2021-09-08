@@ -1,6 +1,7 @@
-import React, { FC, useEffect } from 'react'
+import React, { FC, useEffect, createRef, useCallback } from 'react'
 import { useRecoilState } from 'recoil'
 import { Button, Grid } from '@material-ui/core'
+import { ArrowUpward } from '@material-ui/icons'
 import { Add } from '@material-ui/icons'
 import List from '../watch-list/List'
 import RegisterForm from '../watch-list/RegisterForm'
@@ -19,8 +20,18 @@ const WatchList: FC<WatchListProps> = () => {
   const onClick = () => {
     setOpen((prev) => !prev)
   }
+
+  const ref = createRef<HTMLDivElement>()
+
+  const scrollToStartOfTable = useCallback(() => {
+    ref!.current!.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  }, [ref])
+
   return (
-    <div className={styles.watchListWrapper}>
+    <div className={styles.watchListWrapper} ref={ref}>
       {!open && (
         <Grid
           container
@@ -34,6 +45,11 @@ const WatchList: FC<WatchListProps> = () => {
       )}
       {open && <RegisterForm />}
       <List />
+      <div className={styles.arrowButton}>
+        <Button type="button" onClick={() => scrollToStartOfTable()}>
+          <ArrowUpward />
+        </Button>
+      </div>
     </div>
   )
 }
