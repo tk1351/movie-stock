@@ -12,7 +12,7 @@ import Spinner from '../common/Spinner'
 interface WatchListProps {}
 
 const WatchList: FC<WatchListProps> = () => {
-  const [data, watched, isLoading] = useFetchWatchList()
+  const [data, isLoading] = useFetchWatchList()
   const [open, setOpen] = useRecoilState(watchListRegisterFormState)
 
   const onClick = () => {
@@ -35,9 +35,7 @@ const WatchList: FC<WatchListProps> = () => {
       {isLoading ? (
         <Spinner />
       ) : (
-        data.state === 'hasValue' && (
-          <List watchList={data.contents} watched={watched} />
-        )
+        data.state === 'hasValue' && <List watchList={data.contents} />
       )}
     </div>
   )
