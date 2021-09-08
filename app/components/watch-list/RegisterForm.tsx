@@ -49,8 +49,14 @@ const RegisterForm: FC<RegisterFormProps> = () => {
       url,
     }
 
+    const idArray = watchList.map((elm) => elm.id)
+    const arrayMax = (a: number, b: number) => {
+      return Math.max(a, b)
+    }
+    const maxId = idArray.reduce(arrayMax)
+
     const newData: IWatchList = {
-      id: watchList.length + 1,
+      id: maxId + 1,
       title,
       director,
       release: Number(release),
@@ -60,6 +66,9 @@ const RegisterForm: FC<RegisterFormProps> = () => {
       updatedAt: new Date(),
     }
 
+    const newWatchList = watchList.slice()
+    newWatchList.unshift(newData)
+
     try {
       if (accessToken.state === 'hasValue')
         setAuthToken(accessToken.contents.accessToken)
@@ -67,7 +76,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
       const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/watch-list/register`
       const res = await API.post<IMessage>(apiUrl, registerData)
 
-      setWatchList([...watchList, newData])
+      setWatchList(newWatchList)
       setIsAlert({
         msg: res.data.message,
         alertType: 'succeeded',
