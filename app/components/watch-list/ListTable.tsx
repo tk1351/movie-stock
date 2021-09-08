@@ -30,6 +30,7 @@ const columns: Column[] = [
 ]
 
 const ListTable: FC<ListTableProps> = ({ watchList }) => {
+  const URL_MAX_LENGTH = 30
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -42,8 +43,8 @@ const ListTable: FC<ListTableProps> = ({ watchList }) => {
             ))}
           </TableRow>
         </TableHead>
-        {watchList.map((column) => (
-          <TableBody key={column.id}>
+        <TableBody>
+          {watchList.map((column) => (
             <TableRow hover role="checkbox" tabIndex={-1} key={column.id}>
               <TableCell>{column.title}</TableCell>
               <TableCell align={'right'}>{column.director}</TableCell>
@@ -56,12 +57,14 @@ const ListTable: FC<ListTableProps> = ({ watchList }) => {
                   rel="noopener noreferrer"
                   className={styles.link}
                 >
-                  {column.url}
+                  {column.url.length > URL_MAX_LENGTH
+                    ? column.url.substr(0, URL_MAX_LENGTH) + '...'
+                    : column.url}
                 </a>
               </TableCell>
             </TableRow>
-          </TableBody>
-        ))}
+          ))}
+        </TableBody>
       </Table>
     </TableContainer>
   )
