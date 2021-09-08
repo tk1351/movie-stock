@@ -5,6 +5,7 @@ import {
   useSetRecoilState,
   useRecoilValueLoadable,
   useRecoilValue,
+  useRecoilState,
 } from 'recoil'
 import { IWatchListInputs, IWatchList } from '../../types/watchList'
 import { watchListRegisterFormState } from '../../recoil/atoms/watchListRegisterForm'
@@ -12,20 +13,22 @@ import API from '../../src/utils/api/api'
 import { IMessage } from '../../types/defaultType'
 import { IAlert } from '../../recoil/atoms/alert'
 import { setAlertState } from '../../recoil/selectors/alert'
-import { authState } from '../../recoil/atoms/auth'
+import { authState, Auth } from '../../recoil/atoms/auth'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import { watchListState } from '../../recoil/atoms/watchList'
 import { watchListSelector } from '../../recoil/selectors/watchList'
 import styles from '../../styles/components/watch-list/registerForm.module.css'
+import { watchedState } from '../../recoil/atoms/movie'
 
 interface RegisterFormProps {}
 
 const RegisterForm: FC<RegisterFormProps> = () => {
-  const setOpen = useSetRecoilState(watchListRegisterFormState)
-  const accessToken = useRecoilValueLoadable(authState)
+  const setOpen = useSetRecoilState<boolean>(watchListRegisterFormState)
+  const accessToken = useRecoilValueLoadable<Auth>(authState)
   const setIsAlert = useSetRecoilState<IAlert>(setAlertState)
-  const watchList = useRecoilValue(watchListState)
+  const watchList = useRecoilValue<IWatchList[]>(watchListState)
   const setWatchList = useSetRecoilState<IWatchList[]>(watchListSelector)
+  const [watched, setWatched] = useRecoilState<number>(watchedState)
 
   const defaultValues: IWatchListInputs = {
     title: '',
@@ -77,6 +80,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
       const res = await API.post<IMessage>(apiUrl, registerData)
 
       setWatchList(newWatchList)
+      setWatched(watched + 1)
       setIsAlert({
         msg: res.data.message,
         alertType: 'succeeded',
