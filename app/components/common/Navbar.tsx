@@ -68,6 +68,11 @@ const Navbar: NextPage<NavbarProps> = () => {
         <MenuItem onClick={() => router.push(`/user/${userInfo.id}`)}>
           マイページ
         </MenuItem>
+        <MenuItem
+          onClick={() => router.push(`/user/${userInfo.id}/watch-list`)}
+        >
+          Watch List
+        </MenuItem>
         <MenuItem onClick={() => logout()}>ログアウト</MenuItem>
       </Menu>
       <Button color="inherit">
