@@ -1,23 +1,20 @@
 import { useState, useEffect } from 'react'
 import {
   useRecoilValueLoadable,
-  useRecoilState,
   useRecoilStateLoadable,
   Loadable,
 } from 'recoil'
 import { authState } from '../../../recoil/atoms/auth'
 import { IWatchList } from '../../../types/watchList'
 import { watchListState } from '../../../recoil/atoms/watchList'
-import { watchedState } from '../../../recoil/atoms/movie'
 import API, { offset, limit } from '../api/api'
 import { setAuthToken } from '../api/setAuthToken'
 
-type useFetchWatchListReturnType = [Loadable<IWatchList[]>, number, boolean]
+type useFetchWatchListReturnType = [Loadable<IWatchList[]>, boolean]
 
 export const useFetchWatchList = (): useFetchWatchListReturnType => {
   const accessToken = useRecoilValueLoadable(authState)
   const [data, setData] = useRecoilStateLoadable<IWatchList[]>(watchListState)
-  const [watched, setWatched] = useRecoilState(watchedState)
 
   const [isLoading, setIsLoading] = useState(true)
 
@@ -27,10 +24,8 @@ export const useFetchWatchList = (): useFetchWatchListReturnType => {
     const res = await API.get<[IWatchList[], number]>(url)
 
     const watchList = res.data[0]
-    const length = res.data[1]
 
     setData(watchList)
-    setWatched(length)
     setIsLoading(false)
   }
 
@@ -40,5 +35,5 @@ export const useFetchWatchList = (): useFetchWatchListReturnType => {
     }
   }, [accessToken])
 
-  return [data, watched, isLoading]
+  return [data, isLoading]
 }
