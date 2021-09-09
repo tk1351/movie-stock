@@ -10,9 +10,9 @@ import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
-  async getUsersSub(): Promise<GetUsersSubReturnType[]> {
+  async getUsersId(): Promise<GetUsersSubReturnType[]> {
     const result = await this.createQueryBuilder('users')
-      .select(['users.sub'])
+      .select(['users.id'])
       .getMany();
 
     return result;

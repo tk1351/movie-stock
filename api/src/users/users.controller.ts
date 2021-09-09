@@ -13,9 +13,9 @@ export class UsersController {
     return await this.usersService.getUsers();
   }
 
-  @Get('/sub')
-  getUsersSub(): Promise<GetUsersSubReturnType[]> {
-    return this.usersService.getUsersSub();
+  @Get('/id')
+  getUsersId(): Promise<GetUsersSubReturnType[]> {
+    return this.usersService.getUsersId();
   }
 
   @Post('/register')

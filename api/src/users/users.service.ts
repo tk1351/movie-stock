@@ -16,8 +16,8 @@ export class UsersService {
     return await this.usersRepository.find();
   }
 
-  async getUsersSub(): Promise<GetUsersSubReturnType[]> {
-    return await this.usersRepository.getUsersSub();
+  async getUsersId(): Promise<GetUsersSubReturnType[]> {
+    return await this.usersRepository.getUsersId();
   }
 
   async getUser(user: UserInfo): Promise<User> {

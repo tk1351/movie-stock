@@ -36,5 +36,5 @@ export interface CountryRank extends DefaultRank {
 export type SortType = 'ASC' | 'DESC';
 
 export interface GetUsersSubReturnType {
-  sub: string;
+  id: number;
 }
