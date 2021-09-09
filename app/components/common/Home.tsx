@@ -5,13 +5,13 @@ import { useRecoilValueLoadable } from 'recoil'
 import MoviesList from '../movie/MoviesList'
 import { authState, Auth } from '../../recoil/atoms/auth'
 import API from '../../src/utils/api/api'
-import { IUsersSub, RegisterUser } from '../../types/user'
+import { IUsersId, RegisterUser } from '../../types/user'
 import { registerUser } from '../../src/utils/api/user'
 
 interface HomePageProps {}
 
 const Home: NextPage<HomePageProps> = () => {
-  const [usersId, setUsersId] = useState<IUsersSub[]>([])
+  const [usersId, setUsersId] = useState<IUsersId[]>([])
   const { loginWithRedirect, isAuthenticated, user } = useAuth0()
 
   useEffect(() => {

@@ -4,3 +4,7 @@ export interface RegisterUser {
   sub: string
   picture: string
 }
+
+export interface IUsersId {
+  id: number
+}
