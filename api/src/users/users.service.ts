@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './models/users.entity';
 import { UsersRepository } from './users.repository';
 import { CreateUserDto } from './dto/create-user.dto';
-import { IMessage, UserInfo } from '../types/type';
+import { IMessage, UserInfo, GetUsersSubReturnType } from '../types/type';
 
 @Injectable()
 export class UsersService {
@@ -14,6 +14,10 @@ export class UsersService {
 
   async getUsers(): Promise<User[]> {
     return await this.usersRepository.find();
+  }
+
+  async getUsersId(): Promise<GetUsersSubReturnType[]> {
+    return await this.usersRepository.getUsersId();
   }
 
   async getUser(user: UserInfo): Promise<User> {
