@@ -7,6 +7,7 @@ import { authState, Auth } from '../../recoil/atoms/auth'
 import API from '../../src/utils/api/api'
 import { IUsersId, RegisterUser } from '../../types/user'
 import { registerUser } from '../../src/utils/api/user'
+import Landing from './Landing'
 
 interface HomePageProps {}
 
@@ -49,7 +50,10 @@ const Home: NextPage<HomePageProps> = () => {
   return (
     <div>
       {!isAuthenticated && (
-        <button onClick={() => loginWithRedirect()}>Login</button>
+        <>
+          <Landing />
+          <button onClick={() => loginWithRedirect()}>Login</button>
+        </>
       )}
       {isAuthenticated && (
         <>
