@@ -27,4 +27,8 @@ export class UsersService {
   async createUser(createUserDto: CreateUserDto): Promise<IMessage> {
     return await this.usersRepository.createUser(createUserDto);
   }
+
+  async createAdmin(createUserDto: CreateUserDto): Promise<IMessage> {
+    return await this.usersRepository.createAdmin(createUserDto);
+  }
 }

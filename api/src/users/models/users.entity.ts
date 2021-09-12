@@ -19,7 +19,7 @@ export class User extends DefaultEntity {
   picture: string;
 
   @Column()
-  role: 'user' | undefined;
+  role: 'user' | 'admin' | undefined;
 
   @OneToMany(() => Movie, (movies) => movies.user)
   movies: Movie[];
