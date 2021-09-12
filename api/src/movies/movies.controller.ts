@@ -21,6 +21,7 @@ import { GetMoviesQueryParams } from './dto/get-movies-query-params.dto';
 import { UpdateMovieDto } from './dto/update-movie.dto';
 import { GetMoviesByDecadeQueryParams } from './dto/get-movies-by-decade-query-params.dto';
 import { GetMoviesMoreThanLessThanTimeQueryParams } from './dto/get-movies-more-than-less-than-time-query-params.dto';
+import { CreateLandingMovieDto } from './dto/create-landing-moviee.dto';
 
 @Controller('movies')
 export class MoviesController {
@@ -46,6 +47,11 @@ export class MoviesController {
       getMoviesMoreThanLessThanTimeQueryParams,
       user,
     );
+  }
+
+  @Get('/landing')
+  getLandingMovies(): Promise<Movie[]> {
+    return this.moviesService.getLandingMovies();
   }
 
   @Get('/:id')
@@ -84,6 +90,15 @@ export class MoviesController {
     @CurrentUser() user: UserInfo,
   ): Promise<IMessage> {
     return this.moviesService.registerMovie(createMovieDto, user);
+  }
+
+  @Post('/register/landing')
+  @UseGuards(AuthGuard)
+  registerLandingMovie(
+    @Body(ValidationPipe) createLandingMovieDto: CreateLandingMovieDto,
+    @CurrentUser() user: UserInfo,
+  ): Promise<IMessage> {
+    return this.moviesService.registerLandingMovie(createLandingMovieDto, user);
   }
 
   @Patch('/update/:id')
