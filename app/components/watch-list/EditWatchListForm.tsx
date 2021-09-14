@@ -6,6 +6,7 @@ import {
   Button,
   TextField,
   DialogContent,
+  Grid,
 } from '@material-ui/core'
 import {
   useRecoilState,
@@ -22,6 +23,7 @@ import { IMessage } from '../../types/defaultType'
 import { IAlert } from '../../recoil/atoms/alert'
 import { setAlertState } from '../../recoil/selectors/alert'
 import { watchListState } from '../../recoil/atoms/watchList'
+import styles from '../../styles/components/watch-list/editWatchListForm.module.css'
 
 interface EditWatchListFormProps {
   currentColumn: IWatchList | null
@@ -84,10 +86,14 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
     <Dialog open={dialog.open}>
       {currentColumn && (
         <>
-          <DialogTitle>{currentColumn.title}を編集する</DialogTitle>
+          <DialogTitle>
+            <Grid container justifyContent="center">
+              {currentColumn.title}を編集する
+            </Grid>
+          </DialogTitle>
           <DialogContent>
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
-              <div>
+              <div className={styles.textField}>
                 <Controller
                   name="title"
                   control={control}
@@ -100,9 +106,12 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
                       variant="outlined"
                       defaultValue={currentColumn.title}
                       onChange={onChange}
+                      fullWidth
                     />
                   )}
                 />
+              </div>
+              <div className={styles.textField}>
                 <Controller
                   name="director"
                   control={control}
@@ -115,9 +124,12 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
                       variant="outlined"
                       defaultValue={currentColumn.director}
                       onChange={onChange}
+                      fullWidth
                     />
                   )}
                 />
+              </div>
+              <div className={styles.textField}>
                 <Controller
                   name="release"
                   control={control}
@@ -148,6 +160,8 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
                     />
                   )}
                 />
+              </div>
+              <div className={styles.textField}>
                 <Controller
                   name="url"
                   control={control}
@@ -160,13 +174,16 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
                       variant="outlined"
                       defaultValue={currentColumn.url}
                       onChange={onChange}
+                      fullWidth
                     />
                   )}
                 />
               </div>
-              <Button color="primary" type="submit" variant="contained">
-                編集する
-              </Button>
+              <Grid container justifyContent="center">
+                <Button color="primary" type="submit" variant="contained">
+                  編集する
+                </Button>
+              </Grid>
             </form>
           </DialogContent>
           <DialogActions>
