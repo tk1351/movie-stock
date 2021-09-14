@@ -7,7 +7,9 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  IconButton,
 } from '@material-ui/core'
+import { MoreHoriz } from '@material-ui/icons'
 import {
   useRecoilState,
   useRecoilValueLoadable,
@@ -23,6 +25,10 @@ import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import API, { limit } from '../../src/utils/api/api'
 import Spinner from '../common/Spinner'
 import { watchListSelector } from '../../recoil/selectors/watchList'
+import EditDialog from './EditDialog'
+import { menuState } from '../../recoil/atoms/open'
+import EditMenu from './EditMenu'
+import { currentColumnState } from '../../recoil/atoms/watchList'
 
 interface ListTableProps {
   watchList: Loadable<IWatchList[]>
@@ -40,6 +46,7 @@ const columns: Column[] = [
   { id: 3, label: '製作年', align: 'right' },
   { id: 4, label: '時間', align: 'right' },
   { id: 5, label: 'URL', align: 'right' },
+  { id: 6, label: '', align: 'right' },
 ]
 
 const ListTable: FC<ListTableProps> = ({ watchList }) => {
@@ -66,6 +73,19 @@ const ListTable: FC<ListTableProps> = ({ watchList }) => {
     if (listData.length < 1) {
       setHasMore(false)
     }
+  }
+
+  const setAnchorEl = useSetRecoilState<null | HTMLElement>(menuState)
+  const setCurrentColumn = useSetRecoilState<IWatchList | null>(
+    currentColumnState
+  )
+
+  const handleClick = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    column: IWatchList
+  ) => {
+    setAnchorEl(e.currentTarget)
+    setCurrentColumn(column)
   }
 
   const loader = <Spinner key={0} />
@@ -103,11 +123,23 @@ const ListTable: FC<ListTableProps> = ({ watchList }) => {
                         : column.url}
                     </a>
                   </TableCell>
+                  <TableCell align={'right'}>
+                    <IconButton
+                      size={'small'}
+                      onClick={(e) => handleClick(e, column)}
+                      aria-haspopup="true"
+                      aria-controls="edit-menu"
+                    >
+                      <MoreHoriz fontSize={'small'} />
+                    </IconButton>
+                    <EditMenu />
+                  </TableCell>
                 </TableRow>
               ))}
           </TableBody>
         </Table>
       </InfiniteScroll>
+      <EditDialog />
     </TableContainer>
   )
 }
