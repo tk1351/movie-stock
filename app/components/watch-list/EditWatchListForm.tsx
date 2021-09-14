@@ -14,6 +14,7 @@ import {
   useSetRecoilState,
 } from 'recoil'
 import { useForm, SubmitHandler, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { IWatchList, IWatchListInputs } from '../../types/watchList'
 import { dialogState, menuState } from '../../recoil/atoms/open'
 import { Auth, authState } from '../../recoil/atoms/auth'
@@ -24,6 +25,7 @@ import { IAlert } from '../../recoil/atoms/alert'
 import { setAlertState } from '../../recoil/selectors/alert'
 import { watchListState } from '../../recoil/atoms/watchList'
 import styles from '../../styles/components/watch-list/editWatchListForm.module.css'
+import { watchListValidationSchema } from '../../src/utils/watchListValidation'
 
 interface EditWatchListFormProps {
   currentColumn: IWatchList | null
@@ -51,6 +53,7 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
 
   const { control, handleSubmit } = useForm<IWatchListInputs>({
     defaultValues,
+    resolver: yupResolver(watchListValidationSchema),
   })
 
   const onSubmit: SubmitHandler<IWatchListInputs> = async (data) => {
@@ -97,7 +100,7 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
                 <Controller
                   name="title"
                   control={control}
-                  render={({ field: { onChange } }) => (
+                  render={({ field: { onChange }, formState: { errors } }) => (
                     <TextField
                       label={'タイトル'}
                       id="title"
@@ -107,6 +110,8 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
                       defaultValue={currentColumn.title}
                       onChange={onChange}
                       fullWidth
+                      helperText={errors.title && errors.title.message}
+                      error={Boolean(errors.title)}
                     />
                   )}
                 />
@@ -115,7 +120,7 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
                 <Controller
                   name="director"
                   control={control}
-                  render={({ field: { onChange } }) => (
+                  render={({ field: { onChange }, formState: { errors } }) => (
                     <TextField
                       label={'監督'}
                       id="director"
@@ -125,6 +130,8 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
                       defaultValue={currentColumn.director}
                       onChange={onChange}
                       fullWidth
+                      helperText={errors.director && errors.director.message}
+                      error={Boolean(errors.director)}
                     />
                   )}
                 />
@@ -133,7 +140,7 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
                 <Controller
                   name="release"
                   control={control}
-                  render={({ field: { onChange } }) => (
+                  render={({ field: { onChange }, formState: { errors } }) => (
                     <TextField
                       label={'製作年'}
                       id="release"
@@ -142,13 +149,15 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
                       variant="outlined"
                       defaultValue={currentColumn.release}
                       onChange={onChange}
+                      helperText={errors.release && errors.release.message}
+                      error={Boolean(errors.release)}
                     />
                   )}
                 />
                 <Controller
                   name="time"
                   control={control}
-                  render={({ field: { onChange } }) => (
+                  render={({ field: { onChange }, formState: { errors } }) => (
                     <TextField
                       label={'時間'}
                       id="time"
@@ -157,6 +166,8 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
                       variant="outlined"
                       defaultValue={currentColumn.time}
                       onChange={onChange}
+                      helperText={errors.time && errors.time.message}
+                      error={Boolean(errors.time)}
                     />
                   )}
                 />
@@ -165,7 +176,7 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
                 <Controller
                   name="url"
                   control={control}
-                  render={({ field: { onChange } }) => (
+                  render={({ field: { onChange }, formState: { errors } }) => (
                     <TextField
                       label={'URL'}
                       id="url"
@@ -175,6 +186,8 @@ const EditWatchListForm: FC<EditWatchListFormProps> = ({ currentColumn }) => {
                       defaultValue={currentColumn.url}
                       onChange={onChange}
                       fullWidth
+                      helperText={errors.url && errors.url.message}
+                      error={Boolean(errors.url)}
                     />
                   )}
                 />

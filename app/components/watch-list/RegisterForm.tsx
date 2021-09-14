@@ -7,6 +7,7 @@ import {
   useRecoilValue,
   useRecoilState,
 } from 'recoil'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { IWatchListInputs, IWatchList } from '../../types/watchList'
 import API from '../../src/utils/api/api'
 import { IMessage } from '../../types/defaultType'
@@ -22,6 +23,7 @@ import {
   watchListFormState,
   WatchListFormReturnType,
 } from '../../recoil/atoms/open'
+import { watchListValidationSchema } from '../../src/utils/watchListValidation'
 
 interface RegisterFormProps {}
 
@@ -43,6 +45,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
 
   const { control, handleSubmit, reset } = useForm<IWatchListInputs>({
     defaultValues,
+    resolver: yupResolver(watchListValidationSchema),
   })
 
   const onSubmit: SubmitHandler<IWatchListInputs> = async (data) => {
@@ -108,7 +111,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
           name="title"
           control={control}
           defaultValue=""
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { onChange, value }, formState: { errors } }) => (
             <TextField
               label={'タイトル'}
               id="title"
@@ -117,6 +120,8 @@ const RegisterForm: FC<RegisterFormProps> = () => {
               variant="outlined"
               onChange={onChange}
               value={value}
+              helperText={errors.title && errors.title.message}
+              error={Boolean(errors.title)}
             />
           )}
         />
@@ -124,7 +129,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
           name="director"
           control={control}
           defaultValue=""
-          render={({ field: { onChange, value } }) => (
+          render={({ field: { onChange, value }, formState: { errors } }) => (
             <TextField
               label={'監督'}
               id="director"
@@ -133,6 +138,8 @@ const RegisterForm: FC<RegisterFormProps> = () => {
               variant="outlined"
               onChange={onChange}
               value={value}
+              helperText={errors.director && errors.director.message}
+              error={Boolean(errors.director)}
             />
           )}
         />
@@ -141,7 +148,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
             name="release"
             control={control}
             defaultValue=""
-            render={({ field: { onChange, value } }) => (
+            render={({ field: { onChange, value }, formState: { errors } }) => (
               <TextField
                 label={'製作年'}
                 id="release"
@@ -150,6 +157,8 @@ const RegisterForm: FC<RegisterFormProps> = () => {
                 variant="outlined"
                 onChange={onChange}
                 value={value}
+                helperText={errors.release && errors.release.message}
+                error={Boolean(errors.release)}
               />
             )}
           />
@@ -157,7 +166,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
             name="time"
             control={control}
             defaultValue=""
-            render={({ field: { onChange, value } }) => (
+            render={({ field: { onChange, value }, formState: { errors } }) => (
               <TextField
                 label={'時間'}
                 id="time"
@@ -166,6 +175,8 @@ const RegisterForm: FC<RegisterFormProps> = () => {
                 variant="outlined"
                 onChange={onChange}
                 value={value}
+                helperText={errors.time && errors.time.message}
+                error={Boolean(errors.time)}
               />
             )}
           />
@@ -173,7 +184,7 @@ const RegisterForm: FC<RegisterFormProps> = () => {
             name="url"
             control={control}
             defaultValue=""
-            render={({ field: { onChange, value } }) => (
+            render={({ field: { onChange, value }, formState: { errors } }) => (
               <TextField
                 label={'URL'}
                 id="url"
@@ -182,6 +193,8 @@ const RegisterForm: FC<RegisterFormProps> = () => {
                 variant="outlined"
                 onChange={onChange}
                 value={value}
+                helperText={errors.url && errors.url.message}
+                error={Boolean(errors.url)}
               />
             )}
           />
