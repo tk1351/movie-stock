@@ -8,12 +8,13 @@ import API from '../../src/utils/api/api'
 import { IUsersId, RegisterUser } from '../../types/user'
 import { registerUser } from '../../src/utils/api/user'
 import Landing from './Landing'
+import Spinner from './Spinner'
 
 interface HomePageProps {}
 
 const Home: NextPage<HomePageProps> = () => {
   const [usersId, setUsersId] = useState<IUsersId[]>([])
-  const { loginWithRedirect, isAuthenticated, user } = useAuth0()
+  const { isLoading, isAuthenticated, user } = useAuth0()
 
   useEffect(() => {
     ;(async () => {
@@ -49,10 +50,11 @@ const Home: NextPage<HomePageProps> = () => {
 
   return (
     <div>
+      {/* FIXME: ログイン情報取得中にLandingページを表示しない */}
+      {isLoading && <Spinner />}
       {!isAuthenticated && (
         <>
           <Landing />
-          <button onClick={() => loginWithRedirect()}>Login</button>
         </>
       )}
       {isAuthenticated && (
