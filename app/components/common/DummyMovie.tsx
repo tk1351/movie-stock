@@ -1,9 +1,6 @@
 import React, { FC } from 'react'
 import {
   Button,
-  Dialog,
-  DialogTitle,
-  DialogActions,
   Grid,
   Typography,
   Box,
@@ -13,7 +10,6 @@ import { Rating } from '@material-ui/lab'
 import { Delete, Edit } from '@material-ui/icons'
 import styles from '../../styles/components/common/dummyMovie.module.css'
 import { IMovie } from '../../types/movie'
-import { Loadable } from 'recoil'
 
 interface DummyMovieProps {
   movie: IMovie
@@ -23,6 +19,8 @@ const DummyMovie: FC<DummyMovieProps> = ({ movie }) => {
   console.log('movie', movie)
   return (
     <Grid container className={styles.movieWrapper}>
+      {movie && (
+        <>
       <Grid item xs={12}>
         <Grid container className={styles.header}>
           <Typography
@@ -73,7 +71,7 @@ const DummyMovie: FC<DummyMovieProps> = ({ movie }) => {
               <Chip label={tag.text} />
           </div>
         ))}
-        {/* <DetailTabs movie={movie.contents} /> */}
+      {/* <DetailTabs movie={movie.contents} /> */}
       </Grid>
     <Grid container>
       <div className={styles.buttonWrapper}>
@@ -92,8 +90,10 @@ const DummyMovie: FC<DummyMovieProps> = ({ movie }) => {
         </Button>
       </div>
     </Grid>
-  </Grid>
-    )
+    </>
+      )}
+    </Grid>
+  )
 }
 
 export default DummyMovie
