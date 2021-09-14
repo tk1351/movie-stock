@@ -8,7 +8,6 @@ import {
   useRecoilState,
 } from 'recoil'
 import { IWatchListInputs, IWatchList } from '../../types/watchList'
-import { watchListRegisterFormState } from '../../recoil/atoms/watchListRegisterForm'
 import API from '../../src/utils/api/api'
 import { IMessage } from '../../types/defaultType'
 import { IAlert } from '../../recoil/atoms/alert'
@@ -19,11 +18,15 @@ import { watchListState } from '../../recoil/atoms/watchList'
 import { watchListSelector } from '../../recoil/selectors/watchList'
 import styles from '../../styles/components/watch-list/registerForm.module.css'
 import { watchedState } from '../../recoil/atoms/movie'
+import {
+  watchListFormState,
+  WatchListFormReturnType,
+} from '../../recoil/atoms/open'
 
 interface RegisterFormProps {}
 
 const RegisterForm: FC<RegisterFormProps> = () => {
-  const setOpen = useSetRecoilState<boolean>(watchListRegisterFormState)
+  const setForm = useSetRecoilState<WatchListFormReturnType>(watchListFormState)
   const accessToken = useRecoilValueLoadable<Auth>(authState)
   const setIsAlert = useSetRecoilState<IAlert>(setAlertState)
   const watchList = useRecoilValue<IWatchList[]>(watchListState)
@@ -89,7 +92,10 @@ const RegisterForm: FC<RegisterFormProps> = () => {
   }
 
   const onClick = () => {
-    setOpen((prev) => !prev)
+    setForm((prev) => ({
+      open: !prev.open,
+      category: undefined,
+    }))
   }
   return (
     <Container
