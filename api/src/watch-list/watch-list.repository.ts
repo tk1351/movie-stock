@@ -44,10 +44,20 @@ export class WatchListRepository extends Repository<WatchList> {
     }
   }
 
+  async getWatchListById(id: number, user: UserInfo): Promise<WatchList> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (foundUser.role === undefined)
+      throw new UnauthorizedException('権限がありません');
+
+    return await this.findOne({ id });
+  }
+
   async registerMovie(
     createWatchListDto: CreateWatchListDto,
     user: UserInfo,
-  ): Promise<IMessage> {
+  ): Promise<[IMessage, WatchList]> {
     const usersRepository = getCustomRepository(UsersRepository);
 
     const foundUser = await usersRepository.findOne({ sub: user.sub });
@@ -67,7 +77,7 @@ export class WatchListRepository extends Repository<WatchList> {
     await wantWatched.save();
 
     try {
-      return { message: '観たい映画を登録しました' };
+      return [{ message: '観たい映画を登録しました' }, wantWatched];
     } catch (e) {
       throw new InternalServerErrorException();
     }
