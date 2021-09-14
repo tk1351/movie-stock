@@ -3,29 +3,33 @@ import Head from 'next/head'
 import { useRecoilState, useRecoilValueLoadable } from 'recoil'
 import { Button, Grid } from '@material-ui/core'
 import { ArrowUpward } from '@material-ui/icons'
-import { Add } from '@material-ui/icons'
+import { Add, Search } from '@material-ui/icons'
 import { useAuth0 } from '@auth0/auth0-react'
 import List from '../watch-list/List'
 import RegisterForm from '../watch-list/RegisterForm'
-import { watchListRegisterFormState } from '../../recoil/atoms/watchListRegisterForm'
 import styles from '../../styles/components/user/watchList.module.css'
 import { authState } from '../../recoil/atoms/auth'
 import Spinner from '../common/Spinner'
+import { watchListFormState } from '../../recoil/atoms/open'
+import SearchWatchListForm from '../watch-list/SearchWatchListForm'
 
 interface WatchListProps {}
 
 const WatchList: FC<WatchListProps> = () => {
   const isAuth = useRecoilValueLoadable(authState)
-  const [open, setOpen] = useRecoilState(watchListRegisterFormState)
+  const [form, setForm] = useRecoilState(watchListFormState)
 
   const { isAuthenticated, isLoading } = useAuth0()
 
   useEffect(() => {
-    setOpen(false)
+    setForm({ open: false, category: undefined })
   }, [])
 
-  const onClick = () => {
-    setOpen((prev) => !prev)
+  const onClick = (category: 'register' | 'search') => {
+    setForm((prev) => ({
+      open: !prev.open,
+      category,
+    }))
   }
 
   const ref = createRef<HTMLDivElement>()
@@ -49,7 +53,7 @@ const WatchList: FC<WatchListProps> = () => {
 
         {isAuthenticated && (
           <div className={styles.watchListWrapper} ref={ref}>
-            {!open && (
+            {!form.open && (
               <Grid
                 container
                 justifyContent="center"
@@ -58,13 +62,21 @@ const WatchList: FC<WatchListProps> = () => {
                 <Button
                   color="primary"
                   variant="contained"
-                  onClick={() => onClick()}
+                  onClick={() => onClick('register')}
                 >
                   <Add />
                 </Button>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={() => onClick('search')}
+                >
+                  <Search />
+                </Button>
               </Grid>
             )}
-            {open && <RegisterForm />}
+            {form.open && form.category === 'register' && <RegisterForm />}
+            {form.open && form.category === 'search' && <SearchWatchListForm />}
             <List />
             <div className={styles.arrowButton}>
               <Button type="button" onClick={() => scrollToStartOfTable()}>

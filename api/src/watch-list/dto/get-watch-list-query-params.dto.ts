@@ -8,6 +8,9 @@ export class GetWatchListQueryParamsDto {
   director: string;
 
   @IsOptional()
+  query: string;
+
+  @IsOptional()
   @IsNotEmpty({ message: '取得開始する数字を入力してください' })
   offset: number;
 

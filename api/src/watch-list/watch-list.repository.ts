@@ -22,7 +22,7 @@ export class WatchListRepository extends Repository<WatchList> {
     if (foundUser.role === undefined)
       throw new UnauthorizedException('権限がありません');
 
-    const { title, director, offset, limit } = params;
+    const { title, director, query, offset, limit } = params;
 
     const watchList = this.createQueryBuilder('watch-list')
       .where('watch-list.userId = :userId', { userId: foundUser.id })
@@ -32,6 +32,12 @@ export class WatchListRepository extends Repository<WatchList> {
       .andWhere(director ? 'watch-list.director LIKE :director' : 'true', {
         director: `%${director}%`,
       })
+      .andWhere(
+        query
+          ? 'watch-list.title LIKE :query OR watch-list.director LIKE :query'
+          : 'true',
+        { query: `%${query}%` },
+      )
       .take(limit)
       .skip(offset)
       .orderBy('watch-list.id', 'DESC')
