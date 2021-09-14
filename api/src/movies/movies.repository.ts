@@ -20,6 +20,7 @@ import { CountriesRepository } from '../countries/countries.repository';
 import { StudiosRepository } from '../studios/studios.repository';
 import { GetMoviesByDecadeQueryParams } from './dto/get-movies-by-decade-query-params.dto';
 import { GetMoviesMoreThanLessThanTimeQueryParams } from './dto/get-movies-more-than-less-than-time-query-params.dto';
+import { CreateLandingMovieDto } from './dto/create-landing-moviee.dto';
 
 interface GetMoviesOrderByParams {
   entity: SelectQueryBuilder<Movie>;
@@ -295,6 +296,40 @@ export class MoviesRepository extends Repository<Movie> {
 
     const result = await movies.take(limit).skip(offset).getManyAndCount();
     return result;
+  }
+
+  async getLandingMovies(): Promise<Movie[]> {
+    const movies = await this.find({ userId: 0 });
+
+    return movies;
+  }
+
+  async registerLandingMovie(
+    createLandingMovieDto: CreateLandingMovieDto,
+    user: UserInfo,
+  ): Promise<IMessage> {
+    const { title, release, time, rate } = createLandingMovieDto;
+
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (foundUser.role !== 'admin')
+      throw new UnauthorizedException('権限がありません');
+
+    const movie = this.create();
+    movie.title = title;
+    movie.release = release;
+    movie.time = time;
+    movie.rate = rate;
+    movie.user = foundUser;
+
+    await movie.save();
+
+    try {
+      return { message: '映画の登録が完了しました' };
+    } catch (e) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async registerMovie(

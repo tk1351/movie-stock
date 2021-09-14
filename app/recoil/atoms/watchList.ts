@@ -5,3 +5,8 @@ export const watchListState = atom<IWatchList[]>({
   key: 'watchListState',
   default: [],
 })
+
+export const currentColumnState = atom<IWatchList | null>({
+  key: 'currentColumnState',
+  default: null,
+})

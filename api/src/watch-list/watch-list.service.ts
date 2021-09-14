@@ -27,10 +27,14 @@ export class WatchListService {
     return this.watchListRepository.getWatchList(params, user);
   }
 
+  async getWatchListById(id: number, user: UserInfo): Promise<WatchList> {
+    return this.watchListRepository.getWatchListById(id, user);
+  }
+
   async registerMovie(
     createWatchListDto: CreateWatchListDto,
     user: UserInfo,
-  ): Promise<IMessage> {
+  ): Promise<[IMessage, WatchList]> {
     return this.watchListRepository.registerMovie(createWatchListDto, user);
   }
 
@@ -38,7 +42,7 @@ export class WatchListService {
     id: number,
     params: UpdateWatchListDto,
     user: UserInfo,
-  ): Promise<IMessage> {
+  ): Promise<[IMessage, WatchList]> {
     const foundUser = await this.usersService.getUser(user);
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
@@ -54,7 +58,7 @@ export class WatchListService {
     await this.watchListRepository.save(watchList);
 
     try {
-      return { message: '観たい映画の更新が完了しました' };
+      return [{ message: '観たい映画の更新が完了しました' }, watchList];
     } catch (e) {
       throw new InternalServerErrorException();
     }

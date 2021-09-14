@@ -38,6 +38,26 @@ export class UsersRepository extends Repository<User> {
     }
   }
 
+  async createAdmin(createUserDto: CreateUserDto): Promise<IMessage> {
+    const { name, email, sub, picture } = createUserDto;
+
+    const user = this.create();
+    user.name = name;
+    user.email = email;
+    user.sub = sub;
+    user.picture = picture;
+    user.role = 'admin';
+
+    try {
+      await user.save();
+      return { message: '管理者の登録が完了しました' };
+    } catch (e) {
+      if (e.code === '23505')
+        throw new ConflictException('このメールアドレスは既に登録されています');
+      throw new InternalServerErrorException();
+    }
+  }
+
   async validateUserSub(
     authCredentialsDto: AuthCredentialsDto,
   ): Promise<string> {

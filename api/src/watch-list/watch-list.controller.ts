@@ -33,12 +33,21 @@ export class WatchListController {
     return this.watchListService.getWatchList(params, user);
   }
 
+  @Get('/:id')
+  @UseGuards(AuthGuard)
+  getWatchListById(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: UserInfo,
+  ): Promise<WatchList> {
+    return this.watchListService.getWatchListById(id, user);
+  }
+
   @Post('/register')
   @UseGuards(AuthGuard)
   registerMovie(
     @Body(ValidationPipe) createWatchListDto: CreateWatchListDto,
     @CurrentUser() user: UserInfo,
-  ): Promise<IMessage> {
+  ): Promise<[IMessage, WatchList]> {
     return this.watchListService.registerMovie(createWatchListDto, user);
   }
 
@@ -48,7 +57,7 @@ export class WatchListController {
     @Param('id', ParseIntPipe) id: number,
     @Body(ValidationPipe) params: UpdateWatchListDto,
     @CurrentUser() user: UserInfo,
-  ): Promise<IMessage> {
+  ): Promise<[IMessage, WatchList]> {
     return this.watchListService.updateWatchList(id, params, user);
   }
 

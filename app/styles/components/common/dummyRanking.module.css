@@ -1,0 +1,17 @@
+.tableHead {
+  background-color: rgb(0, 0, 0);
+}
+
+.tableContainer {
+  margin-top: 1rem;
+}
+
+.crewsTableWrapper {
+  width: 50vw;
+  margin: 0 auto;
+}
+
+.cellLink:hover {
+  cursor: pointer;
+  opacity: 0.5;
+}

@@ -24,4 +24,11 @@ export class UsersController {
   ): Promise<IMessage> {
     return this.usersService.createUser(createUserDto);
   }
+
+  @Post('/register/admin')
+  createAdmin(
+    @Body(ValidationPipe) createUserDto: CreateUserDto,
+  ): Promise<IMessage> {
+    return this.usersService.createAdmin(createUserDto);
+  }
 }
