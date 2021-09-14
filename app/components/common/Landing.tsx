@@ -36,7 +36,9 @@ const Landing: FC = () => {
           </Typography>
           <div className={styles.movieItemWrapper}>
             {movies.state === 'hasValue' &&
-              movies.contents.map((movie) => <DummyMovieItem movie={movie} />)}
+              movies.contents.map((movie) => (
+                <DummyMovieItem key={movie.id} movie={movie} />
+              ))}
           </div>
           <div>
             {movies.state === 'hasValue' && (
