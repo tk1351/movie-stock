@@ -26,6 +26,7 @@ const EditMenu: FC<EditMenuProps> = () => {
 
   const handleClickOpen = (category: 'edit' | 'delete') => {
     setOpen({ open: true, category })
+    setAnchorEl(null)
   }
   return (
     <Menu
