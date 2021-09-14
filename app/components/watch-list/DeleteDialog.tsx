@@ -71,7 +71,7 @@ const DeleteDialog: FC<DeleteDialogProps> = () => {
             >
               削除する
             </Button>
-            <Button color="primary" onClick={handleCloseOpen}>
+            <Button color="default" onClick={handleCloseOpen}>
               キャンセル
             </Button>
           </DialogActions>
