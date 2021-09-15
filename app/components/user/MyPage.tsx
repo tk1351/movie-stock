@@ -9,7 +9,7 @@ import { authState } from '../../recoil/atoms/auth'
 import styles from '../../styles/components/user/myPage.module.css'
 import { watchedState } from '../../recoil/atoms/movie'
 import Activity from './Activity'
-import { fetchMoviesByUser } from '../../src/utils/api/movie'
+import { fetchMoviesByUserId } from '../../src/utils/api/movie'
 import MyPageHeader from '../common/MyPageHeader'
 import BackButton from '../common/BackButton'
 import { sortState } from '../../recoil/atoms/sort'
@@ -27,7 +27,7 @@ const MyPage: NextPage<MyPageProps> = () => {
     // userの鑑賞本数を返す
     ;(async () => {
       if (isAuth.state === 'hasValue' || watched === 0) {
-        const { count } = await fetchMoviesByUser(
+        const { count } = await fetchMoviesByUserId(
           isAuth.contents.accessToken,
           sort
         )

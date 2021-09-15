@@ -19,7 +19,7 @@ const Home: NextPage<HomePageProps> = () => {
   useEffect(() => {
     ;(async () => {
       const url = `${process.env.NEXT_PUBLIC_API_URL}/users/id`
-      const res = await API.get(url)
+      const res = await API.get<IUsersId[]>(url)
       setUsersId(res.data)
     })()
   }, [])

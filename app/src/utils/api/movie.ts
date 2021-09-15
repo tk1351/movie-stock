@@ -3,7 +3,7 @@ import API, { offset, limit } from '../api/api'
 import { IMovie } from '../../../types/movie'
 import { SortType } from '../../../recoil/atoms/sort'
 
-export const fetchMoviesByUser = async (
+export const fetchMoviesByUserId = async (
   accessToken: string,
   sort: SortType
 ): Promise<{ movies: IMovie[]; count: number }> => {
@@ -17,7 +17,7 @@ export const fetchMoviesByUser = async (
   return { movies, count }
 }
 
-export const fetchMovieById = async (
+export const fetchMovieByUserId = async (
   accessToken: string,
   id: number
 ): Promise<IMovie> => {
