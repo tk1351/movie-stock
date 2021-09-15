@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import {
   useRecoilValueLoadable,
   useRecoilStateLoadable,
@@ -11,6 +11,7 @@ import { watchListState } from '../../../recoil/atoms/watchList'
 import API, { offset, limit } from '../api/api'
 import { setAuthToken } from '../api/setAuthToken'
 import { watchedState } from '../../../recoil/atoms/movie'
+import { loadingState } from '../../../recoil/atoms/loading'
 
 type useFetchWatchListReturnType = [Loadable<IWatchList[]>, number, boolean]
 
@@ -19,7 +20,7 @@ export const useFetchWatchList = (): useFetchWatchListReturnType => {
   const [data, setData] = useRecoilStateLoadable<IWatchList[]>(watchListState)
   const [watched, setWatched] = useRecoilState(watchedState)
 
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useRecoilState<boolean>(loadingState)
 
   const fetchWatchListAndLength = async (accessToken: string) => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/watch-list?offset=${offset}&limit=${limit}`
