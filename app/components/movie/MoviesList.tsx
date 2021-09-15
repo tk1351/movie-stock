@@ -62,8 +62,6 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
 
   const loader = <Spinner key={0} />
 
-  console.log('movies', movies.contents)
-
   return (
     <>
       <Sort category={'moviesList'} />
