@@ -24,14 +24,17 @@ import { authState, Auth } from '../../recoil/atoms/auth'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import API, { limit } from '../../src/utils/api/api'
 import Spinner from '../common/Spinner'
-import { watchListSelector } from '../../recoil/selectors/watchList'
 import EditDialog from './EditDialog'
 import { menuState } from '../../recoil/atoms/open'
 import EditMenu from './EditMenu'
-import { currentColumnState } from '../../recoil/atoms/watchList'
+import {
+  currentColumnState,
+  watchListState,
+} from '../../recoil/atoms/watchList'
 
 interface ListTableProps {
   watchList: Loadable<IWatchList[]>
+  isLoading: boolean
 }
 
 interface Column {
@@ -49,10 +52,10 @@ const columns: Column[] = [
   { id: 6, label: '', align: 'right' },
 ]
 
-const ListTable: FC<ListTableProps> = ({ watchList }) => {
+const ListTable: FC<ListTableProps> = ({ watchList, isLoading }) => {
   const accessToken = useRecoilValueLoadable<Auth>(authState)
   const [hasMore, setHasMore] = useRecoilState<boolean>(scrollState)
-  const setIsFetched = useSetRecoilState<IWatchList[]>(watchListSelector)
+  const setIsFetched = useSetRecoilState<IWatchList[]>(watchListState)
   const URL_MAX_LENGTH = 30
 
   useEffect(() => {
@@ -91,56 +94,67 @@ const ListTable: FC<ListTableProps> = ({ watchList }) => {
   const loader = <Spinner key={0} />
 
   return (
-    <TableContainer component={Paper}>
-      <InfiniteScroll loadMore={loadMore} hasMore={hasMore} loader={loader}>
-        <Table>
-          <TableHead className={styles.tableHead}>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell key={column.id} align={column.align}>
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {watchList.state === 'hasValue' &&
-              watchList.contents.map((column) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={column.id}>
-                  <TableCell>{column.title}</TableCell>
-                  <TableCell align={'right'}>{column.director}</TableCell>
-                  <TableCell align={'right'}>{column.release}</TableCell>
-                  <TableCell align={'right'}>{column.time}</TableCell>
-                  <TableCell align={'right'}>
-                    <a
-                      href={column.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.link}
-                    >
-                      {column.url && column.url.length > URL_MAX_LENGTH
-                        ? column.url.substr(0, URL_MAX_LENGTH) + '...'
-                        : column.url}
-                    </a>
-                  </TableCell>
-                  <TableCell align={'right'}>
-                    <IconButton
-                      size={'small'}
-                      onClick={(e) => handleClick(e, column)}
-                      aria-haspopup="true"
-                      aria-controls="edit-menu"
-                    >
-                      <MoreHoriz fontSize={'small'} />
-                    </IconButton>
-                    <EditMenu />
-                  </TableCell>
+    <>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <TableContainer component={Paper}>
+          <InfiniteScroll loadMore={loadMore} hasMore={hasMore} loader={loader}>
+            <Table>
+              <TableHead className={styles.tableHead}>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell key={column.id} align={column.align}>
+                      {column.label}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </InfiniteScroll>
-      <EditDialog />
-    </TableContainer>
+              </TableHead>
+              <TableBody>
+                {watchList.state === 'hasValue' &&
+                  watchList.contents.map((column) => (
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={column.id}
+                    >
+                      <TableCell>{column.title}</TableCell>
+                      <TableCell align={'right'}>{column.director}</TableCell>
+                      <TableCell align={'right'}>{column.release}</TableCell>
+                      <TableCell align={'right'}>{column.time}</TableCell>
+                      <TableCell align={'right'}>
+                        <a
+                          href={column.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.link}
+                        >
+                          {column.url && column.url.length > URL_MAX_LENGTH
+                            ? column.url.substr(0, URL_MAX_LENGTH) + '...'
+                            : column.url}
+                        </a>
+                      </TableCell>
+                      <TableCell align={'right'}>
+                        <IconButton
+                          size={'small'}
+                          onClick={(e) => handleClick(e, column)}
+                          aria-haspopup="true"
+                          aria-controls="edit-menu"
+                        >
+                          <MoreHoriz fontSize={'small'} />
+                        </IconButton>
+                        <EditMenu />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </InfiniteScroll>
+          <EditDialog />
+        </TableContainer>
+      )}
+    </>
   )
 }
 
