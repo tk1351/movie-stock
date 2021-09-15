@@ -25,7 +25,7 @@ import { Remove, Add } from '@material-ui/icons'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { movieState } from '../../recoil/atoms/movie'
 import { Auth, authState } from '../../recoil/atoms/auth'
-import { fetchMovieById } from '../../src/utils/api/movie'
+import { fetchMovieByUserId } from '../../src/utils/api/movie'
 import { IMovie, IMovieInputs, PostMovieData } from '../../types/movie'
 import API from '../../src/utils/api/api'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
@@ -52,7 +52,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
   useEffect(() => {
     ;(async () => {
       if (accessToken.state === 'hasValue' || movie.contents.id === 0) {
-        const movieData: IMovie = await fetchMovieById(
+        const movieData: IMovie = await fetchMovieByUserId(
           accessToken.contents.accessToken,
           Number(id)
         )
