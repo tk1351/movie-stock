@@ -39,6 +39,7 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
         } = await fetchMoviesByUserId(accessToken.contents.accessToken, sort)
         setMovies([...res.movies])
         setWatched(res.count)
+        setHasMore(true)
       }
     })()
   }, [accessToken])

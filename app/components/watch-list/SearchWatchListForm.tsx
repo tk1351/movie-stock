@@ -14,6 +14,9 @@ import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import { IWatchList } from '../../types/watchList'
 import { watchListState } from '../../recoil/atoms/watchList'
 import { Clear } from '@material-ui/icons'
+import { scrollState } from '../../recoil/atoms/scroll'
+import { useFetchWatchList } from '../../src/utils/hooks/useFetchWatchList'
+import { loadingState } from '../../recoil/atoms/loading'
 
 interface SearchWatchListFormProps {}
 
@@ -27,6 +30,8 @@ const SearchWatchListForm: FC<SearchWatchListFormProps> = () => {
   const setForm = useSetRecoilState<WatchListFormReturnType>(watchListFormState)
   const accessToken = useRecoilValueLoadable<Auth>(authState)
   const setWatchList = useSetRecoilState<IWatchList[]>(watchListState)
+  const setHasMore = useSetRecoilState<boolean>(scrollState)
+  const setIsLoading = useSetRecoilState<boolean>(loadingState)
 
   const { control, reset } = useForm<ISearchQuery>({
     defaultValues: { query: '' },
@@ -82,6 +87,25 @@ const SearchWatchListForm: FC<SearchWatchListFormProps> = () => {
     return setInput(true)
   }
 
+  const resetWatchList = async () => {
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/watch-list?offset=${offset}&limit=${limit}`
+    setIsLoading(true)
+
+    try {
+      if (accessToken.state === 'hasValue')
+        setAuthToken(accessToken.contents.accessToken)
+
+      const res = await API.get<[IWatchList[], number]>(url)
+
+      const watchList = res.data[0]
+      setWatchList(watchList)
+      setHasMore(true)
+      setIsLoading(false)
+    } catch (e) {
+      throw new Error(e)
+    }
+  }
+
   return (
     <Container
       component="main"
@@ -112,7 +136,10 @@ const SearchWatchListForm: FC<SearchWatchListFormProps> = () => {
         <Button
           type="button"
           disabled={input === false}
-          onClick={clearInputValue}
+          onClick={() => {
+            clearInputValue()
+            resetWatchList()
+          }}
         >
           <Clear fontSize="small" />
         </Button>
@@ -120,7 +147,10 @@ const SearchWatchListForm: FC<SearchWatchListFormProps> = () => {
           type="button"
           color="secondary"
           variant="contained"
-          onClick={() => onClick()}
+          onClick={() => {
+            onClick()
+            resetWatchList()
+          }}
           className={styles.cancelButton}
         >
           キャンセル

@@ -1,6 +1,10 @@
 import React, { FC, useEffect, createRef, useCallback } from 'react'
 import Head from 'next/head'
-import { useRecoilState, useRecoilValueLoadable } from 'recoil'
+import {
+  useRecoilState,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from 'recoil'
 import { Button, Grid } from '@material-ui/core'
 import { ArrowUpward } from '@material-ui/icons'
 import { Add, Search } from '@material-ui/icons'
@@ -12,12 +16,14 @@ import { authState } from '../../recoil/atoms/auth'
 import Spinner from '../common/Spinner'
 import { watchListFormState } from '../../recoil/atoms/open'
 import SearchWatchListForm from '../watch-list/SearchWatchListForm'
+import { scrollState } from '../../recoil/atoms/scroll'
 
 interface WatchListProps {}
 
 const WatchList: FC<WatchListProps> = () => {
   const isAuth = useRecoilValueLoadable(authState)
   const [form, setForm] = useRecoilState(watchListFormState)
+  const setHasMore = useSetRecoilState<boolean>(scrollState)
 
   const { isAuthenticated, isLoading } = useAuth0()
 
@@ -69,7 +75,10 @@ const WatchList: FC<WatchListProps> = () => {
                 <Button
                   color="primary"
                   variant="contained"
-                  onClick={() => onClick('search')}
+                  onClick={() => {
+                    onClick('search')
+                    setHasMore(false)
+                  }}
                 >
                   <Search />
                 </Button>
