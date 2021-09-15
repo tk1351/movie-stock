@@ -9,7 +9,7 @@ import { NextPage } from 'next'
 import { Grid, Typography, Box } from '@material-ui/core'
 import { authState } from '../../recoil/atoms/auth'
 import { moviesState, watchedState } from '../../recoil/atoms/movie'
-import { fetchMoviesByUser } from '../../src/utils/api/movie'
+import { fetchMoviesByUserId } from '../../src/utils/api/movie'
 import API, { limit } from '../../src/utils/api/api'
 import { IMovie } from '../../types/movie'
 import Spinner from '../common/Spinner'
@@ -36,8 +36,8 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
         const res: {
           movies: IMovie[]
           count: number
-        } = await fetchMoviesByUser(accessToken.contents.accessToken, sort)
-        setMovies(res.movies)
+        } = await fetchMoviesByUserId(accessToken.contents.accessToken, sort)
+        setMovies([...res.movies])
         setWatched(res.count)
       }
     })()
