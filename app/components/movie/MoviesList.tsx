@@ -39,6 +39,7 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
         } = await fetchMoviesByUserId(accessToken.contents.accessToken, sort)
         setMovies([...res.movies])
         setWatched(res.count)
+        setHasMore(true)
       }
     })()
   }, [accessToken])
@@ -60,6 +61,8 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
   }
 
   const loader = <Spinner key={0} />
+
+  console.log('movies', movies.contents)
 
   return (
     <>
