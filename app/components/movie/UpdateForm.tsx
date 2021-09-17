@@ -1,7 +1,11 @@
 import React, { useEffect } from 'react'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useRecoilValueLoadable, useSetRecoilState } from 'recoil'
+import {
+  useRecoilValueLoadable,
+  useSetRecoilState,
+  useRecoilStateLoadable,
+} from 'recoil'
 import {
   useForm,
   useFieldArray,
@@ -42,8 +46,7 @@ interface UpdateFormPageProps {}
 
 const UpdateForm: NextPage<UpdateFormPageProps> = () => {
   const accessToken = useRecoilValueLoadable<Auth>(authState)
-  const movie = useRecoilValueLoadable(movieState)
-  const setMovie = useSetRecoilState(movieState)
+  const [movie, setMovie] = useRecoilStateLoadable<IMovie>(movieState)
   const setIsAlert = useSetRecoilState<IAlert>(setAlertState)
 
   const router = useRouter()
