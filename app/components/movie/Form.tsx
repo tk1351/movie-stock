@@ -99,8 +99,8 @@ const Form: FC<FormProps> = ({ watchList }) => {
   const setWatchListValues = (watchList: IWatchList) => {
     const { title, time, release, director } = watchList
     setValue('title', title)
-    setValue('time', time)
-    setValue('release', release)
+    setValue('time', String(time))
+    setValue('release', String(release))
     setValue('crews.0.name', director)
   }
 
