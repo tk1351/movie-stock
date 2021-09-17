@@ -158,4 +158,4 @@ const ListTable: FC<ListTableProps> = memo(({ watchList, isLoading }) => {
   )
 })
 
-export default ListTable
+export default memo(ListTable)

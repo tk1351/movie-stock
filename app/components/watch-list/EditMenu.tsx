@@ -64,4 +64,4 @@ const EditMenu: FC<EditMenuProps> = memo(() => {
   )
 })
 
-export default EditMenu
+export default memo(EditMenu)
