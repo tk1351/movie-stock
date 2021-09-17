@@ -1,4 +1,4 @@
-import React, { FC, useEffect, memo } from 'react'
+import React, { FC, useEffect } from 'react'
 import {
   TableContainer,
   Paper,
@@ -52,7 +52,7 @@ const columns: Column[] = [
   { id: 6, label: '', align: 'right' },
 ]
 
-const ListTable: FC<ListTableProps> = memo(({ watchList, isLoading }) => {
+const ListTable: FC<ListTableProps> = ({ watchList, isLoading }) => {
   const accessToken = useRecoilValueLoadable<Auth>(authState)
   const [hasMore, setHasMore] = useRecoilState<boolean>(scrollState)
   const setIsFetched = useSetRecoilState<IWatchList[]>(watchListState)
@@ -156,6 +156,6 @@ const ListTable: FC<ListTableProps> = memo(({ watchList, isLoading }) => {
       )}
     </>
   )
-})
+}
 
-export default memo(ListTable)
+export default ListTable

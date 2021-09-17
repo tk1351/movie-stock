@@ -1,4 +1,4 @@
-import React, { FC, memo } from 'react'
+import React, { FC } from 'react'
 import { useRouter } from 'next/router'
 import { Menu, MenuItem } from '@material-ui/core'
 import { useRecoilState, useSetRecoilState } from 'recoil'
@@ -13,7 +13,7 @@ import { currentColumnState } from '../../recoil/atoms/watchList'
 
 interface EditMenuProps {}
 
-const EditMenu: FC<EditMenuProps> = memo(() => {
+const EditMenu: FC<EditMenuProps> = () => {
   const router = useRouter()
 
   const [anchorEl, setAnchorEl] = useRecoilState<null | HTMLElement>(menuState)
@@ -62,6 +62,6 @@ const EditMenu: FC<EditMenuProps> = memo(() => {
       )}
     </>
   )
-})
+}
 
-export default memo(EditMenu)
+export default EditMenu
