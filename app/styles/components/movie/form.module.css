@@ -1,0 +1,37 @@
+.container {
+  max-width: 40rem;
+}
+
+.header {
+  margin: 1rem 0;
+}
+
+.textFieldWrapper {
+  margin-bottom: 2rem;
+  display: flex;
+}
+
+.textField {
+  width: 31rem;
+}
+
+.crewTextField {
+  width: 27rem;
+}
+
+.formControl {
+  width: 4rem;
+}
+
+.appendButton {
+  margin-bottom: 1rem;
+}
+
+.registerButton {
+  width: 25rem;
+  margin-bottom: 2rem;
+}
+
+.rate {
+  margin-bottom: 2rem;
+}
