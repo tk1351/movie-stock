@@ -8,18 +8,19 @@ interface AutoCompleteFormProps {
     onChange: (...event: any[]) => void
     id: string
     options: string[]
+    value?: any
   }
   textField: {
     label: string
     id: string
     type: string
     name: string
-    defaultValue?: string
     className: string
     variant: 'filled' | 'outlined' | 'standard'
     helperText?: string | undefined
     error?: boolean
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+    value?: any
   }
 }
 
@@ -33,6 +34,7 @@ const AutoCompleteForm: NextPage<AutoCompleteFormProps> = ({
       selectOnFocus
       id={autocomplete.id}
       options={autocomplete.options}
+      value={autocomplete.value}
       freeSolo
       renderInput={(params: any) => (
         <TextField
@@ -41,12 +43,12 @@ const AutoCompleteForm: NextPage<AutoCompleteFormProps> = ({
           id={textField.id}
           type={textField.type}
           name={textField.name}
-          defaultValue={textField.defaultValue}
           variant={textField.variant}
           className={textField.className}
           helperText={textField.helperText}
           error={textField.error}
           onChange={textField.onChange}
+          value={textField.value}
         />
       )}
     />
