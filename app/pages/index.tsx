@@ -35,10 +35,10 @@ const index: NextPage<Props> = (props) => {
 }
 
 export const getStaticProps = async () => {
-  const dummyMoviesUrl = `http://api:8080/movies/landing`
+  const dummyMoviesUrl = `${process.env.API_URL}/movies/landing`
   const dummyMoviesRes = await axios.get<IMovie[]>(dummyMoviesUrl)
 
-  const dummyWatchListUrl = 'http://api:8080/watch-list/landing'
+  const dummyWatchListUrl = `${process.env.API_URL}/watch-list/landing`
   const dummyWatchListRes = await axios.get<IWatchList[]>(dummyWatchListUrl)
   return {
     props: { movies: dummyMoviesRes.data, watchList: dummyWatchListRes.data },
