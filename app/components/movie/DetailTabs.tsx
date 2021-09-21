@@ -1,9 +1,18 @@
 import React, { useState } from 'react'
 import { NextPage } from 'next'
-import { Box, Typography, Paper, Tabs, Tab, Chip } from '@material-ui/core'
+import {
+  Box,
+  Typography,
+  Paper,
+  Tabs,
+  Tab,
+  Chip,
+  TableBody,
+  TableCell,
+  TableRow,
+} from '@material-ui/core'
 import Link from 'next/link'
 import { IMovie } from '../../types/movie'
-import styles from '../../styles/components/movie/detailTabs.module.css'
 
 interface DetailTabsProps {
   movie: IMovie
@@ -15,12 +24,12 @@ export interface TabPanelProps {
   value: any
 }
 
-export const crewCategory = {
-  1: '監督',
-  2: '脚本',
-  3: '製作',
-  4: '撮影',
-}
+export const crewMetaData = [
+  { category: 1, name: '監督' },
+  { category: 2, name: '脚本' },
+  { category: 3, name: '製作' },
+  { category: 4, name: '撮影' },
+]
 
 export const TabPanel = (props: TabPanelProps) => {
   const { children, index, value, ...other } = props
@@ -56,6 +65,12 @@ const DetailTabs: NextPage<DetailTabsProps> = ({ movie }) => {
     setValue(newValue)
   }
 
+  const { crews, studios, countries } = movie
+
+  const orderedCrews = (num: number) => {
+    return crews.slice().filter((crew) => crew.category === num)
+  }
+
   return (
     <Paper square>
       <Tabs
@@ -63,68 +78,63 @@ const DetailTabs: NextPage<DetailTabsProps> = ({ movie }) => {
         onChange={handleChange}
         indicatorColor="primary"
         textColor="inherit"
+        variant="fullWidth"
+        centered
       >
         <Tab label="スタッフ" {...a11yProps(0)} />
         <Tab label="詳細" {...a11yProps(1)} />
       </Tabs>
       <TabPanel value={value} index={0}>
-        {movie.crews.map((crew) => (
-          <div key={crew.id} className={styles.tabPanel}>
-            <Typography
-              variant="body2"
-              color="textPrimary"
-              component="p"
-              className={styles.typography}
-            >
-              {crewCategory[crew.category]}:
-            </Typography>
-            <Link href={{ pathname: '/crews', query: { name: crew.name } }}>
-              <Chip label={crew.name} className={styles.chip} />
-            </Link>
-          </div>
-        ))}
+        <TableBody>
+          {crewMetaData.map((item) => (
+            <TableRow key={item.category}>
+              <TableCell>{item.name}</TableCell>
+              {orderedCrews(item.category).map((crew) => (
+                <TableCell key={crew.id}>
+                  <Link
+                    href={{ pathname: '/crews', query: { name: crew.name } }}
+                  >
+                    <Chip label={crew.name} />
+                  </Link>
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
       </TabPanel>
       <TabPanel value={value} index={1}>
-        {movie.studios.map((studio) => (
-          <div key={studio.id} className={styles.tabPanel}>
-            <Typography
-              variant="body2"
-              color="textPrimary"
-              component="p"
-              className={styles.typography}
-            >
-              制作会社:
-            </Typography>
-            <Link
-              href={{
-                pathname: '/studios',
-                query: { studio: studio.studio },
-              }}
-            >
-              <Chip label={studio.studio} className={styles.chip} />
-            </Link>
-          </div>
-        ))}
-        {movie.countries.map((country) => (
-          <div key={country.id} className={styles.tabPanel}>
-            <Typography
-              variant="body2"
-              color="textPrimary"
-              component="p"
-              className={styles.typography}
-            >
-              製作国:
-            </Typography>
-            <Link
-              href={{
-                pathname: '/countries',
-                query: { country: country.country },
-              }}
-            >
-              <Chip label={country.country} className={styles.chip} />
-            </Link>
-          </div>
-        ))}
+        <TableBody>
+          <TableRow>
+            <TableCell>制作会社:</TableCell>
+            {studios.map((studio) => (
+              <TableCell key={studio.id}>
+                <Link
+                  href={{
+                    pathname: '/studios',
+                    query: { studio: studio.studio },
+                  }}
+                >
+                  <Chip label={studio.studio} />
+                </Link>
+              </TableCell>
+            ))}
+          </TableRow>
+          <TableRow>
+            <TableCell>製作国:</TableCell>
+            {countries.map((country) => (
+              <TableCell key={country.id}>
+                <Link
+                  href={{
+                    pathname: '/countries',
+                    query: { country: country.country },
+                  }}
+                >
+                  <Chip label={country.country} />
+                </Link>
+              </TableCell>
+            ))}
+          </TableRow>
+        </TableBody>
       </TabPanel>
     </Paper>
   )
