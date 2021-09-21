@@ -37,13 +37,13 @@ interface ListTableProps {
   isLoading: boolean
 }
 
-interface Column {
+export interface Column {
   id: number
   label: string
   align?: 'right'
 }
 
-const columns: Column[] = [
+export const columns: Column[] = [
   { id: 1, label: 'タイトル' },
   { id: 2, label: '監督', align: 'right' },
   { id: 3, label: '製作年', align: 'right' },
@@ -52,11 +52,12 @@ const columns: Column[] = [
   { id: 6, label: '', align: 'right' },
 ]
 
+export const URL_MAX_LENGTH = 30
+
 const ListTable: FC<ListTableProps> = ({ watchList, isLoading }) => {
   const accessToken = useRecoilValueLoadable<Auth>(authState)
   const [hasMore, setHasMore] = useRecoilState<boolean>(scrollState)
   const setIsFetched = useSetRecoilState<IWatchList[]>(watchListState)
-  const URL_MAX_LENGTH = 30
 
   useEffect(() => {
     setHasMore(true)
