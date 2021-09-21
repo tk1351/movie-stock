@@ -305,6 +305,7 @@ export class MoviesRepository extends Repository<Movie> {
       .leftJoinAndSelect('movies.crews', 'crews')
       .leftJoinAndSelect('movies.tags', 'tags')
       .where('movies.userId = :userId', { userId: 0 })
+      .orderBy({ 'crews.category': 'ASC', 'movies.id': 'ASC' })
       .getMany();
 
     return movies;

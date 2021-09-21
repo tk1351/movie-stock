@@ -62,7 +62,11 @@ export class WatchListRepository extends Repository<WatchList> {
   }
 
   async getLandingWatchList(): Promise<WatchList[]> {
-    const watchList = await this.find({ userId: 0 });
+    const watchList = await this.createQueryBuilder('watch-list')
+      .where('watch-list.userId = :userId', { userId: 0 })
+      .orderBy('watch-list.id', 'ASC')
+      .getMany();
+
     return watchList;
   }
 
