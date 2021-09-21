@@ -9,6 +9,7 @@ import { IMessage, UserInfo } from '../types/type';
 import { CreateWatchListDto } from './dto/create-watch-list.dto';
 import { UsersRepository } from '../users/users.repository';
 import { GetWatchListQueryParamsDto } from './dto/get-watch-list-query-params.dto';
+import { User } from '../users/models/users.entity';
 
 @EntityRepository(WatchList)
 export class WatchListRepository extends Repository<WatchList> {
@@ -60,16 +61,15 @@ export class WatchListRepository extends Repository<WatchList> {
     return await this.findOne({ id });
   }
 
+  async getLandingWatchList(): Promise<WatchList[]> {
+    const watchList = await this.find({ userId: 0 });
+    return watchList;
+  }
+
   async registerMovie(
     createWatchListDto: CreateWatchListDto,
-    user: UserInfo,
+    foundUser: User,
   ): Promise<[IMessage, WatchList]> {
-    const usersRepository = getCustomRepository(UsersRepository);
-
-    const foundUser = await usersRepository.findOne({ sub: user.sub });
-    if (foundUser.role === undefined)
-      throw new UnauthorizedException('権限がありません');
-
     const { title, director, release, time, url } = createWatchListDto;
 
     const wantWatched = this.create();
@@ -87,6 +87,32 @@ export class WatchListRepository extends Repository<WatchList> {
     } catch (e) {
       throw new InternalServerErrorException();
     }
+  }
+
+  async registerUsersWatchList(
+    createWatchListDto: CreateWatchListDto,
+    user: UserInfo,
+  ): Promise<[IMessage, WatchList]> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (foundUser.role === undefined)
+      throw new UnauthorizedException('権限がありません');
+
+    return await this.registerMovie(createWatchListDto, foundUser);
+  }
+
+  async registerLandingWatchList(
+    createWatchListDto: CreateWatchListDto,
+    user: UserInfo,
+  ): Promise<[IMessage, WatchList]> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (foundUser.role !== 'admin')
+      throw new UnauthorizedException('権限がありません');
+
+    return await this.registerMovie(createWatchListDto, foundUser);
   }
 
   async deleteWatchList(id: number, user: UserInfo): Promise<IMessage> {

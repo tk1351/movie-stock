@@ -107,7 +107,7 @@ const Navbar: NextPage<NavbarProps> = () => {
           </Toolbar>
         </AppBar>
       </div>
-      <MovieSearchInput />
+      {isAuthenticated && <MovieSearchInput />}
     </>
   )
 }

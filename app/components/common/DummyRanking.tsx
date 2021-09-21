@@ -37,6 +37,16 @@ const DummyRanking: FC<DummyRankingProps> = ({ number }) => {
       crews_name: 'スタンリー・キューブリック',
       crews_category: 1,
     },
+    {
+      cnt: '7',
+      crews_name: 'アルフレッド・ヒッチコック',
+      crews_category: 1,
+    },
+    {
+      cnt: '5',
+      crews_name: '黒澤明',
+      crews_category: 1,
+    },
   ]
   return (
     <div className={styles.crewsTableWrapper}>

@@ -1,3 +1,7 @@
 .movieItemWrapper {
   display: flex;
 }
+
+.wrapper {
+  margin-bottom: 2rem;
+}

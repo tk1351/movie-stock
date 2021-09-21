@@ -31,11 +31,28 @@ export class WatchListService {
     return this.watchListRepository.getWatchListById(id, user);
   }
 
-  async registerMovie(
+  async getLandingWatchList(): Promise<WatchList[]> {
+    return this.watchListRepository.getLandingWatchList();
+  }
+
+  async registerLandingWatchList(
     createWatchListDto: CreateWatchListDto,
     user: UserInfo,
   ): Promise<[IMessage, WatchList]> {
-    return this.watchListRepository.registerMovie(createWatchListDto, user);
+    return this.watchListRepository.registerLandingWatchList(
+      createWatchListDto,
+      user,
+    );
+  }
+
+  async registerUsersWatchList(
+    createWatchListDto: CreateWatchListDto,
+    user: UserInfo,
+  ): Promise<[IMessage, WatchList]> {
+    return this.watchListRepository.registerUsersWatchList(
+      createWatchListDto,
+      user,
+    );
   }
 
   async updateWatchList(

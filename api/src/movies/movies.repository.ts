@@ -20,7 +20,7 @@ import { CountriesRepository } from '../countries/countries.repository';
 import { StudiosRepository } from '../studios/studios.repository';
 import { GetMoviesByDecadeQueryParams } from './dto/get-movies-by-decade-query-params.dto';
 import { GetMoviesMoreThanLessThanTimeQueryParams } from './dto/get-movies-more-than-less-than-time-query-params.dto';
-import { CreateLandingMovieDto } from './dto/create-landing-moviee.dto';
+import { User } from '../users/models/users.entity';
 
 interface GetMoviesOrderByParams {
   entity: SelectQueryBuilder<Movie>;
@@ -299,52 +299,25 @@ export class MoviesRepository extends Repository<Movie> {
   }
 
   async getLandingMovies(): Promise<Movie[]> {
-    const movies = await this.find({ userId: 0 });
+    const movies = await this.createQueryBuilder('movies')
+      .leftJoinAndSelect('movies.countries', 'countries')
+      .leftJoinAndSelect('movies.studios', 'studios')
+      .leftJoinAndSelect('movies.crews', 'crews')
+      .leftJoinAndSelect('movies.tags', 'tags')
+      .where('movies.userId = :userId', { userId: 0 })
+      .getMany();
 
     return movies;
   }
 
-  async registerLandingMovie(
-    createLandingMovieDto: CreateLandingMovieDto,
-    user: UserInfo,
-  ): Promise<IMessage> {
-    const { title, release, time, rate } = createLandingMovieDto;
-
-    const usersRepository = getCustomRepository(UsersRepository);
-
-    const foundUser = await usersRepository.findOne({ sub: user.sub });
-    if (foundUser.role !== 'admin')
-      throw new UnauthorizedException('権限がありません');
-
-    const movie = this.create();
-    movie.title = title;
-    movie.release = release;
-    movie.time = time;
-    movie.rate = rate;
-    movie.user = foundUser;
-
-    await movie.save();
-
-    try {
-      return { message: '映画の登録が完了しました' };
-    } catch (e) {
-      throw new InternalServerErrorException();
-    }
-  }
-
   async registerMovie(
     createMovieDto: CreateMovieDto,
-    user: UserInfo,
+    foundUser: User,
   ): Promise<IMessage> {
-    const usersRepository = getCustomRepository(UsersRepository);
     const countriesRepository = getCustomRepository(CountriesRepository);
     const studiosRepository = getCustomRepository(StudiosRepository);
     const crewsRepository = getCustomRepository(CrewsRepository);
     const tagsRepository = getCustomRepository(TagsRepository);
-
-    const foundUser = await usersRepository.findOne({ sub: user.sub });
-    if (foundUser.role === undefined)
-      throw new UnauthorizedException('権限がありません');
 
     const { title, release, time, rate, countries, studios, crews, tags } =
       createMovieDto;
@@ -392,6 +365,32 @@ export class MoviesRepository extends Repository<Movie> {
     } catch (e) {
       throw new InternalServerErrorException();
     }
+  }
+
+  async registerLandingMovie(
+    createMovieDto: CreateMovieDto,
+    user: UserInfo,
+  ): Promise<IMessage> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (foundUser.role !== 'admin')
+      throw new UnauthorizedException('権限がありません');
+
+    return await this.registerMovie(createMovieDto, foundUser);
+  }
+
+  async registerUsersMovie(
+    createMovieDto: CreateMovieDto,
+    user: UserInfo,
+  ): Promise<IMessage> {
+    const usersRepository = getCustomRepository(UsersRepository);
+
+    const foundUser = await usersRepository.findOne({ sub: user.sub });
+    if (foundUser.role === undefined)
+      throw new UnauthorizedException('権限がありません');
+
+    return await this.registerMovie(createMovieDto, foundUser);
   }
 
   async deleteMovie(id: number, user: UserInfo): Promise<IMessage> {

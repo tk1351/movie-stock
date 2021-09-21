@@ -9,20 +9,20 @@ interface DetailTabsProps {
   movie: IMovie
 }
 
-interface TabPanelProps {
+export interface TabPanelProps {
   children?: React.ReactNode
   index: any
   value: any
 }
 
-const crewCategory = {
+export const crewCategory = {
   1: '監督',
   2: '脚本',
   3: '製作',
   4: '撮影',
 }
 
-const TabPanel = (props: TabPanelProps) => {
+export const TabPanel = (props: TabPanelProps) => {
   const { children, index, value, ...other } = props
 
   return (
@@ -42,7 +42,7 @@ const TabPanel = (props: TabPanelProps) => {
   )
 }
 
-const a11yProps = (index: any) => {
+export const a11yProps = (index: any) => {
   return {
     id: `tab-${index}`,
     'aria-controls': `tabpanel-${index}`,

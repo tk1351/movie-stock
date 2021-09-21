@@ -1,11 +1,14 @@
 import React, { FC } from 'react'
 import { Container, Typography, Grid, Button } from '@material-ui/core'
+import { useAuth0 } from '@auth0/auth0-react'
+import styles from '../../styles/components/common/heroUnit.module.css'
 
 interface HeroUnitProps {}
 
 const HeroUnit: FC<HeroUnitProps> = () => {
+  const { loginWithRedirect } = useAuth0()
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="sm" className={styles.wrapper}>
       <Typography
         component="h1"
         variant="h2"
@@ -29,12 +32,20 @@ const HeroUnit: FC<HeroUnitProps> = () => {
       <div>
         <Grid container spacing={2} justifyContent="center">
           <Grid item>
-            <Button variant="contained" color="primary">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={loginWithRedirect}
+            >
               ユーザー登録
             </Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" color="default">
+            <Button
+              variant="contained"
+              color="default"
+              onClick={loginWithRedirect}
+            >
               ログイン
             </Button>
           </Grid>
