@@ -7,3 +7,17 @@
   cursor: pointer;
   opacity: 0.5;
 }
+
+.cardWrapper {
+  height: 200px;
+}
+
+.cardContent {
+  height: 100%;
+  position: relative;
+}
+
+.cardDetail {
+  position: absolute;
+  bottom: 1rem;
+}
