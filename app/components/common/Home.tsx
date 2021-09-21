@@ -9,10 +9,15 @@ import { IUsersId, RegisterUser } from '../../types/user'
 import { registerUser } from '../../src/utils/api/user'
 import Landing from './Landing'
 import Spinner from './Spinner'
+import { IMovie } from '../../types/movie'
+import { IWatchList } from '../../types/watchList'
 
-interface HomePageProps {}
+interface HomePageProps {
+  movies: IMovie[]
+  watchList: IWatchList[]
+}
 
-const Home: NextPage<HomePageProps> = () => {
+const Home: NextPage<HomePageProps> = ({ movies, watchList }) => {
   const [usersId, setUsersId] = useState<IUsersId[]>([])
   const { isLoading, isAuthenticated, user } = useAuth0()
 
@@ -54,7 +59,7 @@ const Home: NextPage<HomePageProps> = () => {
       {isLoading && <Spinner />}
       {!isAuthenticated && (
         <>
-          <Landing />
+          <Landing movies={movies} watchList={watchList} />
         </>
       )}
       {isAuthenticated && (
