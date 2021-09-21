@@ -1,12 +1,13 @@
-import { NextPage } from 'next'
+import { NextPage, InferGetStaticPropsType } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
+import axios from 'axios'
 import Navbar from '../components/common/Navbar'
 import Home from '../components/common/Home'
+import { IMovie } from '../types/movie'
+import { IWatchList } from '../types/watchList'
 
-interface HomePageProps {}
-
-const index: NextPage<HomePageProps> = () => {
+const index: NextPage<Props> = (props) => {
   return (
     <div>
       <Head>
@@ -15,7 +16,7 @@ const index: NextPage<HomePageProps> = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Navbar />
-      <Home />
+      <Home movies={props.movies} watchList={props.watchList} />
 
       <footer>
         <a
@@ -32,5 +33,18 @@ const index: NextPage<HomePageProps> = () => {
     </div>
   )
 }
+
+export const getStaticProps = async () => {
+  const dummyMoviesUrl = `http://api:8080/movies/landing`
+  const dummyMoviesRes = await axios.get<IMovie[]>(dummyMoviesUrl)
+
+  const dummyWatchListUrl = 'http://api:8080/watch-list/landing'
+  const dummyWatchListRes = await axios.get<IWatchList[]>(dummyWatchListUrl)
+  return {
+    props: { movies: dummyMoviesRes.data, watchList: dummyWatchListRes.data },
+  }
+}
+
+type Props = InferGetStaticPropsType<typeof getStaticProps>
 
 export default index
