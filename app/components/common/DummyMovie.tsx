@@ -1,16 +1,15 @@
 import React, { FC } from 'react'
-import { Button, Grid, Typography, Box, Chip } from '@material-ui/core'
+import { Grid, Typography, Box, Chip } from '@material-ui/core'
 import { Rating } from '@material-ui/lab'
-import { Delete, Edit } from '@material-ui/icons'
 import styles from '../../styles/components/common/dummyMovie.module.css'
 import { IMovie } from '../../types/movie'
+import DummyDetailTabs from './DummyDetailTabs'
 
 interface DummyMovieProps {
   movie: IMovie
 }
 
 const DummyMovie: FC<DummyMovieProps> = ({ movie }) => {
-  console.log('movie', movie)
   return (
     <Grid container className={styles.movieWrapper}>
       {movie && (
@@ -63,24 +62,7 @@ const DummyMovie: FC<DummyMovieProps> = ({ movie }) => {
                   <Chip label={tag.text} />
                 </div>
               ))}
-            {/* <DetailTabs movie={movie.contents} /> */}
-          </Grid>
-          <Grid container>
-            <div className={styles.buttonWrapper}>
-              <div className={styles.editButton}>
-                <Button size="small" color="primary" variant="contained">
-                  <Edit />
-                </Button>
-              </div>
-              <Button
-                size="small"
-                color="secondary"
-                variant="contained"
-                type="button"
-              >
-                <Delete />
-              </Button>
-            </div>
+            <DummyDetailTabs movie={movie} />
           </Grid>
         </>
       )}

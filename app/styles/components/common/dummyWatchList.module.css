@@ -1,0 +1,14 @@
+.tableHead {
+  background-color: rgb(0, 0, 0);
+}
+
+.link:hover {
+  text-decoration: underline;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.watchListWrapper {
+  width: 50vw;
+  margin: 0 auto;
+}
