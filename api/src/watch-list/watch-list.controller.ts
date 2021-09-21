@@ -33,6 +33,11 @@ export class WatchListController {
     return this.watchListService.getWatchList(params, user);
   }
 
+  @Get('/landing')
+  getLandingWatchList(): Promise<WatchList[]> {
+    return this.watchListService.getLandingWatchList();
+  }
+
   @Get('/:id')
   @UseGuards(AuthGuard)
   getWatchListById(
@@ -44,11 +49,26 @@ export class WatchListController {
 
   @Post('/register')
   @UseGuards(AuthGuard)
-  registerMovie(
+  registerUsersWatchList(
     @Body(ValidationPipe) createWatchListDto: CreateWatchListDto,
     @CurrentUser() user: UserInfo,
   ): Promise<[IMessage, WatchList]> {
-    return this.watchListService.registerMovie(createWatchListDto, user);
+    return this.watchListService.registerUsersWatchList(
+      createWatchListDto,
+      user,
+    );
+  }
+
+  @Post('/register/landing')
+  @UseGuards(AuthGuard)
+  registerLandingWatchList(
+    @Body(ValidationPipe) createWatchListDto: CreateWatchListDto,
+    @CurrentUser() user: UserInfo,
+  ): Promise<[IMessage, WatchList]> {
+    return this.watchListService.registerLandingWatchList(
+      createWatchListDto,
+      user,
+    );
   }
 
   @Patch('/update/:id')
