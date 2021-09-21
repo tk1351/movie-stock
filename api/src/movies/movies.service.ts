@@ -21,7 +21,6 @@ import { CreateStudioDtos } from '../studios/dto/create-studio.dtos';
 import { CreateTagDtos } from '../tags/dto/create-tag.dtos';
 import { GetMoviesByDecadeQueryParams } from './dto/get-movies-by-decade-query-params.dto';
 import { GetMoviesMoreThanLessThanTimeQueryParams } from './dto/get-movies-more-than-less-than-time-query-params.dto';
-import { CreateLandingMovieDto } from './dto/create-landing-moviee.dto';
 
 @Injectable()
 export class MoviesService {
@@ -77,20 +76,17 @@ export class MoviesService {
   }
 
   async registerLandingMovie(
-    createLandingMovieDto: CreateLandingMovieDto,
-    user: UserInfo,
-  ): Promise<IMessage> {
-    return this.moviesRepository.registerLandingMovie(
-      createLandingMovieDto,
-      user,
-    );
-  }
-
-  async registerMovie(
     createMovieDto: CreateMovieDto,
     user: UserInfo,
   ): Promise<IMessage> {
-    return await this.moviesRepository.registerMovie(createMovieDto, user);
+    return this.moviesRepository.registerLandingMovie(createMovieDto, user);
+  }
+
+  async registerUsersMovie(
+    createMovieDto: CreateMovieDto,
+    user: UserInfo,
+  ): Promise<IMessage> {
+    return await this.moviesRepository.registerUsersMovie(createMovieDto, user);
   }
 
   async updateMovie(
