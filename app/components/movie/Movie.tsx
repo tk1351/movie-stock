@@ -20,9 +20,8 @@ import {
 } from '@material-ui/core'
 import { Rating } from '@material-ui/lab'
 import { Delete, Edit } from '@material-ui/icons'
-import axios from 'axios'
 import { authState, Auth } from '../../recoil/atoms/auth'
-import { IMovie, TMDBSearchResult } from '../../types/movie'
+import { IMovie } from '../../types/movie'
 import { movieState } from '../../recoil/atoms/movie'
 import { IMessage } from '../../types/defaultType'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
@@ -100,18 +99,6 @@ const Movie: NextPage<MoviePageProps> = () => {
     }
   }
 
-  const [poster, setPoster] = useState<string | null>(null)
-
-  // const fetchMoviePoster = async () => {
-  //   if (movie.state === 'hasValue') {
-  //     const title = movie.contents.title
-  //     const url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=ja-JP&query=${title}&page=1&include_adult=true`
-
-  //     const fetchData = await axios.get<TMDBSearchResult>(url)
-  //     console.log('fetch', fetchData.data.result[0])
-  //   }
-  // }
-
   return (
     <>
       {isLoading ? (
@@ -126,7 +113,6 @@ const Movie: NextPage<MoviePageProps> = () => {
           <Grid container className={styles.movieWrapper}>
             {movie.state === 'hasValue' && (
               <Grid item xs={12}>
-                {/* <Button onClick={() => fetchMoviePoster()}>fetch</Button> */}
                 <Grid container className={styles.header}>
                   <Typography
                     gutterBottom
