@@ -9,7 +9,7 @@ import {
   TableCell,
 } from '@material-ui/core'
 import { IMovie } from '../../types/movie'
-import { a11yProps, TabPanel, crewCategory } from '../movie/DetailTabs'
+import { a11yProps, TabPanel, crewMetaData } from '../movie/DetailTabs'
 
 interface DummyDetailTabsProps {
   movie: IMovie
@@ -21,6 +21,13 @@ const DummyDetailTabs: FC<DummyDetailTabsProps> = ({ movie }) => {
   const handleChange = (e: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue)
   }
+
+  const { crews } = movie
+
+  const orderedCrews = (num: number) => {
+    return crews.slice().filter((crew) => crew.category === num)
+  }
+
   return (
     <Paper square>
       <Tabs
@@ -36,12 +43,14 @@ const DummyDetailTabs: FC<DummyDetailTabsProps> = ({ movie }) => {
       </Tabs>
       <TabPanel value={value} index={0}>
         <TableBody>
-          {movie.crews.map((crew) => (
-            <TableRow key={crew.id}>
-              <TableCell>{crewCategory[crew.category]}:</TableCell>
-              <TableCell>
-                <Chip label={crew.name} />
-              </TableCell>
+          {crewMetaData.map((item) => (
+            <TableRow key={item.category}>
+              <TableCell>{item.name}</TableCell>
+              {orderedCrews(item.category).map((crew) => (
+                <TableCell key={crew.id}>
+                  <Chip label={crew.name} />
+                </TableCell>
+              ))}
             </TableRow>
           ))}
         </TableBody>
