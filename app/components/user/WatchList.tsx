@@ -17,6 +17,8 @@ import Spinner from '../common/Spinner'
 import { watchListFormState } from '../../recoil/atoms/open'
 import SearchWatchListForm from '../watch-list/SearchWatchListForm'
 import { scrollState } from '../../recoil/atoms/scroll'
+import { useFetchWatchList } from '../../src/utils/hooks/useFetchWatchList'
+import { deleteDomain } from '../../src/utils/user'
 
 interface WatchListProps {}
 
@@ -25,7 +27,7 @@ const WatchList: FC<WatchListProps> = () => {
   const [form, setForm] = useRecoilState(watchListFormState)
   const setHasMore = useSetRecoilState<boolean>(scrollState)
 
-  const { isAuthenticated, isLoading } = useAuth0()
+  const { isAuthenticated } = useAuth0()
 
   useEffect(() => {
     setForm({ open: false, category: undefined })
@@ -47,6 +49,8 @@ const WatchList: FC<WatchListProps> = () => {
     })
   }, [ref])
 
+  const [data, watched, isLoading] = useFetchWatchList()
+
   if (isLoading) return <Spinner />
 
   if (isAuth.state === 'hasValue') {
@@ -54,7 +58,7 @@ const WatchList: FC<WatchListProps> = () => {
     return (
       <>
         <Head>
-          <title>{userName}のWatchList | CineStock</title>
+          <title>{deleteDomain(userName)}のWatchList | CineStock</title>
         </Head>
 
         {isAuthenticated && (
@@ -72,21 +76,23 @@ const WatchList: FC<WatchListProps> = () => {
                 >
                   <Add />
                 </Button>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  onClick={() => {
-                    onClick('search')
-                    setHasMore(false)
-                  }}
-                >
-                  <Search />
-                </Button>
+                {watched > 0 && (
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={() => {
+                      onClick('search')
+                      setHasMore(false)
+                    }}
+                  >
+                    <Search />
+                  </Button>
+                )}
               </Grid>
             )}
             {form.open && form.category === 'register' && <RegisterForm />}
             {form.open && form.category === 'search' && <SearchWatchListForm />}
-            <List />
+            <List watched={watched} data={data} isLoading={isLoading} />
             <div className={styles.arrowButton}>
               <Button type="button" onClick={() => scrollToStartOfTable()}>
                 <ArrowUpward />
