@@ -11,6 +11,7 @@ import { authState } from '../../recoil/atoms/auth'
 import MyPageHeader from '../common/MyPageHeader'
 import { yearsRow } from '../../src/utils/tableRow'
 import BackButton from '../common/BackButton'
+import { deleteDomain } from '../../src/utils/user'
 
 interface YearsProps {}
 
@@ -26,11 +27,11 @@ const Years: NextPage<YearsProps> = () => {
     return (
       <>
         <Head>
-          <title>{userName}のページ | CineStock</title>
+          <title>{deleteDomain(userName)}のページ | CineStock</title>
         </Head>
         {isAuthenticated && (
           <Grid container className={styles.myPageWrapper}>
-            <MyPageHeader isAuth={isAuth} />
+            <MyPageHeader isAuth={isAuth} deleteDomain={deleteDomain} />
             <LinkTable contents={yearsRow} />
             <BackButton href={`/user/${userInfo.id}`} text={'戻る'} />
           </Grid>
