@@ -11,6 +11,7 @@ import MyPageHeader from '../common/MyPageHeader'
 import LinkTable from '../common/LinkTable'
 import { timesRow } from '../../src/utils/tableRow'
 import BackButton from '../common/BackButton'
+import { deleteDomain } from '../../src/utils/user'
 
 interface TimesProps {}
 
@@ -26,11 +27,11 @@ const Times: NextPage<TimesProps> = () => {
     return (
       <>
         <Head>
-          <title>{userName}のページ | CineStock</title>
+          <title>{deleteDomain(userName)}のページ | CineStock</title>
         </Head>
         {isAuthenticated && (
           <Grid container className={styles.myPageWrapper}>
-            <MyPageHeader isAuth={isAuth} />
+            <MyPageHeader isAuth={isAuth} deleteDomain={deleteDomain} />
             <LinkTable contents={timesRow} />
             <BackButton href={`/user/${userInfo.id}`} text={'戻る'} />
           </Grid>
