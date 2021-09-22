@@ -7,16 +7,20 @@ import styles from '../../styles/components/common/myPageHeader.module.css'
 
 interface MyPageHeaderProps {
   isAuth: Loadable<Auth>
+  deleteDomain: (userName: string) => string
 }
 
-const MyPageHeader: NextPage<MyPageHeaderProps> = ({ isAuth }) => {
+const MyPageHeader: NextPage<MyPageHeaderProps> = ({
+  isAuth,
+  deleteDomain,
+}) => {
   return (
     <Grid item xs={12}>
       <Grid container justifyContent="center" className={styles.header}>
         {isAuth.contents.userInfo && (
           <Typography gutterBottom variant="h4" component="h2">
             <Box fontWeight="fontWeightBold">
-              {isAuth.contents.userInfo.name}
+              {deleteDomain(isAuth.contents.userInfo.name)}
             </Box>
           </Typography>
         )}

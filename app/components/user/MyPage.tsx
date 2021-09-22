@@ -13,6 +13,7 @@ import { fetchMoviesByUserId } from '../../src/utils/api/movie'
 import MyPageHeader from '../common/MyPageHeader'
 import BackButton from '../common/BackButton'
 import { sortState } from '../../recoil/atoms/sort'
+import { deleteDomain } from '../../src/utils/user'
 
 interface MyPageProps {}
 
@@ -43,11 +44,11 @@ const MyPage: NextPage<MyPageProps> = () => {
     return (
       <>
         <Head>
-          <title>{userName}のページ | CineStock</title>
+          <title>{deleteDomain(userName)}のページ | CineStock</title>
         </Head>
         {isAuthenticated && (
           <Grid container className={styles.myPageWrapper}>
-            <MyPageHeader isAuth={isAuth} />
+            <MyPageHeader isAuth={isAuth} deleteDomain={deleteDomain} />
             <Activity watched={watched} />
             <BackButton href={'/'} text={'戻る'} />
           </Grid>

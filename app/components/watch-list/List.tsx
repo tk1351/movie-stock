@@ -1,12 +1,16 @@
 import React, { FC } from 'react'
 import { Grid, Typography, Box } from '@material-ui/core'
+import { Loadable } from 'recoil'
 import ListTable from './ListTable'
-import { useFetchWatchList } from '../../src/utils/hooks/useFetchWatchList'
+import { IWatchList } from '../../types/watchList'
 
-interface ListProps {}
+interface ListProps {
+  data: Loadable<IWatchList[]>
+  watched: number
+  isLoading: boolean
+}
 
-const List: FC<ListProps> = () => {
-  const [data, watched, isLoading] = useFetchWatchList()
+const List: FC<ListProps> = ({ data, watched, isLoading }) => {
   return (
     <>
       <Grid container>

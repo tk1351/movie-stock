@@ -19,6 +19,7 @@ import Sort from '../common/Sort'
 import { sortState } from '../../recoil/atoms/sort'
 import { scrollState } from '../../recoil/atoms/scroll'
 import styles from '../../styles/components/movie/moviesList.module.css'
+import Suggestion from '../common/Suggestion'
 
 interface MoviesListPageProps {}
 
@@ -71,6 +72,7 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
             <Box fontWeight="fontWeightBold">鑑賞本数: {watched}件</Box>
           </Typography>
         </Grid>
+        {watched === 0 && <Suggestion />}
         <Cards
           loadMore={loadMore}
           hasMore={hasMore}
