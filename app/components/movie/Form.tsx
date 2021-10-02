@@ -1,18 +1,5 @@
 import React, { FC, useEffect } from 'react'
-import {
-  TextField,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormHelperText,
-  Container,
-  Grid,
-  Typography,
-  Box,
-} from '@material-ui/core'
-import { Rating } from '@material-ui/lab'
+import { Button, Container, Grid, Typography, Box } from '@material-ui/core'
 import { Add, Remove } from '@material-ui/icons'
 import {
   useForm,
@@ -37,6 +24,9 @@ import { setAlertState } from '../../recoil/selectors/alert'
 import { setAuthToken } from '../../src/utils/api/setAuthToken'
 import { IMessage } from '../../types/defaultType'
 import API from '../../src/utils/api/api'
+import MuiTextField from '../mui/MuiTextField'
+import MuiRating from '../mui/MuiRating'
+import MuiSelect from '../mui/MuiSelect'
 
 interface FormProps {
   watchList?: IWatchList
@@ -122,6 +112,10 @@ const Form: FC<FormProps> = ({ watchList }) => {
     }
   }
 
+  const openAlert = (msg: string, alertType: 'succeeded' | 'failed') => {
+    setIsAlert({ msg, alertType, open: true })
+  }
+
   const registerMovie = async (data: IMovieInputs) => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/register`
 
@@ -131,11 +125,7 @@ const Form: FC<FormProps> = ({ watchList }) => {
       if (accessToken.state === 'hasValue')
         setAuthToken(accessToken.contents.accessToken)
       const res = await API.post<IMessage>(url, newData)
-      setIsAlert({
-        msg: res.data.message,
-        alertType: 'succeeded',
-        open: true,
-      })
+      openAlert(res.data.message, 'succeeded')
     } catch (e) {
       throw new Error(e)
     }
@@ -170,7 +160,7 @@ const Form: FC<FormProps> = ({ watchList }) => {
             name="title"
             control={control}
             render={({ field: { onChange, value }, formState: { errors } }) => (
-              <TextField
+              <MuiTextField
                 label={'タイトル'}
                 id="title"
                 type="text"
@@ -187,7 +177,7 @@ const Form: FC<FormProps> = ({ watchList }) => {
             name="release"
             control={control}
             render={({ field: { onChange, value }, formState: { errors } }) => (
-              <TextField
+              <MuiTextField
                 label={'製作年'}
                 id="release"
                 type="text"
@@ -204,7 +194,7 @@ const Form: FC<FormProps> = ({ watchList }) => {
             name="time"
             control={control}
             render={({ field: { onChange, value }, formState: { errors } }) => (
-              <TextField
+              <MuiTextField
                 label={'上映時間'}
                 id="time"
                 type="text"
@@ -223,12 +213,7 @@ const Form: FC<FormProps> = ({ watchList }) => {
             name="rate"
             control={control}
             render={({ field: { onChange } }) => (
-              <Rating
-                name="movie-rating"
-                onChange={onChange}
-                precision={0.5}
-                size="large"
-              />
+              <MuiRating name="movie-rating" onChange={onChange} size="large" />
             )}
           />
         </Grid>
@@ -241,7 +226,7 @@ const Form: FC<FormProps> = ({ watchList }) => {
                   control={control}
                   defaultValue={field.country ? field.country : ''}
                   render={({ field: { onChange }, formState: { errors } }) => (
-                    <TextField
+                    <MuiTextField
                       label={'製作国'}
                       id={`countries.${index}.country`}
                       type="text"
@@ -357,26 +342,19 @@ const Form: FC<FormProps> = ({ watchList }) => {
                     field: { onChange, value },
                     formState: { errors },
                   }) => (
-                    <FormControl className={styles.formControl}>
-                      <InputLabel>職種</InputLabel>
-                      <Select
-                        aria-label={'職種'}
-                        label={'職種'}
-                        name={`crews.${index}.category`}
-                        id={`crews.${index}.category`}
-                        onChange={onChange}
-                        value={value ? value : 1}
-                        error={Boolean(errors.crews && errors.crews[index])}
-                      >
-                        <MenuItem value={1}>監督</MenuItem>
-                        <MenuItem value={2}>脚本</MenuItem>
-                        <MenuItem value={3}>製作</MenuItem>
-                        <MenuItem value={4}>撮影</MenuItem>
-                      </Select>
-                      <FormHelperText>
-                        {errors.crews && errors.crews[index]?.category?.message}
-                      </FormHelperText>
-                    </FormControl>
+                    <MuiSelect
+                      className={styles.formControl}
+                      label="職種"
+                      name={`crews.${index}.category`}
+                      id={`crews.${index}.category`}
+                      onChange={onChange}
+                      value={value ? value : 1}
+                      error={Boolean(errors.crews && errors.crews[index])}
+                      menuItems={['監督', '脚本', '製作', '撮影']}
+                      helperText={
+                        errors.crews && errors.crews[index]?.category?.message
+                      }
+                    />
                   )}
                 />
                 <Controller
@@ -449,7 +427,7 @@ const Form: FC<FormProps> = ({ watchList }) => {
                   control={control}
                   defaultValue={field.text ? field.text : ''}
                   render={({ field: { onChange }, formState: { errors } }) => (
-                    <TextField
+                    <MuiTextField
                       label={'タグ'}
                       id={`tags[${index}].text`}
                       type="text"

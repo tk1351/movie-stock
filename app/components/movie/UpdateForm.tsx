@@ -12,19 +12,7 @@ import {
   SubmitHandler,
   Controller,
 } from 'react-hook-form'
-import {
-  TextField,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormHelperText,
-  Container,
-  Grid,
-  Typography,
-  Box,
-} from '@material-ui/core'
+import { Button, Container, Grid, Typography, Box } from '@material-ui/core'
 import { Remove, Add } from '@material-ui/icons'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { movieState } from '../../recoil/atoms/movie'
@@ -40,7 +28,9 @@ import { movieValidationSchema } from '../../src/utils/movieValidation'
 import styles from '../../styles/components/movie/updateForm.module.css'
 import { removeFrontRearSpace } from '../../src/utils/movie'
 import BackHistoryButton from '../common/BackHistoryButton'
-import { Rating } from '@material-ui/lab'
+import MuiRating from '../mui/MuiRating'
+import MuiTextField from '../mui/MuiTextField'
+import MuiSelect from '../mui/MuiSelect'
 
 interface UpdateFormPageProps {}
 
@@ -107,6 +97,10 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
     remove: tagRemove,
   } = useFieldArray<IMovieInputs, any, any>({ control, name: 'tags' })
 
+  const openAlert = (msg: string, alertType: 'succeeded' | 'failed') => {
+    setIsAlert({ msg, alertType, open: true })
+  }
+
   const onSubmit: SubmitHandler<IMovieInputs> = async (data) => {
     const url = `${process.env.NEXT_PUBLIC_API_URL}/movies/update/${movie.contents.id}`
 
@@ -116,11 +110,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
       if (accessToken.state === 'hasValue') {
         setAuthToken(accessToken.contents.accessToken)
         const res = await API.patch<IMessage>(url, newData)
-        setIsAlert({
-          msg: res.data.message,
-          alertType: 'succeeded',
-          open: true,
-        })
+        openAlert(res.data.message, 'succeeded')
         await router.push(`/movie/${movie.contents.id}`)
       }
     } catch (e) {
@@ -142,7 +132,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
               name="title"
               control={control}
               render={({ field: { onChange, ref }, formState: { errors } }) => (
-                <TextField
+                <MuiTextField
                   label={'タイトル'}
                   id="title"
                   type="text"
@@ -160,7 +150,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
               name="release"
               control={control}
               render={({ field: { onChange, ref }, formState: { errors } }) => (
-                <TextField
+                <MuiTextField
                   label={'製作年'}
                   id="release"
                   type="text"
@@ -178,7 +168,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
               name="time"
               control={control}
               render={({ field: { onChange, ref }, formState: { errors } }) => (
-                <TextField
+                <MuiTextField
                   label={'上映時間'}
                   id="time"
                   type="text"
@@ -198,11 +188,10 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
               name="rate"
               control={control}
               render={({ field: { onChange } }) => (
-                <Rating
+                <MuiRating
                   name="movie-rating"
                   defaultValue={movie.contents.rate}
                   onChange={onChange}
-                  precision={0.5}
                   size="large"
                 />
               )}
@@ -220,7 +209,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
                       field: { onChange, ref },
                       formState: { errors },
                     }) => (
-                      <TextField
+                      <MuiTextField
                         label={'製作国'}
                         id={`countries.${index}.country`}
                         type="text"
@@ -277,7 +266,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
                       field: { onChange, ref },
                       formState: { errors },
                     }) => (
-                      <TextField
+                      <MuiTextField
                         label={'制作会社'}
                         id={`studios.${index}.studio`}
                         type="text"
@@ -335,28 +324,19 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
                       field: { onChange, value },
                       formState: { errors },
                     }) => (
-                      <FormControl className={styles.formControl}>
-                        <InputLabel>役職</InputLabel>
-                        <Select
-                          aria-label={'役職'}
-                          label={'役職'}
-                          name={`crews[${index}].category`}
-                          id={`crews[${index}].category`}
-                          defaultValue={Number(field.category)}
-                          onChange={onChange}
-                          value={value ? value : 1}
-                          error={Boolean(errors.crews && errors.crews[index])}
-                        >
-                          <MenuItem value={1}>監督</MenuItem>
-                          <MenuItem value={2}>脚本</MenuItem>
-                          <MenuItem value={3}>製作</MenuItem>
-                          <MenuItem value={4}>撮影</MenuItem>
-                        </Select>
-                        <FormHelperText>
-                          {errors.crews &&
-                            errors.crews[index]?.category?.message}
-                        </FormHelperText>
-                      </FormControl>
+                      <MuiSelect
+                        className={styles.formControl}
+                        label="職種"
+                        name={`crews[${index}].category`}
+                        id={`crews[${index}].category`}
+                        onChange={onChange}
+                        value={value ? value : 1}
+                        error={Boolean(errors.crews && errors.crews[index])}
+                        menuItems={['監督', '脚本', '製作', '撮影']}
+                        helperText={
+                          errors.crews && errors.crews[index]?.category?.message
+                        }
+                      />
                     )}
                   />
                   <Controller
@@ -367,7 +347,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
                       field: { onChange, ref },
                       formState: { errors },
                     }) => (
-                      <TextField
+                      <MuiTextField
                         label={'名前'}
                         id={`crews[${index}].name`}
                         type="text"
@@ -422,7 +402,7 @@ const UpdateForm: NextPage<UpdateFormPageProps> = () => {
                       field: { onChange, ref },
                       formState: { errors },
                     }) => (
-                      <TextField
+                      <MuiTextField
                         label={'タグ'}
                         id={`tags[${index}].text`}
                         type="text"
