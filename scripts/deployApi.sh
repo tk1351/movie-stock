@@ -1,3 +1,5 @@
+heroku login --interactive
+
 # apiディレクトリへ移動し、herokuへログイン
 cd api/ && heroku container:login
 
