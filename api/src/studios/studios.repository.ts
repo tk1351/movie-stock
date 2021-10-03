@@ -35,6 +35,8 @@ export class StudiosRepository extends Repository<Studio> {
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
     const result = await this.createQueryBuilder('studios')
+      .leftJoinAndSelect('studios.movie', 'movie')
+      .where('movie.userId = :userId', { userId: foundUser.id })
       .select(['studios.studio', 'COUNT(*) AS cnt'])
       .take(50)
       .groupBy('studios.studio')

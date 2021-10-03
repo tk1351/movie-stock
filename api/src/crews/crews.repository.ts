@@ -121,6 +121,8 @@ export class CrewsRepository extends Repository<Crew> {
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
     const result = await this.createQueryBuilder('crews')
+      .leftJoinAndSelect('crews.movie', 'movie')
+      .where('movie.userId = :userId', { userId: foundUser.id })
       .select('crews.category')
       .addSelect(['crews.name', 'COUNT(*) AS cnt'])
       .where('crews.category = :category', { category })
