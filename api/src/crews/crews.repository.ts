@@ -122,10 +122,10 @@ export class CrewsRepository extends Repository<Crew> {
 
     const result = await this.createQueryBuilder('crews')
       .leftJoinAndSelect('crews.movie', 'movie')
-      .where('movie.userId = :userId', { userId: foundUser.id })
       .select('crews.category')
       .addSelect(['crews.name', 'COUNT(*) AS cnt'])
       .where('crews.category = :category', { category })
+      .andWhere('movie.userId = :userId', { userId: foundUser.id })
       .take(50)
       .groupBy('crews.name')
       .addGroupBy('crews.category')
