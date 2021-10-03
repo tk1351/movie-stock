@@ -34,6 +34,8 @@ export class CountriesRepository extends Repository<Country> {
     if (!foundUser) throw new NotFoundException('userが存在しません');
 
     const result = await this.createQueryBuilder('countries')
+      .leftJoinAndSelect('countries.movie', 'movie')
+      .where('movie.userId = :userId', { userId: foundUser.id })
       .select(['countries.country', 'COUNT(*) AS cnt'])
       .take(50)
       .groupBy('countries.country')
