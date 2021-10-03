@@ -28,13 +28,17 @@ interface GetMoviesOrderByParams {
   offset: number;
 }
 
-const getMoviesOrderBy = (
+const getMoviesOrderBy = async (
   orderByParams: GetMoviesOrderByParams,
   sort: string,
   order: SortType,
 ): Promise<[Movie[], number]> => {
   const { entity, limit, offset } = orderByParams;
-  return entity.take(limit).skip(offset).orderBy(sort, order).getManyAndCount();
+  return await entity
+    .take(limit)
+    .skip(offset)
+    .orderBy(sort, order)
+    .getManyAndCount();
 };
 
 @EntityRepository(Movie)
