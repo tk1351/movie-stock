@@ -46,6 +46,10 @@ const MoviesList: NextPage<MoviesListPageProps> = () => {
   }, [accessToken])
 
   const loadMore = async () => {
+    if (movies.contents.length < limit) {
+      return setHasMore(false)
+    }
+
     if (accessToken.state === 'hasValue')
       setAuthToken(accessToken.contents.accessToken)
 
